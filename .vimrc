@@ -32,6 +32,9 @@ NeoBundle 'Shougo/neosnippet'
 NeoBundle 'jpalardy/vim-slime'
 NeoBundle 'scrooloose/syntastic'
 
+call neobundle#end()
+
+
 " Powerline
 python from powerline.vim import setup as powerline_setup
 python powerline_setup()
