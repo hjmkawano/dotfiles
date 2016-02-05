@@ -23,29 +23,44 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     auto-completion
-     ;; better-defaults
+     (auto-completion :variables
+                      auto-completion-enable-sort-by-usage t
+                      auto-completion-enable-snippets-in-popup t)
+     better-defaults
      emacs-lisp
      git
+     github
      php
      javascript
      java
      html
-     ;; markdown
-     org
+     markdown
+     (org :variables
+          org-enable-github-support t)
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
+     pandoc
      ;; spell-checking
      syntax-checking
      ;; version-control
      themes-megapack
+     python
+     yaml
+     ansible
+     dockerfile
+     emoji
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages
+   '(
+     ddskk
+     mozc
+     wdired
+     )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -147,10 +162,10 @@ values."
    dotspacemacs-default-layout-name "Default"
    ;; If non nil the default layout name is displayed in the mode-line.
    ;; (default nil)
-   dotspacemacs-display-default-layout nil
+   dotspacemacs-display-default-layout t
    ;; If non nil then the last auto saved layouts are resume automatically upon
    ;; start. (default nil)
-   dotspacemacs-auto-resume-layouts nil
+   dotspacemacs-auto-resume-layouts t
    ;; Location where to auto-save files. Possible values are `original' to
    ;; auto-save the file in-place, `cache' to auto-save the file to another
    ;; file stored in the cache directory and `nil' to disable auto-saving.
@@ -194,7 +209,7 @@ values."
    ;; If non nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
-   dotspacemacs-maximized-at-startup nil
+   dotspacemacs-maximized-at-startup t
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
@@ -212,7 +227,7 @@ values."
    ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
    ;; derivatives. If set to `relative', also turns on relative line numbers.
    ;; (default nil)
-   dotspacemacs-line-numbers nil
+   dotspacemacs-line-numbers t
    ;; If non-nil smartparens-strict-mode will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
@@ -239,9 +254,11 @@ values."
    dotspacemacs-whitespace-cleanup nil
    ))
 
+
 (defun dotspacemacs/user-init ()
   "Initialization function for user code.
 It is called immediately after `dotspacemacs/init'.  You are free to put almost
+
 any user code here.  The exception is org related code, which should be placed
 in `dotspacemacs/user-config'."
   )
@@ -250,7 +267,38 @@ in `dotspacemacs/user-config'."
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
 layers configuration. You are free to put any user code."
+  (set-language-environment "Japanese")
   (setq powerline-default-separator 'arrow)
+
+  (setq default-file-name-coding-system 'utf-8-unix) ;diredで日本語file名出力
+
+  ;; for mozc
+  (when (require 'mozc nil t)
+    (setq default-input-method "japanese-mozc")
+    (add-hook 'mozc-mode-hook
+              (lambda ()
+                (setq mozc-candidate-style 'overlay)
+                ))
+    )
+
+  ;; for ddskk
+  (when (require 'skk nil t)
+    (global-set-key (kbd "C-x j") 'skk-auto-fill-mode)
+;    (setq default-input-method "japanese-skk")
+    (require 'skk-study)
+    )
+
+  (cond ((eq system-type 'gnu/linux)
+         (set-language-environment 'Japanese)
+         (prefer-coding-system 'utf-8-unix))
+        ((eq window-system 'w32)
+         (setenv "LANG" "ja_JP.UTF-8")
+         (setq default-buffer-file-coding-system 'utf-8-unix)
+         (set-coding-system-priority 'utf-8)
+         (set-terminal-coding-system 'utf-8)
+         (set-keyboard-coding-system 'utf-8)
+         (setenv "EDITOR" "emacs")
+         (add-to-list 'process-coding-system-alist '("git" utf-8 . cp932))))
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
