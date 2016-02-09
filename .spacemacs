@@ -286,11 +286,15 @@ layers configuration. You are free to put any user code."
     (global-set-key (kbd "C-x j") 'skk-auto-fill-mode)
 ;    (setq default-input-method "japanese-skk")
     (require 'skk-study)
-    )
+    (setq skk-show-annotation t)
+    (setq skk-annotation-delay 0.5)     ;デフォルトは1.0秒
+    (setq skk-dcomp-activate t)
+)
 
   (cond ((eq system-type 'gnu/linux)
          (set-language-environment 'Japanese)
-         (prefer-coding-system 'utf-8-unix))
+         (prefer-coding-system 'utf-8-unix)
+         (setq default-process-coding-system 'utf-8))
         ((eq window-system 'w32)
          (setenv "LANG" "ja_JP.UTF-8")
          (setq default-buffer-file-coding-system 'utf-8-unix)
