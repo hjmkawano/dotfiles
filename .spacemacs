@@ -26,6 +26,7 @@ values."
      (auto-completion :variables
                       auto-completion-enable-sort-by-usage t
                       auto-completion-enable-snippets-in-popup t)
+
      better-defaults
      emacs-lisp
      git
@@ -50,6 +51,9 @@ values."
      ansible
      dockerfile
      emoji
+     tmux
+     vagrant
+     wakatime
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -121,7 +125,7 @@ values."
                          solarized-light
                          solarized-dark
                          leuven
-                         monokai
+                         molokai
                          zenburn)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
@@ -289,7 +293,21 @@ layers configuration. You are free to put any user code."
     (setq skk-show-annotation t)
     (setq skk-annotation-delay 0.5)     ;デフォルトは1.0秒
     (setq skk-dcomp-activate t)
-)
+    )
+
+  (setq help-at-pt-display-when-idle t)
+  (setq help-at-pt-timer-delay 0.1)
+  (help-at-pt-set-timer)
+
+  ;; regular auto-complete initialization
+  (require 'auto-complete-config)
+  (ac-config-default)
+
+  (require 'company)
+  (require 'company-emacs-eclim)
+  (global-company-mode t)
+
+  (global-wakatime-mode)
 
   (cond ((eq system-type 'gnu/linux)
          (set-language-environment 'Japanese)
@@ -307,3 +325,18 @@ layers configuration. You are free to put any user code."
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(wakatime-api-key "54b127d0-dfbf-4a43-8fbc-4bc26c9e2a45")
+ '(wakatime-cli-path "/usr/local/bin/"))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Ricty Discord" :foundry "unknown" :slant normal :weight normal :height 120 :width normal))))
+ '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
+ '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
