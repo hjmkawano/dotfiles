@@ -54,6 +54,7 @@ values."
      tmux
      vagrant
      wakatime
+     chrome
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -113,7 +114,7 @@ values."
    dotspacemacs-startup-lists '(recents projects)
    ;; Number of recent files to show in the startup buffer. Ignored if
    ;; `dotspacemacs-startup-lists' doesn't include `recents'. (default 5)
-   dotspacemacs-startup-recent-list-size 5
+   dotspacemacs-startup-recent-list-size 10
    ;; Default major mode of the scratch buffer (default `text-mode')
    dotspacemacs-scratch-mode 'text-mode
    ;; List of themes, the first of the list is loaded when spacemacs starts.
@@ -194,7 +195,7 @@ values."
    dotspacemacs-enable-paste-micro-state nil
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
-   dotspacemacs-which-key-delay 0.4
+   dotspacemacs-which-key-delay 0.3
    ;; Which-key frame position. Possible values are `right', `bottom' and
    ;; `right-then-bottom'. right-then-bottom tries to display the frame to the
    ;; right; if there is insufficient space it displays it at the bottom.
@@ -255,7 +256,7 @@ values."
    ;; `trailing' to delete only the whitespace at end of lines, `changed'to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
-   dotspacemacs-whitespace-cleanup nil
+   dotspacemacs-whitespace-cleanup 'trailing
    ))
 
 
@@ -285,6 +286,8 @@ layers configuration. You are free to put any user code."
                 ))
     )
 
+  (golden-ratio-mode t)
+
   ;; for ddskk
   (when (require 'skk nil t)
     (global-set-key (kbd "C-x j") 'skk-auto-fill-mode)
@@ -309,6 +312,12 @@ layers configuration. You are free to put any user code."
 
   (global-wakatime-mode)
 
+  ;;; chrome edit
+  (setq edit-server-url-major-mode-alist
+        '(("github\\.com" . org-mode)))
+  (add-to-list 'edit-server-new-frame-alist '(width  . 140))
+  (add-to-list 'edit-server-new-frame-alist '(height . 60))
+
   (cond ((eq system-type 'gnu/linux)
          (set-language-environment 'Japanese)
          (prefer-coding-system 'utf-8-unix)
@@ -331,7 +340,10 @@ layers configuration. You are free to put any user code."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(wakatime-api-key "54b127d0-dfbf-4a43-8fbc-4bc26c9e2a45")
- '(wakatime-cli-path "/usr/local/bin/"))
+ '(wakatime-cli-path "/usr/local/bin/wakatime")
+ '(wakatime-python-bin "/usr/bin/python")
+ )
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
