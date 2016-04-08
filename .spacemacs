@@ -65,6 +65,7 @@ values."
      ddskk
      mozc
      wdired
+     editorconfig
      )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
@@ -121,13 +122,13 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(monokai
-                         spacemacs-dark
-                         spacemacs-light
-                         solarized-light
-                         solarized-dark
-                         leuven
                          molokai
-                         zenburn)
+                         zenburn
+                         solarized-dark
+                         spacemacs-dark
+                         leuven
+                         spacemacs-light
+                         solarized-light)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
@@ -330,7 +331,18 @@ layers configuration. You are free to put any user code."
          (set-keyboard-coding-system 'utf-8)
          (setenv "EDITOR" "emacs")
          (add-to-list 'process-coding-system-alist '("git" utf-8 . cp932))))
+
+  (add-hook 'python-mode-hook
+            '(lambda ()
+               (setq python-indent 2)
+               (setq indent-tabs-mod nil)
+               ))
+
+  (editorconfig-mode 1)
+
   )
+
+
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
