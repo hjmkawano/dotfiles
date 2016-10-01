@@ -33,6 +33,7 @@ NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle 'jpalardy/vim-slime'
 NeoBundle 'scrooloose/syntastic'
 NeoBundle 'editorconfig/editorconfig-vim'
+NeoBundle 'powerline/powerline', {'rtp': 'powerline/bindings/vim/'}
 
 call neobundle#end()
 
@@ -42,10 +43,6 @@ NeoBundleCheck
 "End NeoBundle Scripts-------------------------
 
 
-" Powerline
-python from powerline.vim import setup as powerline_setup
-python powerline_setup()
-python del powerline_setup
 set laststatus=2
 set showtabline=2
 set noshowmode
