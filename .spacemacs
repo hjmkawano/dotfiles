@@ -18,6 +18,7 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
+      python
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -27,45 +28,46 @@ values."
                       auto-completion-enable-sort-by-usage t
                       auto-completion-enable-snippets-in-popup t)
 
-     better-defaults
-     emacs-lisp
-     git
-     github
-     php
-     javascript
-     java
-     html
-     markdown
-     (org :variables
-          org-enable-github-support t)
-     (shell :variables
-            shell-default-height 30
-            shell-default-position 'bottom)
-     pandoc
-     ;; spell-checking
-     syntax-checking
-     ;; version-control
-     themes-megapack
-     python
-     yaml
-     ansible
-     dockerfile
-     emoji
-     tmux
-     vagrant
-     wakatime
-     chrome
-     )
+      better-defaults
+      emacs-lisp
+      git
+      github
+      php
+      javascript
+      java
+      html
+      markdown
+      (org :variables
+        org-enable-github-support t)
+      (shell :variables
+        shell-default-height 30
+        shell-default-position 'bottom)
+      pandoc
+      ;; spell-checking
+      syntax-checking
+      ;; version-control
+      themes-megapack
+      yaml
+      ansible
+      dockerfile
+      emoji
+      tmux
+      vagrant
+      wakatime
+      chrome
+      csv ; https://github.com/jb55/spacemacs-csv
+      go
+      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages
    '(
-     ddskk
-     mozc
-     wdired
-     editorconfig
+      ddskk
+      mozc
+      wdired
+      editorconfig
      )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
@@ -276,7 +278,7 @@ layers configuration. You are free to put any user code."
   (set-language-environment "Japanese")
   (setq powerline-default-separator 'arrow)
 
-  (setq default-file-name-coding-system 'utf-8-unix) ;dired§«∆¸À‹∏ÏfileÃæΩ–Œœ
+  (setq default-file-name-coding-system 'utf-8-unix) ;dired„ÅßÊó•Êú¨Ë™ûfileÂêçÂá∫Âäõ
 
   ;; for mozc
   (when (require 'mozc nil t)
@@ -285,6 +287,9 @@ layers configuration. You are free to put any user code."
               (lambda ()
                 (setq mozc-candidate-style 'overlay)
                 ))
+    (global-set-key (kbd "C-j") 'mozc-mode)
+    ;(require 'mozc-cursor-color)
+    (require 'mozc-mode-line-indicator)
     )
 
   (golden-ratio-mode t)
@@ -295,7 +300,7 @@ layers configuration. You are free to put any user code."
 ;    (setq default-input-method "japanese-skk")
     (require 'skk-study)
     (setq skk-show-annotation t)
-    (setq skk-annotation-delay 0.5)     ;•«•’•©•Î•»§œ1.0…√
+    (setq skk-annotation-delay 0.5)     ;„Éá„Éï„Ç©„É´„Éà„ÅØ1.0Áßí
     (setq skk-dcomp-activate t)
     )
 
@@ -308,7 +313,6 @@ layers configuration. You are free to put any user code."
   (ac-config-default)
 
   (require 'company)
-  (require 'company-emacs-eclim)
   (global-company-mode t)
 
   (global-wakatime-mode)
@@ -340,6 +344,7 @@ layers configuration. You are free to put any user code."
 
   (editorconfig-mode 1)
 
+  (setq load-path (cons "~/.local/share/emacs/lisp/" load-path))
   )
 
 
