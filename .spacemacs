@@ -49,7 +49,7 @@ values."
       themes-megapack
       yaml
       ansible
-      dockerfile
+;;      dockerfile
       emoji
       tmux
       vagrant
@@ -101,7 +101,7 @@ values."
    ;; variable is `emacs' then the `holy-mode' is enabled at startup. `hybrid'
    ;; uses emacs key bindings for vim's insert mode, but otherwise leaves evil
    ;; unchanged. (default 'vim)
-   dotspacemacs-editing-style 'emacs
+   dotspacemacs-editing-style 'vim
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading nil
    ;; Specify the startup banner. Default value is `official', it displays
@@ -280,18 +280,6 @@ layers configuration. You are free to put any user code."
 
   (setq default-file-name-coding-system 'utf-8-unix) ;diredで日本語file名出力
 
-  ;; for mozc
-  (when (require 'mozc nil t)
-    (setq default-input-method "japanese-mozc")
-    (add-hook 'mozc-mode-hook
-              (lambda ()
-                (setq mozc-candidate-style 'overlay)
-                ))
-    (global-set-key (kbd "C-j") 'mozc-mode)
-    ;(require 'mozc-cursor-color)
-    (require 'mozc-mode-line-indicator)
-    )
-
   (golden-ratio-mode t)
 
   ;; for ddskk
@@ -315,7 +303,7 @@ layers configuration. You are free to put any user code."
   (require 'company)
   (global-company-mode t)
 
-  (global-wakatime-mode)
+  ;;(global-wakatime-mode)
 
   ;;; chrome edit
   (setq edit-server-url-major-mode-alist
@@ -324,23 +312,36 @@ layers configuration. You are free to put any user code."
   (add-to-list 'edit-server-new-frame-alist '(height . 60))
 
   (cond ((eq system-type 'gnu/linux)
-         (set-language-environment 'Japanese)
-         (prefer-coding-system 'utf-8-unix)
-         (setq default-process-coding-system 'utf-8))
-        ((eq window-system 'w32)
-         (setenv "LANG" "ja_JP.UTF-8")
-         (setq default-buffer-file-coding-system 'utf-8-unix)
-         (set-coding-system-priority 'utf-8)
-         (set-terminal-coding-system 'utf-8)
-         (set-keyboard-coding-system 'utf-8)
-         (setenv "EDITOR" "emacs")
-         (add-to-list 'process-coding-system-alist '("git" utf-8 . cp932))))
+          ;; for mozc
+          (when (require 'mozc nil t)
+            (setq default-input-method "japanese-mozc")
+            (add-hook 'mozc-mode-hook
+              (lambda ()
+                (setq mozc-candidate-style 'overlay)
+                ))
+            (global-set-key (kbd "C-j") 'mozc-mode)
+            ;(require 'mozc-cursor-color)
+            (require 'mozc-mode-line-indicator)
+            )
+          (set-language-environment 'Japanese)
+          (prefer-coding-system 'utf-8-unix)
+          (setq default-process-coding-system 'utf-8))
+    ((eq system-type 'darwin)
+      )
+    ((eq window-system 'w32)
+      (setenv "LANG" "ja_JP.UTF-8")
+      (setq default-buffer-file-coding-system 'utf-8-unix)
+      (set-coding-system-priority 'utf-8)
+      (set-terminal-coding-system 'utf-8)
+      (set-keyboard-coding-system 'utf-8)
+      (setenv "EDITOR" "emacs")
+      (add-to-list 'process-coding-system-alist '("git" utf-8 . cp932))))
 
   (add-hook 'python-mode-hook
-            '(lambda ()
-               (setq python-indent 2)
-               (setq indent-tabs-mod nil)
-               ))
+    '(lambda ()
+       (setq python-indent 2)
+       (setq indent-tabs-mod nil)
+       ))
 
   (editorconfig-mode 1)
 
@@ -356,16 +357,20 @@ layers configuration. You are free to put any user code."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(wakatime-api-key "54b127d0-dfbf-4a43-8fbc-4bc26c9e2a45")
- '(wakatime-cli-path "/usr/local/bin/wakatime")
- '(wakatime-python-bin "/usr/bin/python")
- )
+ '(evil-want-Y-yank-to-eol t)
+ '(package-selected-packages
+   (quote
+    (zonokai-theme zenburn-theme zen-and-art-theme yapfify yaml-mode xterm-color ws-butler window-numbering which-key web-mode web-beautify wakatime-mode volatile-highlights vi-tilde-fringe vagrant-tramp vagrant uuidgen use-package underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacemacs-theme spaceline powerline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode sass-mode reverse-theme restart-emacs rainbow-delimiters railscasts-theme pyvenv pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme popwin planet-theme pip-requirements phpunit phpcbf php-extras php-auto-yasnippets phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox spinner pandoc-mode ox-pandoc ox-gfm orgit organic-green-theme org-projectile org-present org org-pomodoro alert log4e gntp org-plus-contrib org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term mozc move-text monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-gitflow magit-gh-pulls macrostep lush-theme lorem-ipsum livid-mode skewer-mode simple-httpd live-py-mode linum-relative link-hint light-soap-theme less-css-mode json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc jinja2-mode jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide ido-vertical-mode hydra hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make projectile helm-gitignore request helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme haml-mode gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio go-guru go-eldoc gnuplot gmail-message-mode ham-mode markdown-mode html-to-markdown gitignore-mode github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gist gh marshal logito pcache ht gh-md gandalf-theme flycheck-pos-tip pos-tip flycheck pkg-info epl flx-ido flx flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit magit-popup git-commit with-editor evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight espresso-theme eshell-z eshell-prompt-extras esh-help emoji-cheat-sheet-plus emmet-mode elisp-slime-nav editorconfig edit-server dumb-jump drupal-mode php-mode dracula-theme django-theme diminish define-word ddskk cdb ccc darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme csv-mode company-web web-completion-data company-tern dash-functional tern company-statistics company-go go-mode company-emoji company-emacs-eclim eclim company-anaconda company column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized coffee-mode clues-theme clean-aindent-mode cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-map bind-key badwolf-theme auto-yasnippet yasnippet auto-highlight-symbol auto-compile packed apropospriate-theme anti-zenburn-theme ansible-doc ansible anaconda-mode pythonic f dash s ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core async ac-ispell auto-complete popup quelpa package-build monokai-theme)))
+  '(wakatime-api-key "54b127d0-dfbf-4a43-8fbc-4bc26c9e2a45")
+  '(wakatime-python-bin "/Users/jimbeam8y/.pyenv/shims/python")
+  )
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Ricty Discord" :foundry "unknown" :slant normal :weight normal :height 120 :width normal))))
- '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
- '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
+ ;; '(default ((t (:family "Ricty Discord" :foundry "unknown" :slant normal :weight normal :height 120 :width normal))))
+ ;; '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
+ ;; '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil))))
+  )

@@ -25,3 +25,11 @@
 (setq skk-server-host "localhost") ; サーバー機能を利用
 (setq skk-server-portnum 55100)     ; ポートはgoogle-ime-skk
 (setq skk-share-private-jisyo t)   ; 複数 skk 辞書を共有
+
+(setq skk-large-jisyo "~/.skkdic/SKK-JISYO.L")
+(setq skk-extra-jisyo-file-list
+  (list '("~/.skkdic/SKK-JISYO.geo"
+           "~/.skkdic/SKK-JISYO.jinmei"
+           "~/.skkdic/SKK-JISYO.propernoun"
+           "~/.skkdic/SKK-JISYO.station"))
+)
