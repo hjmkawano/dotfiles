@@ -12,6 +12,7 @@
 (setq skk-auto-insert-paren t)
 ;; 動的補完
 (setq skk-dcomp-activate t)
+(setq skk-dcomp-multiple-rows 20)
 
 (setq skk-status-indicator 'minor-mode)
 
@@ -19,9 +20,9 @@
 
 (setq skk-henkan-face (skk-make-face 'DimGray/PeachPuff1))
 
-
 (setq skk-server-prog "/usr/local/bin/google-ime-skk") ; google-ime-skkの場所
 (setq skk-server-inhibit-startup-server nil) ; 辞書サーバが起動していなかったときに Emacs からプロセスを立ち上げる
 (setq skk-server-host "localhost") ; サーバー機能を利用
 (setq skk-server-portnum 55100)     ; ポートはgoogle-ime-skk
+
 (setq skk-share-private-jisyo t)   ; 複数 skk 辞書を共有
