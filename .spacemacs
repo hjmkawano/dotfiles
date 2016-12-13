@@ -49,7 +49,7 @@ values."
       themes-megapack
       yaml
       ansible
-      dockerfile
+;;      dockerfile
       emoji
       tmux
       vagrant
@@ -279,18 +279,6 @@ layers configuration. You are free to put any user code."
 
   (setq default-file-name-coding-system 'utf-8-unix) ;diredで日本語file名出力
 
-  ;; for mozc
-  (when (require 'mozc nil t)
-    (setq default-input-method "japanese-mozc")
-    (add-hook 'mozc-mode-hook
-              (lambda ()
-                (setq mozc-candidate-style 'overlay)
-                ))
-    (global-set-key (kbd "C-j") 'mozc-mode)
-    ;(require 'mozc-cursor-color)
-    (require 'mozc-mode-line-indicator)
-    )
-
   (golden-ratio-mode t)
 
   ;; for ddskk
@@ -322,7 +310,18 @@ layers configuration. You are free to put any user code."
 
   (cond
     ((eq system-type 'gnu/linux)
-          (set-language-environment 'Japanese)
+      ;; for mozc
+      (when (require 'mozc nil t)
+        (setq default-input-method "japanese-mozc")
+        (add-hook 'mozc-mode-hook
+          (lambda ()
+            (setq mozc-candidate-style 'overlay)
+            ))
+        (global-set-key (kbd "C-j") 'mozc-mode)
+                                        ;(require 'mozc-cursor-color)
+        (require 'mozc-mode-line-indicator)
+        )
+      (set-language-environment 'Japanese)
           (prefer-coding-system 'utf-8-unix)
           (setq default-process-coding-system 'utf-8))
     ;; Mac OSX
@@ -343,13 +342,14 @@ layers configuration. You are free to put any user code."
       (set-terminal-coding-system 'utf-8)
       (set-keyboard-coding-system 'utf-8)
       (setenv "EDITOR" "emacs")
-         (add-to-list 'process-coding-system-alist '("git" utf-8 . cp932))))
+      (add-to-list 'process-coding-system-alist '("git" utf-8 . cp932))))
+
 
   (add-hook 'python-mode-hook
-            '(lambda ()
-               (setq python-indent 2)
-               (setq indent-tabs-mod nil)
-               ))
+    '(lambda ()
+       (setq python-indent 2)
+       (setq indent-tabs-mod nil)
+       ))
 
   (editorconfig-mode 1)
 

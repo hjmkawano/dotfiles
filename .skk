@@ -12,6 +12,7 @@
 (setq skk-auto-insert-paren t)
 ;; 動的補完
 (setq skk-dcomp-activate t)
+(setq skk-dcomp-multiple-activate t)
 (setq skk-dcomp-multiple-rows 20)
 
 (setq skk-status-indicator 'minor-mode)
@@ -26,3 +27,12 @@
 (setq skk-server-portnum 55100)     ; ポートはgoogle-ime-skk
 
 (setq skk-share-private-jisyo t)   ; 複数 skk 辞書を共有
+
+(setq skk-large-jisyo "~/Library/Application Support/AquaSKK/SKK-JISYO.L")
+(setq skk-extra-jisyo-file-list
+  (list '("~/Library/Application Support/AquaSKK/SKK-JISYO.geo"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.fullname"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.jinmei"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.propernoun"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.station"))
+)
