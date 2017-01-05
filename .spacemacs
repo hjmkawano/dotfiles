@@ -331,8 +331,8 @@ layers configuration. You are free to put any user code."
     ;; Mac OSX
     ((eq system-type 'darwin)
       (set-language-environment 'Japanese)
-;      (prefer-coding-system 'utf-8-unix)
-;      (setq default-process-coding-system 'utf-8-unix)
+      (prefer-coding-system 'utf-8-unix)
+      (setq buffer-file-coding-system 'utf-8-unix)
 
       (setq ns-command-modifier (quote meta))
       (setq ns-alternate-modifier (quote super))
