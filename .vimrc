@@ -1,35 +1,42 @@
-syntax on
-set autoindent
-set expandtab
-set tabstop=4
-set shiftwidth=4
-set cursorline
-set number
+" http://qiita.com/delphinus/items/00ff2c0ba972c6e41542
+" vimrc に以下のように追記
 
-set background=dark
-"colorscheme solarized
-colorscheme molokai
+" プラグインが実際にインストールされるディレクトリ
+let s:dein_dir = expand('~/.cache/dein')
+" dein.vim 本体
+let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
 
-
-if &compatible
-  set nocompatible
+" dein.vim がなければ github から落としてくる
+if &runtimepath !~# '/dein.vim'
+if !isdirectory(s:dein_repo_dir)
+execute '!git clone https://github.com/Shougo/dein.vim' s:dein_repo_dir
 endif
-set runtimepath+=~/.vim/dein/repos/github.com/Shougo/dein.vim
+execute 'set runtimepath^=' . fnamemodify(s:dein_repo_dir, ':p')
+endif
 
-call dein#begin(expand('~/.vim/dein'))
+" 設定開始
+if dein#load_state(s:dein_dir)
+call dein#begin(s:dein_dir)
 
-call dein#add('Shougo/dein.vim')
-call dein#add('Shougo/vimproc.vim', {'build': 'make'})
+" プラグインリストを収めた TOML ファイル
+" 予め TOML ファイル（後述）を用意しておく
+let g:rc_dir    = expand('~/.vim/rc')
+let s:toml      = g:rc_dir . '/dein.toml'
+let s:lazy_toml = g:rc_dir . '/dein_lazy.toml'
 
-call dein#add('Shougo/neocomplete.vim')
-call dein#add('Shougo/neomru.vim')
-call dein#add('Shougo/neosnippet')
+" TOML を読み込み、キャッシュしておく
+call dein#load_toml(s:toml,      {'lazy': 0})
+call dein#load_toml(s:lazy_toml, {'lazy': 1})
 
-" (中略)
+" 設定終了
+call dein#end()
+call dein#save_state()
+endif
 
-call dein#add('davidhalter/jedi-vim')
-call dein#add('vim-airline/vim-airline')
-call dein#add('vim-airline/vim-airline-themes')
+" もし、未インストールものものがあったらインストール
+if dein#check_install()
+call dein#install()
+endif
 
 "Airline
 "2016/08/05
@@ -41,6 +48,18 @@ let g:airline#extensions#tabline#buffer_idx_mode = 1
 let g:airline_theme='papercolor' "落ち着いた色調が好き
 let g:airline_powerline_fonts = 1
 
-call dein#end()
-  
+let OSTYPE = system('uname')
+if OSTYPE == "Darwin\n"
+    :set term=xterm-256color
+endif
 
+set background=dark
+colorscheme molokai
+syntax on
+
+set autoindent
+set expandtab
+set tabstop=2
+set shiftwidth=4
+set cursorline
+set number
