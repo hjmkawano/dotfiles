@@ -432,6 +432,11 @@ layers configuration. You are free to put any user code."
   (setq ns-use-srgb-colorspace nil)
 
   (setq load-path (cons "~/.local/share/emacs/lisp/" load-path))
+
+  (require 'server)
+  (unless (server-running-p)
+    (server-start))
+
   )
 
 
