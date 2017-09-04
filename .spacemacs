@@ -452,6 +452,7 @@ layers configuration. You are free to put any user code."
                            org-directory
                            )
     )
+  (setq org-log-done 'time)
 
   ;; (with-eval-after-load 'org-agenda
   ;;   (require 'org-projectile)
