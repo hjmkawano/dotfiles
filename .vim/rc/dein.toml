@@ -51,6 +51,9 @@ if   = '''! has('kaoriya')'''
 [[plugins]]
 repo = 'dag/vim-fish'
 
+[[plugins]]
+repo = 'editorconfig/editorconfig-vim'
+
 # 依存関係を指定したいとき
 #[[plugins]]
 #repo    = 'vim-airline/vim-airline'
