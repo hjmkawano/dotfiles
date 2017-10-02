@@ -454,6 +454,7 @@ layers configuration. You are free to put any user code."
     )
   (setq org-log-done 'time)
 
+  (add-hook 'text-mode-hook 'turn-on-orgtbl)
   ;; (with-eval-after-load 'org-agenda
   ;;   (require 'org-projectile)
   ;;   (push (org-projectile:todo-files) org-agenda-files))
