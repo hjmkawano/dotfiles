@@ -435,6 +435,14 @@ layers configuration. You are free to put any user code."
       (add-to-list 'process-coding-system-alist '("git" utf-8 . cp932))))
 
 
+  ;; helm
+  ;; http://qiita.com/jabberwocky0139/items/86df1d3108e147c69e2c
+  (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+  (setq helm-M-x-fuzzy-match t) ;; optional fuzzy matching for helm-M-x
+  (global-set-key (kbd "C-x b") 'helm-mini)
+  (setq helm-buffers-fuzzy-matching t
+    helm-recentf-fuzzy-match    t)
+
   (add-hook 'python-mode-hook
     '(lambda ()
        (setq python-indent 2)
@@ -442,6 +450,15 @@ layers configuration. You are free to put any user code."
        ))
 
   (editorconfig-mode 1)
+
+  ;; neotree
+  ;; https://github.com/jaypei/emacs-neotree
+  (setq neo-create-file-auto-open t)
+  (setq neo-smart-open t)
+  (setq neo-vc-integration '(face char))
+
+  (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+
   (setq ns-use-srgb-colorspace nil)
 
   (setq load-path (cons "~/.local/share/emacs/lisp/" load-path))
