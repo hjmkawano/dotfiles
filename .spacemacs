@@ -98,7 +98,7 @@ values."
        ddskk
        ;;      mozc
        wdired
-       editorconfig
+;;       editorconfig
        ox-gfm
        esqlite
        helm-dash
@@ -145,7 +145,7 @@ values."
    ;; with `:variables' keyword (similar to layers). Check the editing styles
    ;; section of the documentation for details on available variables.
    ;; (default 'vim)
-   dotspacemacs-editing-style 'vim
+   dotspacemacs-editing-style 'hybrid
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading nil
    ;; Specify the startup banner. Default value is `official', it displays
@@ -375,13 +375,13 @@ layers configuration. You are free to put any user code."
     (setq skk-annotation-delay 0.5)     ;デフォルトは1.0秒
     (setq skk-dcomp-activate t)
     (add-hook 'isearch-mode-hook
-      #'(lambda ()
+      '(lambda ()
           (when (and (boundp 'skk-mode)
                   skk-mode
                   skk-isearch-mode-enable)
             (skk-isearch-mode-setup))))
     (add-hook 'isearch-mode-end-hook
-      #'(lambda ()
+      '(lambda ()
           (when (and (featurep 'skk-isearch)
                   skk-isearch-mode-enable)
             (skk-isearch-mode-cleanup))))
@@ -442,14 +442,8 @@ layers configuration. You are free to put any user code."
       (setenv "EDITOR" "emacs")
       (add-to-list 'process-coding-system-alist '("git" utf-8 . cp932))))
 
-
   ;; helm
   ;; http://qiita.com/jabberwocky0139/items/86df1d3108e147c69e2c
-  (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-  (setq helm-M-x-fuzzy-match t) ;; optional fuzzy matching for helm-M-x
-  (global-set-key (kbd "C-x b") 'helm-mini)
-  (setq helm-buffers-fuzzy-matching t
-    helm-recentf-fuzzy-match    t)
 
   (add-hook 'python-mode-hook
     '(lambda ()
@@ -458,7 +452,7 @@ layers configuration. You are free to put any user code."
        (spacemacs/toggle-indent-guide-on)
        ))
 
-  (editorconfig-mode 1)
+;;  (editorconfig-mode 1)
 
   ;; neotree
   ;; https://github.com/jaypei/emacs-neotree
@@ -479,8 +473,8 @@ layers configuration. You are free to put any user code."
   (eval-after-load "org"
     '(require 'ox-gfm nil t)
     )
-  (setq open-junk-file-format "~/Documents/junk/%Y-%m%d-%H%M%S.")
-  (setq org-directory "~/Documents/junk")
+  (setq open-junk-file-format "~/projects/junk/%Y-%m%d-%H%M%S.")
+  (setq org-directory "~/projects/junk")
   (setq org-agenda-files (list "~/projects/00-draft.org"
                            org-directory
                            )
@@ -491,7 +485,7 @@ layers configuration. You are free to put any user code."
     '(lambda ()
        (set (make-local-variable 'whitespace-action) nil)))
 
-  (setq deft-directory "~/Documents/junk")
+  (setq deft-directory "~/projects/junk")
 
   ;; migemo
   (require 'migemo)
@@ -515,6 +509,34 @@ layers configuration. You are free to put any user code."
   (with-eval-after-load "helm"
     (helm-migemo-mode 1)
     )
+
+  ;; eww
+  ;;http://futurismo.biz/archives/2950
+  (require 'eww)
+  (define-key eww-mode-map "p" 'scroll-down)
+  (define-key eww-mode-map "n" 'scroll-up)
+
+  (defvar eww-disable-colorize t)
+  (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
+    (unless eww-disable-colorize
+      (funcall orig start end fg)))
+  (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
+  (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
+  (defun eww-disable-color ()
+    "eww で文字色を反映させない"
+    (interactive)
+    (setq-local eww-disable-colorize t)
+    (eww-reload))
+  (defun eww-enable-color ()
+    "eww で文字色を反映させる"
+    (interactive)
+    (setq-local eww-disable-colorize nil)
+    (eww-reload))
+
+  (setq eww-search-prefix "https://www.google.co.jp/search?q=")
+
+  ;; ace-link
+  (ace-link-setup-default)
 
   ;; (with-eval-after-load 'org-agenda
   ;;   (require 'org-projectile)
