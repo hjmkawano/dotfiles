@@ -31,39 +31,47 @@ values."
     ;; List of configuration layers to load.
     dotspacemacs-configuration-layers
     '(
-       ;; spacemacs-spaceline
-       (spacemacs-spaceline :location local)
-       osx
-       helm
-       emacs-lisp
-       neotree
-       shell-scripts
-       ;; sql
-       rust
-       vimscript
-       (python :variables
-         python-enable-yapf-format-on-save t
-         python-sort-imports-on-save t
-         )
        ;; ----------------------------------------------------------------
        ;; Example of useful layers you may want to use right away.
        ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
        ;; <M-m f e R> (Emacs style) to install them.
        ;; ----------------------------------------------------------------
+
+       ;; spacemacs-spaceline
+       (spacemacs-spaceline :location local)
+       osx
+       better-defaults
+       helm
+       emacs-lisp
+       neotree
+       shell-scripts
+       git
+       github
+       emoji
+       tmux
        (auto-completion :variables
          auto-completion-enable-sort-by-usage t
          auto-completion-enable-snippets-in-popup t)
-       better-defaults
-       git
-       github
+       ;; sql
+       ;; rust
+       vimscript
+       (python :variables
+         python-enable-yapf-format-on-save t
+         python-sort-imports-on-save t
+         )
+       go
+       javascript
        ;; php
-       ;; javascript
+       ;; ansible
        ;; java
        html
+       spell-checking
+       syntax-checking
+       version-control
        markdown
        (org :variables
          org-enable-github-support t
-         ;; org-projectile-file "TODOs.org"
+         org-projectile-file "00-draft.org"
          )
        (shell :variables
          shell-default-shell 'eshell
@@ -73,29 +81,35 @@ values."
          ;; shell-default-position 'bottom
          )
        pandoc
-       spell-checking
-       syntax-checking
-       version-control
-       ;; themes-megapack
        yaml
-       ;; ansible
-       docker
-       emoji
-       tmux
-       vagrant
-       ;; chrome
        csv ; https://github.com/jb55/spacemacs-csv
-       go
+       deft
+       (ranger :variables.
+         ranger-show-preview nil)
+       pdf-tools
        dash
        ;; terraform
        ;; search-engine
-       deft
+       docker
+       vagrant
+       ;; chrome
        twitter
-       ;;(ranger :variables
-       ;;  ranger-show-preview t)
-       pdf-tools
+       (erc :variables
+         erc-server-list
+         '(("slack.irccloud.com"
+             :port "6697"
+             :ssl t
+             :nick "jimbeam8y")
+            ("irc.freenode.net"
+              :port "6697"
+              :ssl t
+              :nick "jimbeam8y")
+            )
+         )
+       emms
+       slack
        )
-    ;; List of additional packages that will be installed without being
+    ;; list of additional packages that will be installed without being
     ;; wrapped in a layer. If you need some configuration for these
     ;; packages, then consider creating a layer. You can also put the
     ;; configuration in `dotspacemacs/user-config'.
@@ -104,9 +118,11 @@ values."
        ddskk
        wdired
        ox-gfm
-       esqlite
        helm-dash
+       helm-ghq
        migemo
+       anzu
+       diminish
        )
 
     ;; A list of packages that cannot be updated.
@@ -298,7 +314,7 @@ It should only modify the values of Spacemacs settings."
 
     ;; If non-nil then the last auto saved layouts are resumed automatically upon
     ;; start. (default nil)
-    dotspacemacs-auto-resume-layouts nil
+    dotspacemacs-auto-resume-layouts t
 
     ;; If non-nil, auto-generate layout name when creating new layouts. Only has
     ;; effect when using the "jump to layout by number" commands. (default nil)
@@ -479,7 +495,7 @@ It should only modify the values of Spacemacs settings."
     ;; `trailing' to delete only the whitespace at end of lines, `changed' to
     ;; delete only whitespace for changed lines or `nil' to disable cleanup.
     ;; (default nil)
-    dotspacemacs-whitespace-cleanup nil
+    dotspacemacs-whitespace-cleanup 'trailing
 
     ;; Either nil or a number of seconds. If non-nil zone out after the specified
     ;; number of seconds. (default nil)
@@ -674,7 +690,60 @@ layers configuration. You are free to put any user code."
 
   (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig")
   (add-hook 'pdf-view-mode-hook (lambda() (linum-mode -1)))
+
+  (spaceline-all-the-icons--setup-anzu)            ;; Enable anzu searching
+  (spaceline-all-the-icons--setup-package-updates) ;; Enable package update indicator
+  (spaceline-all-the-icons--setup-git-ahead)       ;; Enable # of commits ahead of upstream in git
+  (spaceline-all-the-icons--setup-paradox)         ;; Enable Paradox mode line
+  (spaceline-all-the-icons--setup-neotree)         ;; Enable Neotree mode line
+  (fancy-battery-mode +1)
+
+  (require 'diminish)
+  (eval-after-load "filladapt" '(diminish 'filladapt-mode))
+
+  (require 'emms-player-mpd)
+  (setq emms-player-mpd-server-name "localhost")
+  (setq emms-player-mpd-server-port "6600")
+  (add-to-list 'emms-info-functions 'emms-info-mpd)
+  (add-to-list 'emms-player-list 'emms-player-mpd)
+
+  (spaceline-define-segment all-the-icons-track
+    "Show the current played track"
+    (emms-mode-line-icon-function))
+  (require 'emms-streams)
+  (require 'emms-stream-info)
+
+  (setq paradox-github-token (my-lisp-load "paradox-github-token"))
+  (add-hook 'after-init-hook #'fancy-battery-mode)
+
+  (setq my-slack-team (my-lisp-load "emacs-slack-team"))
+  (setq my-slack-client-id (my-lisp-load "emacs-slack-client-id"))
+  (setq my-slack-client-secret (my-lisp-load "emacs-slack-client-secret"))
+  (setq my-slack-client-token (my-lisp-load "emacs-slack-client-token"))
+
+  (slack-register-team
+    :name my-emacs-team
+    :default t
+    :client-id my-slack-client-id
+    :client-secret my-slack-client-secret
+    :token my-slack-client-token
+    :subscribed-channels '(general slackbot))
+
   )
+
+(defun my-lisp-load (filename)
+  "Load lisp from FILENAME"
+  (let ((fullname (expand-file-name (concat "private/" filename) user-emacs-directory))
+         lisp)
+    (when (file-readable-p fullname)
+      (with-temp-buffer
+        (progn
+          (insert-file-contents fullname)
+          (setq lisp
+            (condition-case nil
+              (read (current-buffer))
+              (error ()))))))
+    lisp))
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -688,8 +757,9 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 18))
  '(package-selected-packages
-   '(flatland-theme yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode volatile-highlights vimrc-mode vi-tilde-fringe vagrant-tramp vagrant uuidgen use-package unfill twittering-mode toml-mode toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode shell-pop scss-mode sass-mode reveal-in-osx-finder restart-emacs rainbow-delimiters racer pyvenv pytest pyenv-mode py-isort pug-mode popwin pippel pipenv pip-requirements persp-mode pdf-tools pcre2el pbcopy password-generator paradox pandoc-mode ox-pandoc ox-gfm overseer osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file neotree nameless mwim multi-term move-text mmm-mode migemo markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum live-py-mode linum-relative link-hint launchctl insert-shebang indent-guide importmagic impatient-mode hy-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio godoctor go-tag go-rename go-guru go-eldoc gnuplot github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fuzzy font-lock+ flyspell-correct-helm flycheck-rust flycheck-pos-tip flycheck-bashate flx-ido fish-mode fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu esqlite eshell-z eshell-prompt-extras esh-help emojify emoji-cheat-sheet-plus emmet-mode elisp-slime-nav editorconfig dumb-jump dockerfile-mode docker diminish diff-hl deft ddskk dash-at-point darktooth-theme dactyl-mode cython-mode csv-mode counsel-projectile company-web company-statistics company-shell company-go company-emoji company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode cargo browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+   '(helm-ghq yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe vagrant-tramp vagrant uuidgen use-package unfill twittering-mode toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode reveal-in-osx-finder restart-emacs ranger rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode popwin pippel pipenv pip-requirements persp-mode pdf-tools pcre2el pbcopy password-generator paradox pandoc-mode ox-pandoc ox-gfm overseer osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file neotree nameless mwim multi-term move-text mmm-mode migemo markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint launchctl js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hy-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio godoctor go-tag go-rename go-guru go-eldoc gnuplot github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks emoji-cheat-sheet-plus emms emmet-mode elisp-slime-nav editorconfig dumb-jump dockerfile-mode docker diminish diff-hl deft ddskk dash-at-point dactyl-mode cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-shell company-go company-emoji company-anaconda column-enforce-mode coffee-mode clean-aindent-mode centered-cursor-mode browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
