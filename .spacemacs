@@ -30,7 +30,7 @@ values."
     dotspacemacs-configuration-layer-path '()
     ;; List of configuration layers to load.
     dotspacemacs-configuration-layers
-    '(
+    '(graphviz
        ;; ----------------------------------------------------------------
        ;; Example of useful layers you may want to use right away.
        ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -82,25 +82,21 @@ values."
          )
        pandoc
        yaml
-       csv ; https://github.com/jb55/spacemacs-csv
-       deft
-       (ranger :variables.
-         ranger-show-preview nil)
+       ;; csv ; https://github.com/jb55/spacemacs-csv
+       (deft :variables
+         deft-directory "~/Dropbox/notes"
+         )
+       treeemacs
        pdf-tools
        dash
        ;; terraform
-       ;; search-engine
        docker
-       vagrant
+       ;; vagrant
        ;; chrome
        twitter
        (erc :variables
          erc-server-list
-         '(("slack.irccloud.com"
-             :port "6697"
-             :ssl t
-             :nick "jimbeam8y")
-            ("irc.freenode.net"
+         '(("irc.freenode.net"
               :port "6697"
               :ssl t
               :nick "jimbeam8y")
@@ -108,7 +104,10 @@ values."
          )
        emms
        slack
+       search-engine
+       ;; google-calendar
        )
+
     ;; list of additional packages that will be installed without being
     ;; wrapped in a layer. If you need some configuration for these
     ;; packages, then consider creating a layer. You can also put the
@@ -120,6 +119,7 @@ values."
        ox-gfm
        helm-dash
        helm-ghq
+       helm-eww
        migemo
        anzu
        diminish
@@ -179,7 +179,7 @@ It should only modify the values of Spacemacs settings."
     ;; when the current branch is not `develop'. Note that checking for
     ;; new versions works via git commands, thus it calls GitHub services
     ;; whenever you start Emacs. (default nil)
-    dotspacemacs-check-for-update nil
+    dotspacemacs-check-for-update t
 
     ;; If non-nil, a form that evaluates to a package directory. For example, to
     ;; use different package directories for different Emacs versions, set this
@@ -435,11 +435,12 @@ It should only modify the values of Spacemacs settings."
                                  org-mode
                                  pdf-view-mode
                                  text-mode
+                                 twittering-mode
                                  :size-limit-kb 1000)
 
     ;; Code folding method. Possible values are `evil' and `origami'.
     ;; (default 'evil)
-    dotspacemacs-folding-method 'evil
+    dotspacemacs-folding-method 'origami
 
     ;; If non-nil `smartparens-strict-mode' will be enabled in programming modes.
     ;; (default nil)
@@ -513,6 +514,12 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
+  (setq my-google-calendar-client-id (my-lisp-load "spacemacs-google-calendar-client-id"))
+  (setq my-google-calendar-client-secret (my-lisp-load "spacemacs-google-calendar-client-secret"))
+
+  (setq org-gcal-client-id my-google-calendar-client-id
+    org-gcal-client-secret my-google-calendar-client-secret)
+
   )
 
 (defun dotspacemacs/user-config ()
@@ -612,7 +619,7 @@ layers configuration. You are free to put any user code."
     '(require 'ox-gfm nil t)
     )
   (setq open-junk-file-format "~/projects/junk/%Y-%m%d-%H%M%S.")
-  (setq org-directory "~/projects/junk")
+  (setq org-directory "~/Dropbox/notes")
   (setq org-agenda-files (list "~/projects/00-draft.org"
                            org-directory
                            )
@@ -622,8 +629,6 @@ layers configuration. You are free to put any user code."
   (add-hook 'markdown-mode-hook
     '(lambda ()
        (set (make-local-variable 'whitespace-action) nil)))
-
-  (setq deft-directory "~/projects/junk")
 
   ;; migemo
   (require 'migemo)
@@ -648,30 +653,32 @@ layers configuration. You are free to put any user code."
     (helm-migemo-mode 1)
     )
 
-  ;; eww
-  ;;http://futurismo.biz/archives/2950
-  (require 'eww)
-  (define-key eww-mode-map "p" 'scroll-down)
-  (define-key eww-mode-map "n" 'scroll-up)
+  ;; ;; eww
+  ;; ;;http://futurismo.biz/archives/2950
+  ;; (require 'eww)
+  ;; ;; (define-key eww-mode-map "p" 'scroll-down)
+  ;; ;; (define-key eww-mode-map "n" 'scroll-up)
 
-  (defvar eww-disable-colorize t)
-  (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
-    (unless eww-disable-colorize
-      (funcall orig start end fg)))
-  (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
-  (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
-  (defun eww-disable-color ()
-    "eww で文字色を反映させない"
-    (interactive)
-    (setq-local eww-disable-colorize t)
-    (eww-reload))
-  (defun eww-enable-color ()
-    "eww で文字色を反映させる"
-    (interactive)
-    (setq-local eww-disable-colorize nil)
-    (eww-reload))
+  ;; (defvar eww-disable-colorize t)
+  ;; (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
+  ;;   (unless eww-disable-colorize
+  ;;     (funcall orig start end fg)))
+  ;; (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
+  ;; (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
+  ;; (defun eww-disable-color ()
+  ;;   "eww で文字色を反映させない"
+  ;;   (interactive)
+  ;;   (setq-local eww-disable-colorize t)
+  ;;   (eww-reload))
+  ;; (defun eww-enable-color ()
+  ;;   "eww で文字色を反映させる"
+  ;;   (interactive)
+  ;;   (setq-local eww-disable-colorize nil)
+  ;;   (eww-reload))
 
-  (setq eww-search-prefix "https://www.google.co.jp/search?q=")
+  ;; (setq eww-search-prefix "https://www.google.co.jp/search?q=")
+
+  (setq browse-url-browser-function 'eww-browse-url)
 
   ;; ace-link
   (ace-link-setup-default)
@@ -722,12 +729,17 @@ layers configuration. You are free to put any user code."
   (setq my-slack-client-token (my-lisp-load "emacs-slack-client-token"))
 
   (slack-register-team
-    :name my-emacs-team
+    :name my-slack-team
     :default t
     :client-id my-slack-client-id
     :client-secret my-slack-client-secret
     :token my-slack-client-token
     :subscribed-channels '(general slackbot))
+
+  (setq org-gcal-file-alist '(("jimbeam8y@gmail.com" . "~/.google-calendar-jimbeam8y.org")
+                               ))
+  (setq org-agenda-files
+    (quote ("~/.google-calendar-jimbeam8y.org")))
 
   )
 
@@ -757,9 +769,8 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 18))
  '(package-selected-packages
-   '(helm-ghq yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe vagrant-tramp vagrant uuidgen use-package unfill twittering-mode toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode reveal-in-osx-finder restart-emacs ranger rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode popwin pippel pipenv pip-requirements persp-mode pdf-tools pcre2el pbcopy password-generator paradox pandoc-mode ox-pandoc ox-gfm overseer osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file neotree nameless mwim multi-term move-text mmm-mode migemo markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint launchctl js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hy-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio godoctor go-tag go-rename go-guru go-eldoc gnuplot github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks emoji-cheat-sheet-plus emms emmet-mode elisp-slime-nav editorconfig dumb-jump dockerfile-mode docker diminish diff-hl deft ddskk dash-at-point dactyl-mode cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-shell company-go company-emoji company-anaconda column-enforce-mode coffee-mode clean-aindent-mode centered-cursor-mode browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+   '(yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode reveal-in-osx-finder restart-emacs rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode popwin pippel pipenv pip-requirements persp-mode pdf-tools pcre2el pbcopy password-generator paradox pandoc-mode ox-pandoc ox-gfm overseer osx-trash osx-dictionary origami orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file neotree nameless mwim multi-term move-text mmm-mode migemo markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint launchctl js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hy-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio godoctor go-tag go-rename go-guru go-eldoc gnuplot github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks engine-mode emoji-cheat-sheet-plus emms emmet-mode elisp-slime-nav editorconfig dumb-jump dockerfile-mode docker diminish diff-hl deft ddskk dash-at-point dactyl-mode cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-shell company-go company-emoji company-anaconda column-enforce-mode coffee-mode clean-aindent-mode centered-cursor-mode browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
