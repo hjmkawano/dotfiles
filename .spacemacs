@@ -43,7 +43,7 @@ values."
        better-defaults
        helm
        emacs-lisp
-       neotree
+       treemacs
        shell-scripts
        git
        github
@@ -52,8 +52,6 @@ values."
        (auto-completion :variables
          auto-completion-enable-sort-by-usage t
          auto-completion-enable-snippets-in-popup t)
-       ;; sql
-       ;; rust
        vimscript
        (python :variables
          python-enable-yapf-format-on-save t
@@ -64,6 +62,8 @@ values."
        ;; php
        ;; ansible
        ;; java
+       ;; sql
+       ;; rust
        html
        spell-checking
        syntax-checking
@@ -91,7 +91,7 @@ values."
        dash
        ;; terraform
        docker
-       ;; vagrant
+       vagrant
        ;; chrome
        twitter
        (erc :variables
@@ -102,10 +102,11 @@ values."
               :nick "jimbeam8y")
             )
          )
-       emms
        slack
        search-engine
        ;; google-calendar
+       emms
+       gnus
        )
 
     ;; list of additional packages that will be installed without being
@@ -211,7 +212,7 @@ It should only modify the values of Spacemacs settings."
     ;; `recents' `bookmarks' `projects' `agenda' `todos'.
     ;; List sizes may be nil, in which case
     ;; `spacemacs-buffer-startup-lists-length' takes effect.
-    dotspacemacs-startup-lists '((recents . 5)
+    dotspacemacs-startup-lists '((recents . 0)
                                   (projects . 7))
 
     ;; True if the home buffer should respond to resize events. (default t)
@@ -678,6 +679,14 @@ layers configuration. You are free to put any user code."
 
   ;; (setq eww-search-prefix "https://www.google.co.jp/search?q=")
 
+  (defun shr-insert-document--for-eww (&rest them)
+    (let ((shr-width 100)) (apply them)))
+  (defun eww-display-html--fill-column (&rest them)
+    (advice-add 'shr-insert-document :around 'shr-insert-document--for-eww)
+    (unwind-protect
+      (apply them)
+      (advice-remove 'shr-insert-document 'shr-insert-document--for-eww)))
+  (advice-add 'eww-display-html :around 'eww-display-html--fill-column)
   (setq browse-url-browser-function 'eww-browse-url)
 
   ;; ace-link
@@ -713,12 +722,11 @@ layers configuration. You are free to put any user code."
   (setq emms-player-mpd-server-port "6600")
   (add-to-list 'emms-info-functions 'emms-info-mpd)
   (add-to-list 'emms-player-list 'emms-player-mpd)
-
+  (require 'emms-streams)
+  (require 'emms-stream-info)
   (spaceline-define-segment all-the-icons-track
     "Show the current played track"
     (emms-mode-line-icon-function))
-  (require 'emms-streams)
-  (require 'emms-stream-info)
 
   (setq paradox-github-token (my-lisp-load "paradox-github-token"))
   (add-hook 'after-init-hook #'fancy-battery-mode)
@@ -740,6 +748,19 @@ layers configuration. You are free to put any user code."
                                ))
   (setq org-agenda-files
     (quote ("~/.google-calendar-jimbeam8y.org")))
+
+
+  ;; Send email via Gmail:
+  (setq message-send-mail-function 'smtpmail-send-it
+    smtpmail-default-smtp-server "smtp.gmail.com")
+
+  ;; Archive outgoing email in Sent folder on imap.gmail.com:
+  (setq gnus-message-archive-method '(nnimap "imap.gmail.com")
+    gnus-message-archive-group "[Gmail]/Sent Mail")
+
+  ;; store email in ~/gmail directory
+  (setq nnml-directory "~/gmail")
+  (setq message-directory "~/gmail")
 
   )
 
@@ -770,7 +791,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode reveal-in-osx-finder restart-emacs rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode popwin pippel pipenv pip-requirements persp-mode pdf-tools pcre2el pbcopy password-generator paradox pandoc-mode ox-pandoc ox-gfm overseer osx-trash osx-dictionary origami orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file neotree nameless mwim multi-term move-text mmm-mode migemo markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint launchctl js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hy-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio godoctor go-tag go-rename go-guru go-eldoc gnuplot github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks engine-mode emoji-cheat-sheet-plus emms emmet-mode elisp-slime-nav editorconfig dumb-jump dockerfile-mode docker diminish diff-hl deft ddskk dash-at-point dactyl-mode cython-mode csv-mode counsel-projectile company-web company-tern company-statistics company-shell company-go company-emoji company-anaconda column-enforce-mode coffee-mode clean-aindent-mode centered-cursor-mode browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+   '(web-mode slack circe pyvenv pandoc-mode evil-matchit evil-magit erc-image emms docker deft anaconda-mode flycheck helm markdown-mode magit pythonic which-key async yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum websocket web-beautify volatile-highlights vimrc-mode vi-tilde-fringe vagrant-tramp vagrant uuidgen use-package unfill twittering-mode treemacs-projectile toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode shell-pop scss-mode sass-mode reveal-in-osx-finder restart-emacs rainbow-delimiters pytest pyenv-mode py-isort pug-mode popwin pippel pipenv pip-requirements persp-mode pdf-tools pcre2el pbcopy password-generator paradox ox-pandoc ox-gfm overseer osx-trash osx-dictionary origami orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file oauth2 nameless mwim multi-term move-text mmm-mode migemo markdown-toc magithub magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint launchctl json-navigator json-mode js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio godoctor go-tag go-rename go-guru go-eldoc gnuplot github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-org evil-numbers evil-nerd-commenter evil-mc evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-hl-nicks engine-mode emojify emoji-cheat-sheet-plus emmet-mode elisp-slime-nav editorconfig dumb-jump dockerfile-mode docker-tramp diminish diff-hl ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-tern company-statistics company-shell company-go company-emoji company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
