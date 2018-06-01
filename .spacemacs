@@ -71,7 +71,7 @@ values."
        markdown
        (org :variables
          org-enable-github-support t
-         org-projectile-file "00-draft.org"
+         org-projectile-file "00-drafts.org"
          )
        (shell :variables
          shell-default-shell 'eshell
@@ -86,7 +86,6 @@ values."
        (deft :variables
          deft-directory "~/Dropbox/notes"
          )
-       treeemacs
        pdf-tools
        dash
        ;; terraform
@@ -105,7 +104,7 @@ values."
        slack
        search-engine
        ;; google-calendar
-       emms
+       ;; emms
        gnus
        )
 
@@ -193,7 +192,7 @@ It should only modify the values of Spacemacs settings."
     ;; with `:variables' keyword (similar to layers). Check the editing styles
     ;; section of the documentation for details on available variables.
     ;; (default 'vim)
-    dotspacemacs-editing-style 'emacs
+    dotspacemacs-editing-style 'hybrid
 
     ;; If non-nil output loading progress in `*Messages*' buffer. (default nil)
     dotspacemacs-verbose-loading nil
@@ -253,11 +252,11 @@ It should only modify the values of Spacemacs settings."
     ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
     ;; quickly tweak the mode-line size to make separators look not too crappy.
     dotspacemacs-default-font '(
-                                 "Source Code Pro"
+                                 ;; "Source Code Pro"
                                  ;; "Ricty Diminished Discord"
-                                 ;; "Ricty Discord"
+                                 "Ricty Discord"
                                  ;; "Ricty Discord for Powerline"
-                                 :size 13
+                                 :size 14
                                  :weight normal
                                  :width normal)
 
@@ -429,15 +428,7 @@ It should only modify the values of Spacemacs settings."
     ;;                       text-mode
     ;;   :size-limit-kb 1000)
     ;; (default nil)
-    dotspacemacs-line-numbers '(:relative nil
-                                 :disabled-for-modes dired-mode
-                                 doc-view-mode
-                                 markdown-mode
-                                 org-mode
-                                 pdf-view-mode
-                                 text-mode
-                                 twittering-mode
-                                 :size-limit-kb 1000)
+    dotspacemacs-line-numbers nil
 
     ;; Code folding method. Possible values are `evil' and `origami'.
     ;; (default 'evil)
@@ -515,11 +506,6 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
-  (setq my-google-calendar-client-id (my-lisp-load "spacemacs-google-calendar-client-id"))
-  (setq my-google-calendar-client-secret (my-lisp-load "spacemacs-google-calendar-client-secret"))
-
-  (setq org-gcal-client-id my-google-calendar-client-id
-    org-gcal-client-secret my-google-calendar-client-secret)
 
   )
 
@@ -529,36 +515,18 @@ This function is called at the very end of Spacemacs initialization after
 layers configuration. You are free to put any user code."
 
   (set-language-environment "Japanese")
-  (setq load-path (cons "~/.local/share/emacs/lisp/" load-path))
 
   (golden-ratio-mode t)
   (display-time-mode nil)
-  (global-linum-mode nil)
 
   ;; for ddskk
-  (when (require 'skk nil t)
-    (global-set-key (kbd "C-x j") 'skk-mode)
-    (setq default-input-method "japanese-skk")
-    (require 'skk-study)
-    (setq skk-show-annotation t)
-    (setq skk-annotation-delay 0.5)     ;デフォルトは1.0秒
-    (setq skk-dcomp-activate t)
-    (add-hook 'isearch-mode-hook
-      '(lambda ()
-         (when (and (boundp 'skk-mode)
-                 skk-mode
-                 skk-isearch-mode-enable)
-           (skk-isearch-mode-setup))))
-    (add-hook 'isearch-mode-end-hook
-      '(lambda ()
-         (when (and (featurep 'skk-isearch)
-                 skk-isearch-mode-enable)
-           (skk-isearch-mode-cleanup))))
-    )
+  (require 'skk nil t)
+  (global-set-key (kbd "C-x j") 'skk-mode)
+  (setq default-input-method "japanese-skk")
 
-  (setq help-at-pt-display-when-idle t)
-  (setq help-at-pt-timer-delay 0.1)
-  (help-at-pt-set-timer)
+  ;; (setq help-at-pt-display-when-idle t)
+  ;; (setq help-at-pt-timer-delay 0.1)
+  ;; (help-at-pt-set-timer)
 
   ;; regular auto-complete initialization
   (require 'auto-complete-config)
@@ -592,7 +560,6 @@ layers configuration. You are free to put any user code."
 
       (setq ns-command-modifier (quote meta))
       (setq ns-alternate-modifier (quote super))
-      ;; 背景を透過に設定
       (set-frame-parameter nil 'alpha '(90 . 60))
       (add-to-list 'default-frame-alist '(undecorated . t)))
     ;; Windows
@@ -607,21 +574,15 @@ layers configuration. You are free to put any user code."
 
   (add-hook 'python-mode-hook
     '(lambda ()
-       (setq python-indent 2)
-       (setq indent-tabs-mod nil)
        (spacemacs/toggle-indent-guide-on)
        ))
-
-  (require 'server)
-  (unless (server-running-p)
-    (server-start))
 
   (eval-after-load "org"
     '(require 'ox-gfm nil t)
     )
   (setq open-junk-file-format "~/projects/junk/%Y-%m%d-%H%M%S.")
   (setq org-directory "~/Dropbox/notes")
-  (setq org-agenda-files (list "~/projects/00-draft.org"
+  (setq org-agenda-files (list "~/projects/00-drafts.org"
                            org-directory
                            )
     )
@@ -656,28 +617,26 @@ layers configuration. You are free to put any user code."
 
   ;; ;; eww
   ;; ;;http://futurismo.biz/archives/2950
-  ;; (require 'eww)
-  ;; ;; (define-key eww-mode-map "p" 'scroll-down)
-  ;; ;; (define-key eww-mode-map "n" 'scroll-up)
+  (require 'eww)
+  ;; (define-key eww-mode-map "p" 'scroll-down)
+  ;; (define-key eww-mode-map "n" 'scroll-up)
 
-  ;; (defvar eww-disable-colorize t)
-  ;; (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
-  ;;   (unless eww-disable-colorize
-  ;;     (funcall orig start end fg)))
-  ;; (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
-  ;; (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
-  ;; (defun eww-disable-color ()
-  ;;   "eww で文字色を反映させない"
-  ;;   (interactive)
-  ;;   (setq-local eww-disable-colorize t)
-  ;;   (eww-reload))
-  ;; (defun eww-enable-color ()
-  ;;   "eww で文字色を反映させる"
-  ;;   (interactive)
-  ;;   (setq-local eww-disable-colorize nil)
-  ;;   (eww-reload))
+  (defvar eww-disable-colorize t)
+  (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
+    (unless eww-disable-colorize
+      (funcall orig start end fg)))
+  (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
+  (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
+  (defun eww-disable-color ()
+    (interactive)
+    (setq-local eww-disable-colorize t)
+    (eww-reload))
+  (defun eww-enable-color ()
+    (interactive)
+    (setq-local eww-disable-colorize nil)
+    (eww-reload))
 
-  ;; (setq eww-search-prefix "https://www.google.co.jp/search?q=")
+  (setq eww-search-prefix "https://www.google.co.jp/search?q=")
 
   (defun shr-insert-document--for-eww (&rest them)
     (let ((shr-width 100)) (apply them)))
@@ -692,17 +651,13 @@ layers configuration. You are free to put any user code."
   ;; ace-link
   (ace-link-setup-default)
 
-  ;; (with-eval-after-load 'org-agenda
-  ;;   (require 'org-projectile)
-  ;;   (push (org-projectile:todo-files) org-agenda-files))
-
   (eval-after-load "magit-log"
     '(progn
        (custom-set-variables
-         '(magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 18)))))
+         '(magit-log-margin '(t "%Y-%m-%d %H:%`'m1q:%S" magit-log-margin-width t 18)))))
 
   ;; https://gist.github.com/s-fubuki/551f1ba58dc4bd202665a19d588ca40e
-  (require 'buffer-menu-color)
+
 
   (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig")
   (add-hook 'pdf-view-mode-hook (lambda() (linum-mode -1)))
@@ -711,22 +666,27 @@ layers configuration. You are free to put any user code."
   (spaceline-all-the-icons--setup-package-updates) ;; Enable package update indicator
   (spaceline-all-the-icons--setup-git-ahead)       ;; Enable # of commits ahead of upstream in git
   (spaceline-all-the-icons--setup-paradox)         ;; Enable Paradox mode line
-  (spaceline-all-the-icons--setup-neotree)         ;; Enable Neotree mode line
+
   (fancy-battery-mode +1)
 
   (require 'diminish)
   (eval-after-load "filladapt" '(diminish 'filladapt-mode))
 
-  (require 'emms-player-mpd)
-  (setq emms-player-mpd-server-name "localhost")
-  (setq emms-player-mpd-server-port "6600")
-  (add-to-list 'emms-info-functions 'emms-info-mpd)
-  (add-to-list 'emms-player-list 'emms-player-mpd)
-  (require 'emms-streams)
-  (require 'emms-stream-info)
-  (spaceline-define-segment all-the-icons-track
-    "Show the current played track"
-    (emms-mode-line-icon-function))
+  ;; (emms-standard)
+  ;; (emms-default-players)
+  ;; (setq emms-playlist-buffer-name "Music-EMMS")
+  ;; (setq emms-source-file-default-directory "~/Music/")
+  ;; (require 'emms-streams)
+  ;; (require 'emms-stream-info)
+  ;; (require 'emms-player-mpd)
+  ;; (setq emms-player-mpd-server-name "localhost")
+  ;; (setq emms-player-mpd-server-port "6600")
+  ;; (add-to-list 'emms-info-functions 'emms-info-mpd)
+  ;; (add-to-list 'emms-player-list 'emms-player-mpd)
+  ;; (emms-player-mpd-connect)
+  ;; (spaceline-define-segment all-the-icons-track
+  ;;   "Show the current played track"
+  ;;   (emms-mode-line-icon-function))
 
   (setq paradox-github-token (my-lisp-load "paradox-github-token"))
   (add-hook 'after-init-hook #'fancy-battery-mode)
@@ -735,6 +695,7 @@ layers configuration. You are free to put any user code."
   (setq my-slack-client-id (my-lisp-load "emacs-slack-client-id"))
   (setq my-slack-client-secret (my-lisp-load "emacs-slack-client-secret"))
   (setq my-slack-client-token (my-lisp-load "emacs-slack-client-token"))
+  (my-lisp-load "buffer-menu-color")
 
   (slack-register-team
     :name my-slack-team
@@ -743,24 +704,6 @@ layers configuration. You are free to put any user code."
     :client-secret my-slack-client-secret
     :token my-slack-client-token
     :subscribed-channels '(general slackbot))
-
-  (setq org-gcal-file-alist '(("jimbeam8y@gmail.com" . "~/.google-calendar-jimbeam8y.org")
-                               ))
-  (setq org-agenda-files
-    (quote ("~/.google-calendar-jimbeam8y.org")))
-
-
-  ;; Send email via Gmail:
-  (setq message-send-mail-function 'smtpmail-send-it
-    smtpmail-default-smtp-server "smtp.gmail.com")
-
-  ;; Archive outgoing email in Sent folder on imap.gmail.com:
-  (setq gnus-message-archive-method '(nnimap "imap.gmail.com")
-    gnus-message-archive-group "[Gmail]/Sent Mail")
-
-  ;; store email in ~/gmail directory
-  (setq nnml-directory "~/gmail")
-  (setq message-directory "~/gmail")
 
   )
 
@@ -791,7 +734,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(web-mode slack circe pyvenv pandoc-mode evil-matchit evil-magit erc-image emms docker deft anaconda-mode flycheck helm markdown-mode magit pythonic which-key async yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum websocket web-beautify volatile-highlights vimrc-mode vi-tilde-fringe vagrant-tramp vagrant uuidgen use-package unfill twittering-mode treemacs-projectile toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode shell-pop scss-mode sass-mode reveal-in-osx-finder restart-emacs rainbow-delimiters pytest pyenv-mode py-isort pug-mode popwin pippel pipenv pip-requirements persp-mode pdf-tools pcre2el pbcopy password-generator paradox ox-pandoc ox-gfm overseer osx-trash osx-dictionary origami orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file oauth2 nameless mwim multi-term move-text mmm-mode migemo markdown-toc magithub magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint launchctl json-navigator json-mode js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio godoctor go-tag go-rename go-guru go-eldoc gnuplot github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-org evil-numbers evil-nerd-commenter evil-mc evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-hl-nicks engine-mode emojify emoji-cheat-sheet-plus emmet-mode elisp-slime-nav editorconfig dumb-jump dockerfile-mode docker-tramp diminish diff-hl ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-tern company-statistics company-shell company-go company-emoji company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+   '(yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe vagrant-tramp vagrant uuidgen use-package unfill twittering-mode treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode reveal-in-osx-finder restart-emacs rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode popwin pippel pipenv pip-requirements persp-mode pdf-tools pcre2el pbcopy password-generator paradox pandoc-mode ox-pandoc ox-gfm overseer osx-trash osx-dictionary origami orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file nameless mwim multi-term move-text mmm-mode migemo markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint launchctl json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio godoctor go-tag go-rename go-guru go-eldoc gnuplot github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks engine-mode emoji-cheat-sheet-plus emmet-mode elisp-slime-nav editorconfig dumb-jump dockerfile-mode docker diminish diff-hl deft ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-tern company-statistics company-shell company-go company-emoji company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
