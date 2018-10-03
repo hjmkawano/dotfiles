@@ -3,14 +3,14 @@
 ;; It must be stored in your home directory.
 
 (defun dotspacemacs/layers ()
-  "Configuration Layers declaration.
-You should not put any user code in this function besides modifying the variable
-values."
+  "Layer configuration:
+This function should only modify configuration layer settings."
   (setq-default
     ;; Base distribution to use. This is a layer contained in the directory
     ;; `+distribution'. For now available distributions are `spacemacs-base'
     ;; or `spacemacs'. (default 'spacemacs)
     dotspacemacs-distribution 'spacemacs
+
     ;; Lazy installation of layers (i.e. layers are installed only when a file
     ;; with a supported type is opened). Possible values are `all', `unused'
     ;; and `nil'. `unused' will lazy install only unused layers (i.e. layers
@@ -21,25 +21,34 @@ values."
     ;; variable `dotspacemacs-configuration-layers' to install it.
     ;; (default 'unused)
     dotspacemacs-enable-lazy-installation 'unused
+
     ;; If non-nil then Spacemacs will ask for confirmation before installing
     ;; a layer lazily. (default t)
     dotspacemacs-ask-for-lazy-installation t
+
     ;; If non-nil layers with lazy install support are lazy installed.
     ;; List of additional paths where to look for configuration layers.
     ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
     dotspacemacs-configuration-layer-path '()
+
     ;; List of configuration layers to load.
     dotspacemacs-configuration-layers
-    '(graphviz
+    '(
        ;; ----------------------------------------------------------------
        ;; Example of useful layers you may want to use right away.
        ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
        ;; <M-m f e R> (Emacs style) to install them.
        ;; ----------------------------------------------------------------
 
-       ;; spacemacs-spaceline
+       ;; spacemacs-modeline
        (spacemacs-spaceline :location local)
-       osx
+       (osx :variables
+         osx-command-as 'meta
+         osx-option-as  'none
+         )
+       (shell :variables
+         shell-enable-smart-eshell t
+         )
        better-defaults
        helm
        emacs-lisp
@@ -48,7 +57,7 @@ values."
        git
        github
        emoji
-       tmux
+       ;; tmux
        (auto-completion :variables
          auto-completion-enable-sort-by-usage t
          auto-completion-enable-snippets-in-popup t)
@@ -56,9 +65,11 @@ values."
        (python :variables
          python-enable-yapf-format-on-save t
          python-sort-imports-on-save t
+         python-fill-column 99
          )
        go
        javascript
+       web-beautify
        ;; php
        ;; ansible
        ;; java
@@ -68,17 +79,24 @@ values."
        spell-checking
        syntax-checking
        version-control
-       markdown
+       (markdown :variables
+         markdown-live-preview-engine 'vmd)
        (org :variables
+         org-directory "~/Dropbox/notes/"
+         org-agenda-files (list org-directory)
+         org-log-done 'time
          org-enable-github-support t
-         org-projectile-file "00-drafts.org"
-         )
-       (shell :variables
-         shell-default-shell 'eshell
-         shell-default-term-shell "/bin/bash"
-         shell-enable-smart-eshell t
-         ;; shell-default-height 30
-         ;; shell-default-position 'bottom
+         org-enable-bootstrap-support t
+         org-enable-org-journal-support t
+         org-journal-dir "~/Dropbox/notes/journal/"
+         org-journal-file-format "%Y-%m-%d"
+         org-journal-date-format "%A, %B %d %Y"
+         org-journal-time-prefix "* "
+         org-journal-time-format ""
+         org-projectile-file "TODOs.org"
+         org-mobile-inbox-for-pull "~/Dropbox/notes/flagged.org"
+         org-mobile-directory "~/Dropbox/アプリ/MobileOrg"
+         org-capture-ical-file (concat org-directory "org-ical.org")
          )
        pandoc
        yaml
@@ -86,11 +104,11 @@ values."
        (deft :variables
          deft-directory "~/Dropbox/notes"
          )
-       pdf-tools
+       ;; pdf-tools
        dash
        ;; terraform
        docker
-       vagrant
+       ;; vagrant
        ;; chrome
        twitter
        (erc :variables
@@ -103,9 +121,10 @@ values."
          )
        slack
        search-engine
-       ;; google-calendar
        ;; emms
+       ;; graphviz
        gnus
+       evernote
        )
 
     ;; list of additional packages that will be installed without being
@@ -115,14 +134,17 @@ values."
     dotspacemacs-additional-packages
     '(
        ddskk
-       wdired
        ox-gfm
        helm-dash
        helm-ghq
        helm-eww
-       migemo
+       ;; migemo
        anzu
        diminish
+       atomic-chrome
+       quick-preview
+       direx
+       beacon
        )
 
     ;; A list of packages that cannot be updated.
@@ -148,6 +170,25 @@ It should only modify the values of Spacemacs settings."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
+    ;; If non-nil then enable support for the portable dumper. You'll need
+    ;; to compile Emacs 27 from source following the instructions in file
+    ;; EXPERIMENTAL.org at to root of the git repository.
+    ;; (default nil)
+    dotspacemacs-enable-emacs-pdumper nil
+
+    ;; File path pointing to emacs 27.1 executable compiled with support
+    ;; for the portable dumper (this is currently the branch pdumper).
+    ;; (default "emacs-27.0.50")
+    dotspacemacs-emacs-pdumper-executable-file "emacs-27.0.50"
+
+    ;; Name of the Spacemacs dump file. This is the file will be created by the
+    ;; portable dumper in the cache directory under dumps sub-directory.
+    ;; To load it when starting Emacs add the parameter `--dump-file'
+    ;; when invoking Emacs 27.1 executable on the command line, for instance:
+    ;;   ./emacs --dump-file=~/.emacs.d/.cache/dumps/spacemacs.pdmp
+    ;; (default spacemacs.pdmp)
+    dotspacemacs-emacs-dumper-dump-file "spacemacs.pdmp"
+
     ;; If non-nil ELPA repositories are contacted via HTTPS whenever it's
     ;; possible. Set it to nil if you have no way to use HTTPS in your
     ;; environment, otherwise it is strongly recommended to let it set to t.
@@ -197,6 +238,23 @@ It should only modify the values of Spacemacs settings."
     ;; If non-nil output loading progress in `*Messages*' buffer. (default nil)
     dotspacemacs-verbose-loading nil
 
+    ;; If non-nil then Spacemacs will import your PATH and environment variables
+    ;; from your default shell on startup. This is enabled by default for macOS
+    ;; users and X11 users.
+    dotspacemacs-import-env-vars-from-shell (and (display-graphic-p)
+                                              (or (eq system-type 'darwin)
+                                                (eq system-type 'gnu/linux)
+                                                (eq window-system 'x)))
+
+    ;; If nil then use the default shell is used to fetch the environment
+    ;; variables. Set this variable to a different shell executable path to
+    ;; import the environment variables from this shell. Note that
+    ;; `file-shell-name' is preserved and always points to the default shell. For
+    ;; instance to use your fish shell environment variables set this variable to
+    ;; `/usr/local/bin/fish'.
+    ;; (default nil)
+    dotspacemacs-import-env-vars-shell-file-name nil
+
     ;; Specify the startup banner. Default value is `official', it displays
     ;; the official spacemacs logo. An integer value is the index of text
     ;; banner, `random' chooses a random text banner in `core/banners'
@@ -243,7 +301,7 @@ It should only modify the values of Spacemacs settings."
     ;; to create your own spaceline theme. Value can be a symbol or list with\
     ;; additional properties.
     ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-    dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+    dotspacemacs-mode-line-theme '(spacemacs :separator all-the-icons :separator-scale 1.5)
 
     ;; If non-nil the cursor color matches the state color in GUI Emacs.
     ;; (default t)
@@ -257,8 +315,9 @@ It should only modify the values of Spacemacs settings."
                                  "Ricty Discord"
                                  ;; "Ricty Discord for Powerline"
                                  :size 14
-                                 :weight normal
-                                 :width normal)
+                                 ;; :weight normal
+                                 ;; :width normal
+                                 )
 
     ;; The leader key (default "SPC")
     dotspacemacs-leader-key "SPC"
@@ -290,21 +349,6 @@ It should only modify the values of Spacemacs settings."
     ;; works in the GUI. (default nil)
     dotspacemacs-distinguish-gui-tab nil
 
-    ;; If non-nil `Y' is remapped to `y$' in Evil states. (default nil)
-    dotspacemacs-remap-Y-to-y$ nil
-
-    ;; If non-nil, the shift mappings `<' and `>' retain visual state if used
-    ;; there. (default t)
-    dotspacemacs-retain-visual-state-on-shift t
-
-    ;; If non-nil, `J' and `K' move lines up and down when in visual mode.
-    ;; (default nil)
-    dotspacemacs-visual-line-move-text nil
-
-    ;; If non-nil, inverse the meaning of `g' in `:substitute' Evil ex-command.
-    ;; (default nil)
-    dotspacemacs-ex-substitute-global nil
-
     ;; Name of the default layout (default "Default")
     dotspacemacs-default-layout-name "Default"
 
@@ -334,23 +378,6 @@ It should only modify the values of Spacemacs settings."
     ;; Maximum number of rollback slots to keep in the cache. (default 5)
     dotspacemacs-max-rollback-slots 5
 
-    ;; If non-nil, `helm' will try to minimize the space it uses. (default nil)
-    dotspacemacs-helm-resize nil
-
-    ;; if non-nil, the helm header is hidden when there is only one source.
-    ;; (default nil)
-    dotspacemacs-helm-no-header nil
-
-    ;; define the position to display `helm', options are `bottom', `top',
-    ;; `left', or `right'. (default 'bottom)
-    dotspacemacs-helm-position 'bottom
-
-    ;; Controls fuzzy matching in helm. If set to `always', force fuzzy matching
-    ;; in all non-asynchronous sources. If set to `source', preserve individual
-    ;; source settings. Else, disable fuzzy matching in all sources.
-    ;; (default 'always)
-    dotspacemacs-helm-use-fuzzy 'always
-
     ;; If non-nil, the paste transient-state is enabled. While enabled, pressing
     ;; `p' several times cycles through the elements in the `kill-ring'.
     ;; (default nil)
@@ -358,7 +385,7 @@ It should only modify the values of Spacemacs settings."
 
     ;; Which-key delay in seconds. The which-key buffer is the popup listing
     ;; the commands bound to the current keystroke sequence. (default 0.4)
-    dotspacemacs-which-key-delay 0.4
+    dotspacemacs-which-key-delay 0.2
 
     ;; Which-key frame position. Possible values are `right', `bottom' and
     ;; `right-then-bottom'. right-then-bottom tries to display the frame to the
@@ -399,7 +426,7 @@ It should only modify the values of Spacemacs settings."
     ;; A value from the range (0..100), in increasing opacity, which describes
     ;; the transparency level of a frame when it's inactive or deselected.
     ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-    dotspacemacs-inactive-transparency 90
+    dotspacemacs-inactive-transparency 70
 
     ;; If non-nil show the titles of transient states. (default t)
     dotspacemacs-show-transient-state-title t
@@ -407,7 +434,9 @@ It should only modify the values of Spacemacs settings."
     ;; If non-nil show the color guide hint for transient state keys. (default t)
     dotspacemacs-show-transient-state-color-guide t
 
-    ;; If non-nil unicode symbols are displayed in the mode line. (default t)
+    ;; If non-nil unicode symbols are displayed in the mode line.
+    ;; If you use Emacs as a daemon and wants unicode characters only in GUI set
+    ;; the value to quoted `display-graphic-p'. (default t)
     dotspacemacs-mode-line-unicode-symbols t
 
     ;; If non-nil smooth scrolling (native-scrolling) is enabled. Smooth
@@ -439,7 +468,7 @@ It should only modify the values of Spacemacs settings."
     dotspacemacs-smartparens-strict-mode nil
 
     ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
-    ;; over any automatically added closing parenthesis, bracket, quote, etc…
+    ;; over any automatically added closing parenthesis, bracket, quote, etc腦駈拾
     ;; This can be temporary disabled by pressing `C-q' before `)'. (default nil)
     dotspacemacs-smart-closing-parenthesis nil
 
@@ -449,7 +478,15 @@ It should only modify the values of Spacemacs settings."
     dotspacemacs-highlight-delimiters 'all
 
     ;; If non-nil, start an Emacs server if one is not already running.
+    ;; (default nil)
     dotspacemacs-enable-server t
+
+    ;; Set the emacs server socket location.
+    ;; If nil, uses whatever the Emacs default is, otherwise a directory path
+    ;; like \"~/.emacs.d/server\". It has no effect if
+    ;; `dotspacemacs-enable-server' is nil.
+    ;; (default nil)
+    dotspacemacs-server-socket-dir nil
 
     ;; If non-nil, advise quit functions to keep server open when quitting.
     ;; (default nil)
@@ -506,166 +543,137 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
+  )
+
+(defun dotspacemacs/user-load ()
+  "Library to load while dumping.
+This function is called while dumping Spacemacs configuration. You can
+`require' or `load' the libraries of your choice that will be included
+in the dump."
+  (require 'skk nil t)
+  (require 'eww)
+  (require 'auto-complete-config)
+  (require 'company)
+  (require 'quick-preview)
+  (require 'direx)
+  ;; (require 'migemo)
 
   )
 
 (defun dotspacemacs/user-config ()
-  "Configuration function for user code.
-This function is called at the very end of Spacemacs initialization after
-layers configuration. You are free to put any user code."
+  "Configuration for user code:
+This function is called at the very end of Spacemacs startup, after layer
+configuration.
+Put your configuration code here, except for variables that should be set
+before packages are loaded."
+  (global-set-key (kbd "C-x j") 'skk-mode)
+  (setq default-input-method "japanese-skk")
 
-  (set-language-environment "Japanese")
+  (set-frame-parameter nil 'alpha '(90 . 60))
+  (add-to-list 'default-frame-alist '(undecorated . t))
+
+  (add-hook 'term-mode-hook 'spacemacs/toggle-truncate-lines-on)
 
   (golden-ratio-mode t)
   (display-time-mode nil)
 
-  ;; for ddskk
-  (require 'skk nil t)
-  (global-set-key (kbd "C-x j") 'skk-mode)
-  (setq default-input-method "japanese-skk")
-
-  ;; (setq help-at-pt-display-when-idle t)
-  ;; (setq help-at-pt-timer-delay 0.1)
-  ;; (help-at-pt-set-timer)
-
-  ;; regular auto-complete initialization
-  (require 'auto-complete-config)
   (ac-config-default)
 
-  (require 'company)
   (global-company-mode t)
-
-  (cond
-    ;; Linux
-    ((eq system-type 'gnu/linux)
-      ;; for mozc
-      (when (require 'mozc nil t)
-        (setq default-input-method "japanese-mozc")
-        (add-hook 'mozc-mode-hook
-          (lambda ()
-            (setq mozc-candidate-style 'overlay)
-            ))
-        (global-set-key (kbd "C-j") 'mozc-mode)
-                                        ;(require 'mozc-cursor-color)
-        (require 'mozc-mode-line-indicator)
-        )
-      (set-language-environment 'Japanese)
-      (prefer-coding-system 'utf-8-unix)
-      (setq default-process-coding-system 'utf-8))
-    ;; Mac OSX
-    ((eq system-type 'darwin)
-      (set-language-environment 'Japanese)
-      (prefer-coding-system 'utf-8-unix)
-      (setq buffer-file-coding-system 'utf-8-unix)
-
-      (setq ns-command-modifier (quote meta))
-      (setq ns-alternate-modifier (quote super))
-      (set-frame-parameter nil 'alpha '(90 . 60))
-      (add-to-list 'default-frame-alist '(undecorated . t)))
-    ;; Windows
-    ((eq window-system 'w32)
-      (setenv "LANG" "ja_JP.UTF-8")
-      (setq default-buffer-file-coding-system 'utf-8-unix)
-      (set-coding-system-priority 'utf-8)
-      (set-terminal-coding-system 'utf-8)
-      (set-keyboard-coding-system 'utf-8)
-      (setenv "EDITOR" "emacs")
-      (add-to-list 'process-coding-system-alist '("git" utf-8 . cp932))))
 
   (add-hook 'python-mode-hook
     '(lambda ()
        (spacemacs/toggle-indent-guide-on)
        ))
 
-  (eval-after-load "org"
-    '(require 'ox-gfm nil t)
+  (with-eval-after-load "org"
+    (require 'ox-gfm nil t)
+    (require 'org-projectile)
+    (mapcar '(lambda (file)
+               (when (file-exists-p file)
+                 (push file org-agenda-files)))
+      (org-projectile-todo-files))
+    (setq spaceline-org-clock-p t)
     )
-  (setq open-junk-file-format "~/projects/junk/%Y-%m%d-%H%M%S.")
-  (setq org-directory "~/Dropbox/notes")
-  (setq org-agenda-files (list "~/projects/00-drafts.org"
-                           org-directory
-                           )
-    )
-  (setq org-log-done 'time)
 
   (add-hook 'markdown-mode-hook
     '(lambda ()
        (set (make-local-variable 'whitespace-action) nil)))
 
-  ;; migemo
-  (require 'migemo)
-  (setq migemo-command "cmigemo")
-  (setq migemo-options '("-q" "--emacs" "-i" "\a"))
-  (cond
-    ((eq system-type 'darwin)
-      (setq migemo-dictionary "/usr/local/share/migemo/utf-8/migemo-dict")
-      )
-    ((eq system-type 'gnu/linux)
-      (setq migemo-dictionary "/usr/share/cmigemo/utf-8/migemo-dict")
-      )
-    ((eq system-type 'windows-nt)
-      (setq migemo-dictionary "c:/app/cmigemo-default-win64/dict/utf-8/migemo-dict")
-      ))
-  (setq migemo-user-dictionary nil)
-  (setq migemo-regex-dictionary nil)
-  (setq migemo-coding-system 'utf-8-unix)
-  ;; initialize migemo
-  (migemo-init)
-  (with-eval-after-load "helm"
-    (helm-migemo-mode 1)
-    )
+  ;; (with-eval-after-load "migemo"
+  ;;   (setq migemo-command "cmigemo")
+  ;;   (setq migemo-options '("-q" "--emacs" "-i" "\a"))
+  ;;   (cond
+  ;;     ((eq system-type 'darwin)
+  ;;       (setq migemo-dictionary "/usr/local/share/migemo/utf-8/migemo-dict")
+  ;;       )
+  ;;     ((eq system-type 'gnu/linux)
+  ;;       (setq migemo-dictionary "/usr/share/cmigemo/utf-8/migemo-dict")
+  ;;       )
+  ;;     ((eq system-type 'windows-nt)
+  ;;       (setq migemo-dictionary "c:/app/cmigemo-default-win64/dict/utf-8/migemo-dict")
+  ;;       ))
+  ;;   (setq migemo-user-dictionary nil)
+  ;;   (setq migemo-regex-dictionary nil)
+  ;;   (setq migemo-coding-system 'utf-8-unix)
+  ;;   ;; initialize migemo
+  ;;   (migemo-init)
+  ;;   )
 
-  ;; ;; eww
-  ;; ;;http://futurismo.biz/archives/2950
-  (require 'eww)
-  ;; (define-key eww-mode-map "p" 'scroll-down)
-  ;; (define-key eww-mode-map "n" 'scroll-up)
+  ;; (with-eval-after-load "helm"
+  ;;   (helm-migemo-mode 1)
+  ;;   )
 
-  (defvar eww-disable-colorize t)
-  (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
-    (unless eww-disable-colorize
-      (funcall orig start end fg)))
-  (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
-  (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
-  (defun eww-disable-color ()
-    (interactive)
-    (setq-local eww-disable-colorize t)
-    (eww-reload))
-  (defun eww-enable-color ()
-    (interactive)
-    (setq-local eww-disable-colorize nil)
-    (eww-reload))
+  ;; ;; ;; eww
+  ;; ;; ;;http://futurismo.biz/archives/2950
+  ;; ;; (define-key eww-mode-map "p" 'scroll-down)
+  ;; ;; (define-key eww-mode-map "n" 'scroll-up)
 
-  (setq eww-search-prefix "https://www.google.co.jp/search?q=")
+  ;; (defvar eww-disable-colorize t)
+  ;; (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
+  ;;   (unless eww-disable-colorize
+  ;;     (funcall orig start end fg)))
+  ;; (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
+  ;; (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
+  ;; (defun eww-disable-color ()
+  ;;   (interactive)
+  ;;   (setq-local eww-disable-colorize t)
+  ;;   (eww-reload))
+  ;; (defun eww-enable-color ()
+  ;;   (interactive)
+  ;;   (setq-local eww-disable-colorize nil)
+  ;;   (eww-reload))
 
-  (defun shr-insert-document--for-eww (&rest them)
-    (let ((shr-width 100)) (apply them)))
-  (defun eww-display-html--fill-column (&rest them)
-    (advice-add 'shr-insert-document :around 'shr-insert-document--for-eww)
-    (unwind-protect
-      (apply them)
-      (advice-remove 'shr-insert-document 'shr-insert-document--for-eww)))
-  (advice-add 'eww-display-html :around 'eww-display-html--fill-column)
+  ;; (setq eww-search-prefix "https://www.google.co.jp/search?q=")
+
+  ;; (defun shr-insert-document--for-eww (&rest them)
+  ;;   (let ((shr-width 100)) (apply them)))
+  ;; (defun eww-display-html--fill-column (&rest them)
+  ;;   (advice-add 'shr-insert-document :around 'shr-insert-document--for-eww)
+  ;;   (unwind-protect
+  ;;     (apply them)
+  ;;     (advice-remove 'shr-insert-document 'shr-insert-document--for-eww)))
+  ;; (advice-add 'eww-display-html :around 'eww-display-html--fill-column)
   (setq browse-url-browser-function 'eww-browse-url)
 
-  ;; ace-link
+  ;; ;; ace-link
   (ace-link-setup-default)
 
   (eval-after-load "magit-log"
     '(progn
        (custom-set-variables
-         '(magit-log-margin '(t "%Y-%m-%d %H:%`'m1q:%S" magit-log-margin-width t 18)))))
+         '(magit-log-margin '(t "%Y-%m-%d %H:%m:%S" magit-log-margin-width t 18)))))
 
   ;; https://gist.github.com/s-fubuki/551f1ba58dc4bd202665a19d588ca40e
 
 
-  (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig")
-  (add-hook 'pdf-view-mode-hook (lambda() (linum-mode -1)))
+  ;; (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig")
+  ;; (add-hook 'pdf-view-mode-hook (lambda() (linum-mode -1)))
 
-  (spaceline-all-the-icons--setup-anzu)            ;; Enable anzu searching
-  (spaceline-all-the-icons--setup-package-updates) ;; Enable package update indicator
-  (spaceline-all-the-icons--setup-git-ahead)       ;; Enable # of commits ahead of upstream in git
-  (spaceline-all-the-icons--setup-paradox)         ;; Enable Paradox mode line
+  (spaceline-all-the-icons--setup-anzu)            ;; enable anzu searching
+  (spaceline-all-the-icons--setup-package-updates) ;; enable package update indicator
+  (spaceline-all-the-icons--setup-git-ahead)       ;; enable # of commits ahead of upstream in git
+  (spaceline-all-the-icons--setup-paradox)         ;; enable paradox mode line
 
   (fancy-battery-mode +1)
 
@@ -691,11 +699,12 @@ layers configuration. You are free to put any user code."
   (setq paradox-github-token (my-lisp-load "paradox-github-token"))
   (add-hook 'after-init-hook #'fancy-battery-mode)
 
+  (my-lisp-load "buffer-menu-color")
+
   (setq my-slack-team (my-lisp-load "emacs-slack-team"))
   (setq my-slack-client-id (my-lisp-load "emacs-slack-client-id"))
   (setq my-slack-client-secret (my-lisp-load "emacs-slack-client-secret"))
   (setq my-slack-client-token (my-lisp-load "emacs-slack-client-token"))
-  (my-lisp-load "buffer-menu-color")
 
   (slack-register-team
     :name my-slack-team
@@ -704,6 +713,48 @@ layers configuration. You are free to put any user code."
     :client-secret my-slack-client-secret
     :token my-slack-client-token
     :subscribed-channels '(general slackbot))
+
+  (which-function-mode t)
+
+  (require 'atomic-chrome)
+  (atomic-chrome-start-server)
+
+  ;; (my-lisp-load "org-gcal-setting")
+  ;; see org.pdf:p73
+  (setq org-capture-templates
+    `(("t" "TODO 項目を INBOX に貼り付ける" entry
+        (file+headline nil "INBOX") "** TODO %?\n\t")
+       ("c" "同期カレンダーにエントリー" entry
+         (file+headline ,org-capture-ical-file "Schedule")
+         "** TODO %?\n\t")))
+  (setq org-refile-targets
+    (quote (("org-ical.org" :level . 1)
+             ("next.org" :level . 1)
+             ("sleep.org" :level . 1))))
+
+  (when (package-installed-p 'quick-preview)
+    (global-set-key (kbd "C-c C-p") 'quick-preview-at-point)
+
+    (with-eval-after-load "direx"
+      (define-key direx:direx-mode-map (kbd "SPC") 'quick-preview-at-point)
+      (defun my-advice-quick-preview---get-file-name-for-direx (f &rest args)
+        (if (eq major-mode 'direx:direx-mode)
+          (direx:file-full-name (direx:item-tree (direx:item-at-point)))
+          (apply f args)))
+      (advice-add 'quick-preview--get-filename :around #'my-advice-quick-preview---get-file-name-for-direx)))
+
+  ;;Setting for key bindings
+  (global-set-key (kbd "C-c q") 'quick-preview-at-point)
+  ;;(global-set-key (kbd "C-x C-j") 'direx:jump-to-directory)
+  (push '(direx:direx-mode :position left :width 25 :dedicated t)
+    popwin:special-display-config)
+  (global-set-key (kbd "C-x C-j") 'direx:jump-to-directory-other-window)
+  ;; (define-key dired-mode-map (kbd "Q") 'quick-preview-at-point)
+  (eval-after-load "python"
+    '(define-key python-mode-map "\C-cx" 'jedi-direx:pop-to-buffer))
+  (add-hook 'jedi-mode-hook 'jedi-direx:setup)
+
+  (global-ede-mode t)
 
   )
 
@@ -721,6 +772,8 @@ layers configuration. You are free to put any user code."
               (error ()))))))
     lisp))
 
+
+
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
 (defun dotspacemacs/emacs-custom-settings ()
@@ -734,11 +787,11 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe vagrant-tramp vagrant uuidgen use-package unfill twittering-mode treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode reveal-in-osx-finder restart-emacs rainbow-delimiters pyvenv pytest pyenv-mode py-isort pug-mode popwin pippel pipenv pip-requirements persp-mode pdf-tools pcre2el pbcopy password-generator paradox pandoc-mode ox-pandoc ox-gfm overseer osx-trash osx-dictionary origami orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file nameless mwim multi-term move-text mmm-mode migemo markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint launchctl json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio godoctor go-tag go-rename go-guru go-eldoc gnuplot github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks engine-mode emoji-cheat-sheet-plus emmet-mode elisp-slime-nav editorconfig dumb-jump dockerfile-mode docker diminish diff-hl deft ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-tern company-statistics company-shell company-go company-emoji company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+   '(yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode reveal-in-osx-finder restart-emacs rainbow-delimiters quick-preview pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-twbs ox-pandoc ox-gfm overseer osx-trash osx-dictionary origami orgit org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file nameless mwim multi-term move-text mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint launchctl json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks engine-mode emoji-cheat-sheet-plus emmet-mode elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline dockerfile-mode docker direx diminish diff-hl deft ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-tern company-statistics company-shell company-go company-emoji company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote beacon auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atomic-chrome aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:foreground "#f8f8f8" :background "#26292c")))))
 )
