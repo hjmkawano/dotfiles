@@ -125,6 +125,7 @@ This function should only modify configuration layer settings."
        ;; graphviz
        gnus
        evernote
+       ranger
        )
 
     ;; list of additional packages that will be installed without being
@@ -145,6 +146,7 @@ This function should only modify configuration layer settings."
        quick-preview
        direx
        beacon
+       mpv
        )
 
     ;; A list of packages that cannot be updated.
@@ -426,7 +428,7 @@ It should only modify the values of Spacemacs settings."
     ;; A value from the range (0..100), in increasing opacity, which describes
     ;; the transparency level of a frame when it's inactive or deselected.
     ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-    dotspacemacs-inactive-transparency 70
+    dotspacemacs-inactive-transparency 50
 
     ;; If non-nil show the titles of transient states. (default t)
     dotspacemacs-show-transient-state-title t
@@ -756,6 +758,59 @@ before packages are loaded."
 
   (global-ede-mode t)
 
+
+  ;; (load "mpv-settings" nil t nil)
+  ;; ↑ TODO いずれする
+  ;; http://emacs.rubikitch.com/mpv/ by るびきち
+  (require 'mpv)
+  (setq mpv-default-options '("--no-video" "--replaygain=album" "--shuffle"))
+
+  ;;;
+  ;;; Wiki(https://github.com/kljohann/mpv.el/wiki)より
+  ;;; C-c C-lでmpv:を選択したらmvpのリンクを補完付きで入力できる
+
+  (org-add-link-type "mpv" #'mpv-play-and-prepare-memo)
+  (defun mpv-play-and-prepare-memo (path)
+    (mpv-play path)
+    (kill-new "- 0:00:00 :: start\n"))
+  (defun org-mpv-complete-link (&optional arg)
+    (replace-regexp-in-string
+     "file:" "mpv:"
+     (org-file-complete-link arg)
+     t t))
+
+  ;;; 再生位置をM-RETで挿入させる
+  (defun org-timer-item--mpv-insert-playback-position (fun &rest args)
+    "When no org timer is running but mpv is alive, insert playback position."
+    (if (and
+         (not org-timer-start-time)
+         (mpv-live-p))
+        (mpv-insert-playback-position t)
+      (apply fun args)))
+  (advice-add 'org-timer-item :around
+              #'org-timer-item--mpv-insert-playback-position)
+
+  ;;; 0:01:02のような文字列でC-c C-oしたらその位置にジャンプさせる
+  (add-hook 'org-open-at-point-functions #'mpv-seek-to-position-at-point)
+
+  ;;; 表示されてる時間の3秒前に飛ぶように再定義
+  (defun mpv-seek-to-position-at-point ()
+    "Jump to playback position as inserted by `mpv-insert-playback-position'.
+
+  This can be used with the `org-open-at-point-functions' hook."
+    (interactive)
+    (save-excursion
+      (skip-chars-backward ":[:digit:]" (point-at-bol))
+      (when (looking-at "[0-9]+:[0-9]\\{2\\}:[0-9]\\{2\\}")
+        (let ((secs (max 0 (- (org-timer-hms-to-secs (match-string 0)) 3))))
+          (when (>= secs 0)
+            (mpv--enqueue `("seek" ,secs "absolute") #'ignore)
+  )))))
+
+  (global-set-key (kbd "H-SPC") 'mpv-pause)
+    (global-set-key (kbd "H-b") 'mpv-seek-backward)
+
+
   )
 
 (defun my-lisp-load (filename)
@@ -787,7 +842,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode reveal-in-osx-finder restart-emacs rainbow-delimiters quick-preview pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-twbs ox-pandoc ox-gfm overseer osx-trash osx-dictionary origami orgit org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file nameless mwim multi-term move-text mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint launchctl json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks engine-mode emoji-cheat-sheet-plus emmet-mode elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline dockerfile-mode docker direx diminish diff-hl deft ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-tern company-statistics company-shell company-go company-emoji company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote beacon auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atomic-chrome aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+   '(yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode reveal-in-osx-finder restart-emacs ranger rainbow-delimiters quick-preview pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-twbs ox-pandoc ox-gfm overseer osx-trash osx-dictionary origami orgit org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file nameless mwim multi-term mpv move-text mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint launchctl json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks engine-mode emoji-cheat-sheet-plus emmet-mode elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline dockerfile-mode docker direx diminish diff-hl deft ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-tern company-statistics company-shell company-go company-emoji company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote beacon auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atomic-chrome aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
