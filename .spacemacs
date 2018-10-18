@@ -132,6 +132,7 @@ This function should only modify configuration layer settings."
        gnus
        evernote
        ranger
+       coq
        )
 
     ;; list of additional packages that will be installed without being
@@ -145,7 +146,8 @@ This function should only modify configuration layer settings."
        helm-dash
        helm-ghq
        helm-eww
-       ;; migemo
+       migemo
+       avy-migemo
        anzu
        diminish
        atomic-chrome
@@ -568,8 +570,7 @@ in the dump."
   (require 'company)
   (require 'quick-preview)
   (require 'direx)
-  ;; (require 'migemo)
-
+  (require 'migemo)
   )
 
 (defun dotspacemacs/user-config ()
@@ -608,33 +609,38 @@ before packages are loaded."
     (setq spaceline-org-clock-p t)
     )
 
+  ;; (require 'buffer-menu-color)
+
   (add-hook 'markdown-mode-hook
     '(lambda ()
        (set (make-local-variable 'whitespace-action) nil)))
 
-  ;; (with-eval-after-load "migemo"
-  ;;   (setq migemo-command "cmigemo")
-  ;;   (setq migemo-options '("-q" "--emacs" "-i" "\a"))
-  ;;   (cond
-  ;;     ((eq system-type 'darwin)
-  ;;       (setq migemo-dictionary "/usr/local/share/migemo/utf-8/migemo-dict")
-  ;;       )
-  ;;     ((eq system-type 'gnu/linux)
-  ;;       (setq migemo-dictionary "/usr/share/cmigemo/utf-8/migemo-dict")
-  ;;       )
-  ;;     ((eq system-type 'windows-nt)
-  ;;       (setq migemo-dictionary "c:/app/cmigemo-default-win64/dict/utf-8/migemo-dict")
-  ;;       ))
-  ;;   (setq migemo-user-dictionary nil)
-  ;;   (setq migemo-regex-dictionary nil)
-  ;;   (setq migemo-coding-system 'utf-8-unix)
-  ;;   ;; initialize migemo
-  ;;   (migemo-init)
-  ;;   )
+  (with-eval-after-load "migemo"
+    (setq migemo-command "cmigemo")
+    (setq migemo-options '("-q" "--emacs" "-i" "\a"))
+    (cond
+      ((eq system-type 'darwin)
+        (setq migemo-dictionary "/usr/local/share/migemo/utf-8/migemo-dict")
+        )
+      ((eq system-type 'gnu/linux)
+        (setq migemo-dictionary "/usr/share/cmigemo/utf-8/migemo-dict")
+        )
+      ((eq system-type 'windows-nt)
+        (setq migemo-dictionary "c:/app/cmigemo-default-win64/dict/utf-8/migemo-dict")
+        ))
+    (setq migemo-user-dictionary nil)
+    (setq migemo-regex-dictionary nil)
+    (setq migemo-coding-system 'utf-8-unix)
+    ;; initialize migemo
+    (migemo-init)
+    )
 
-  ;; (with-eval-after-load "helm"
-  ;;   (helm-migemo-mode 1)
-  ;;   )
+  (with-eval-after-load "helm"
+    (helm-migemo-mode 1)
+    )
+  (with-eval-after-load "avy-migemo"
+    (avy-migemo-mode 1)
+    )
 
   ;; ;; ;; eww
   ;; ;; ;;http://futurismo.biz/archives/2950
@@ -718,8 +724,6 @@ before packages are loaded."
 
   (setq paradox-github-token (my-lisp-load "paradox-github-token"))
   (add-hook 'after-init-hook #'fancy-battery-mode)
-
-  (my-lisp-load "buffer-menu-color")
 
   (setq my-slack-team (my-lisp-load "emacs-slack-team"))
   (setq my-slack-client-id (my-lisp-load "emacs-slack-client-id"))
@@ -829,7 +833,9 @@ before packages are loaded."
     (global-set-key (kbd "H-b") 'mpv-seek-backward)
 
 
-  )
+  (with-eval-after-load 'company-coq
+    (add-to-list 'company-coq-disabled-features 'prettify-symbols))
+ )
 
 (defun my-lisp-load (filename)
   "Load lisp from FILENAME"
@@ -860,7 +866,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(company-quickhelp yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode reveal-in-osx-finder restart-emacs ranger rainbow-delimiters quick-preview pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-twbs ox-pandoc ox-gfm overseer osx-trash osx-dictionary origami orgit org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file nameless mwim multi-term mpv move-text mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint launchctl json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks engine-mode emoji-cheat-sheet-plus emmet-mode elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline dockerfile-mode docker direx diminish diff-hl deft ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-tern company-statistics company-shell company-go company-emoji company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote beacon auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atomic-chrome aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+   '(avy-migemo yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode reveal-in-osx-finder restart-emacs ranger rainbow-delimiters quick-preview pyvenv pytest pyenv-mode py-isort pug-mode proof-general prettier-js popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-twbs ox-pandoc ox-gfm overseer osx-trash osx-dictionary origami orgit org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file nameless mwim multi-term mpv move-text mmm-mode migemo markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint launchctl json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks engine-mode emoji-cheat-sheet-plus emmet-mode elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline dockerfile-mode docker direx diminish diff-hl deft ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-tern company-statistics company-shell company-quickhelp company-go company-emoji company-coq company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote beacon auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atomic-chrome aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
