@@ -1,4 +1,5 @@
 ;; -*- mode: emacs-lisp -*-
+(require 'skk-study)                    ; 変換学習機能の追加
 
 ;;変換時に注釈(annotation)を表示する
 (setq skk-show-annotation t)
@@ -10,21 +11,17 @@
 (setq skk-annotation-show-as-message nil) ;skk-show-tooltipが優先される
 ;; 対応する閉括弧を自動的に挿入する
 (setq skk-auto-insert-paren t)
-;; 動的補完
-;; 動作がもっさりするので試しにOffにしてみる
-;; (setq skk-dcomp-activate t)
-;; (setq skk-dcomp-multiple-activate t)
-;; (setq skk-dcomp-multiple-rows 20)
+
 
 (setq skk-status-indicator 'minor-mode)
 
-;; (require 'skk-study)
-
 (setq skk-henkan-face (skk-make-face 'DimGray/PeachPuff1))
 
+(setq skk-server-prog "/usr/local/bin/google-ime-skk") ; google-ime-skkの場所
+(setq skk-server-inhibit-startup-server nil) ; 辞書サーバが起動していなかったときに Emacs からプロセスを立ち上げる
 (setq skk-server-host "localhost") ; サーバー機能を利用
-(setq skk-server-portnum 1178)     ; ポートはAquaSKK
-
+(setq skk-server-portnum 55100)     ; ポートはgoogle-ime-skk
+;; (setq skk-server-portnum 1178)     ; ポートはAquaSKK
 (setq skk-share-private-jisyo t)   ; 複数 skk 辞書を共有
 
 (setq skk-large-jisyo "~/Library/Application Support/AquaSKK/SKK-JISYO.L")
@@ -35,3 +32,69 @@
            "~/Library/Application Support/AquaSKK/SKK-JISYO.propernoun"
            "~/Library/Application Support/AquaSKK/SKK-JISYO.station"))
 )
+
+;; ノーマルステート時に状態遷移した時に、skkが起動している場合、自動的にアスキーモードにする
+(when (locate-library "skk")
+  (require 'skk)
+  (defun my-skk-control ()
+    (when skk-mode
+      (skk-latin-mode 1)))
+  (add-hook 'evil-normal-state-entry-hook 'my-skk-control))
+
+;; アスキーモードのカーソルの色
+(setq skk-cursor-latin-color "#5BFBD0")
+
+;; ミニバッファでは C-j を改行にしない
+(define-key minibuffer-local-map (kbd "C-j") 'skk-kakutei)
+
+;; ";"をsticky shiftに用いることにする
+;; (setq skk-sticky-key ";")
+
+;; 候補表示
+;; (setq skk-show-inline t)   ; 変換候補の表示位置
+;; (setq skk-show-tooltip t) ; 変換候補の表示位置
+(setq skk-show-candidates-always-pop-to-buffer t) ; 変換候補の表示位置
+(setq skk-henkan-show-candidates-rows 2) ; 候補表示件数を2列に
+
+;; 動的候補表示
+;; 動作がもっさりするので試しに気をつけて
+(setq skk-dcomp-activate t) ; 動的補完
+(setq skk-dcomp-multiple-activate t) ; 動的補完の複数候補表示
+(setq skk-dcomp-multiple-rows 10) ; 動的補完の候補表示件数
+;; 動的補完の複数表示群のフェイス
+(set-face-foreground 'skk-dcomp-multiple-face "Black")
+(set-face-background 'skk-dcomp-multiple-face "LightGoldenrodYellow")
+(set-face-bold-p 'skk-dcomp-multiple-face nil)
+;; 動的補完の複数表示郡の補完部分のフェイス
+(set-face-foreground 'skk-dcomp-multiple-trailing-face "dim gray")
+(set-face-bold-p 'skk-dcomp-multiple-trailing-face nil)
+;; 動的補完の複数表示郡の選択対象のフェイス
+(set-face-foreground 'skk-dcomp-multiple-selected-face "White")
+(set-face-background 'skk-dcomp-multiple-selected-face "LightGoldenrod4")
+(set-face-bold-p 'skk-dcomp-multiple-selected-face nil)
+;; 動的補完時にC-nで次の補完へ
+;; たぶんひらがなモードの時だけにするといいかも
+;; (define-key skk-j-mode-map (kbd "C-n") 'skk-completion-wrapper)
+
+;; 動作
+(setq skk-egg-like-newline t) ; Enterで改行しない
+(setq skk-delete-implies-kakutei nil) ; ▼モードで一つ前の候補を表示
+(setq skk-use-look t) ; 英語補完
+(setq skk-auto-insert-paren t) ; 閉じカッコを自動的に
+(setq skk-henkan-strict-okuri-precedence t) ; 送り仮名が厳密に正しい候補を優先して表示
+(require 'skk-hint) ; ヒント
+(add-hook 'skk-load-hook ; 自動的に入力モードを切り替え
+      (lambda ()
+        (require 'context-skk)))
+
+;; 言語
+(setq skk-japanese-message-and-error t) ; エラーを日本語に
+(setq skk-show-japanese-menu t) ; メニューを日本語に
+
+;; isearch
+(add-hook 'isearch-mode-hook 'skk-isearch-mode-setup) ; isearch で skk のセットアップ
+(add-hook 'isearch-mode-end-hook 'skk-isearch-mode-cleanup) ; isearch で skk のクリーンアップ
+(setq skk-isearch-start-mode 'latin) ; isearch で skk の初期状態
+
+;; カタカナを変換候補に入れる
+(setq skk-search-katakana 'jisx0201-kana)
