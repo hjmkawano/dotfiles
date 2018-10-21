@@ -88,8 +88,8 @@
         (require 'context-skk)))
 
 ;; 言語
-(setq skk-japanese-message-and-error t) ; エラーを日本語に
-(setq skk-show-japanese-menu t) ; メニューを日本語に
+(setq skk-japanese-message-and-error nil) ; エラーを日本語に
+(setq skk-show-japanese-menu nil) ; メニューを日本語に
 
 ;; isearch
 (add-hook 'isearch-mode-hook 'skk-isearch-mode-setup) ; isearch で skk のセットアップ
