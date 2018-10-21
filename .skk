@@ -56,25 +56,25 @@
 (setq skk-show-candidates-always-pop-to-buffer t) ; 変換候補の表示位置
 (setq skk-henkan-show-candidates-rows 2) ; 候補表示件数を2列に
 
-;; 動的候補表示
-;; 動作がもっさりするので試しに気をつけて
-(setq skk-dcomp-activate t) ; 動的補完
-(setq skk-dcomp-multiple-activate t) ; 動的補完の複数候補表示
-(setq skk-dcomp-multiple-rows 10) ; 動的補完の候補表示件数
-;; 動的補完の複数表示群のフェイス
-(set-face-foreground 'skk-dcomp-multiple-face "Black")
-(set-face-background 'skk-dcomp-multiple-face "LightGoldenrodYellow")
-(set-face-bold-p 'skk-dcomp-multiple-face nil)
-;; 動的補完の複数表示郡の補完部分のフェイス
-(set-face-foreground 'skk-dcomp-multiple-trailing-face "dim gray")
-(set-face-bold-p 'skk-dcomp-multiple-trailing-face nil)
-;; 動的補完の複数表示郡の選択対象のフェイス
-(set-face-foreground 'skk-dcomp-multiple-selected-face "White")
-(set-face-background 'skk-dcomp-multiple-selected-face "LightGoldenrod4")
-(set-face-bold-p 'skk-dcomp-multiple-selected-face nil)
-;; 動的補完時にC-nで次の補完へ
-;; たぶんひらがなモードの時だけにするといいかも
-;; (define-key skk-j-mode-map (kbd "C-n") 'skk-completion-wrapper)
+;; ;; 動的候補表示
+;; ;; 動作がもっさりするのでお試しに気をつけて
+;; (setq skk-dcomp-activate t) ; 動的補完
+;; (setq skk-dcomp-multiple-activate t) ; 動的補完の複数候補表示
+;; (setq skk-dcomp-multiple-rows 10) ; 動的補完の候補表示件数
+;; ;; 動的補完の複数表示群のフェイス
+;; (set-face-foreground 'skk-dcomp-multiple-face "Black")
+;; (set-face-background 'skk-dcomp-multiple-face "LightGoldenrodYellow")
+;; (set-face-bold-p 'skk-dcomp-multiple-face nil)
+;; ;; 動的補完の複数表示郡の補完部分のフェイス
+;; (set-face-foreground 'skk-dcomp-multiple-trailing-face "dim gray")
+;; (set-face-bold-p 'skk-dcomp-multiple-trailing-face nil)
+;; ;; 動的補完の複数表示郡の選択対象のフェイス
+;; (set-face-foreground 'skk-dcomp-multiple-selected-face "White")
+;; (set-face-background 'skk-dcomp-multiple-selected-face "LightGoldenrod4")
+;; (set-face-bold-p 'skk-dcomp-multiple-selected-face nil)
+;; ;; 動的補完時にC-nで次の補完へ
+;; ;; たぶんひらがなモードの時だけにするといいかも
+;; ;; (define-key skk-j-mode-map (kbd "C-n") 'skk-completion-wrapper)
 
 ;; 動作
 (setq skk-egg-like-newline t) ; Enterで改行しない
