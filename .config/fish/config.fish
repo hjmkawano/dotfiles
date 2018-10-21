@@ -30,4 +30,7 @@ alias git hub
 alias play-my-rock-list 'mpv --no-video --shuffle "https://www.youtube.com/playlist?list=PLvwAzdceyZtKzPv_EswzoRO0w1XFCW1m3"'
 alias play-my-band-maid-list 'mpv --no-video --shuffle "https://www.youtube.com/playlist?list=PLvwAzdceyZtJXQXePGfYchiEUDkZLLjhr"'
 
-#set fish_plugins theme git rbenv rails brew bundler gem osx pbcopy better-alias gi peco z tmux ghq spin fzf
+set fish_plugins theme git rbenv rails brew bundler gem osx pbcopy better-alias gi peco z tmux ghq spin fzf
+set -g theme_powerline_fonts no
+set -g theme_nerd_fonts yes
+set -x VIRTUAL_ENV_DISABLE_PROMPT 1
