@@ -654,27 +654,27 @@ before packages are loaded."
   ;;   (avy-migemo-mode 1)
   ;;   )
 
-  ;; ;; ;; eww
-  ;; ;; ;;http://futurismo.biz/archives/2950
-  ;; ;; (define-key eww-mode-map "p" 'scroll-down)
-  ;; ;; (define-key eww-mode-map "n" 'scroll-up)
+  ;; eww
+  ;;http://futurismo.biz/archives/2950
+  ;; (define-key eww-mode-map "p" 'scroll-down)
+  ;; (define-key eww-mode-map "n" 'scroll-up)
 
-  ;; (defvar eww-disable-colorize t)
-  ;; (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
-  ;;   (unless eww-disable-colorize
-  ;;     (funcall orig start end fg)))
-  ;; (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
-  ;; (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
-  ;; (defun eww-disable-color ()
-  ;;   (interactive)
-  ;;   (setq-local eww-disable-colorize t)
-  ;;   (eww-reload))
-  ;; (defun eww-enable-color ()
-  ;;   (interactive)
-  ;;   (setq-local eww-disable-colorize nil)
-  ;;   (eww-reload))
+  (defvar eww-disable-colorize t)
+  (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
+    (unless eww-disable-colorize
+      (funcall orig start end fg)))
+  (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
+  (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
+  (defun eww-disable-color ()
+    (interactive)
+    (setq-local eww-disable-colorize t)
+    (eww-reload))
+  (defun eww-enable-color ()
+    (interactive)
+    (setq-local eww-disable-colorize nil)
+    (eww-reload))
 
-  ;; (setq eww-search-prefix "https://www.google.co.jp/search?q=")
+  (setq eww-search-prefix "https://www.google.co.jp/search?q=")
 
   ;; (defun shr-insert-document--for-eww (&rest them)
   ;;   (let ((shr-width 100)) (apply them)))
@@ -684,7 +684,7 @@ before packages are loaded."
   ;;     (apply them)
   ;;     (advice-remove 'shr-insert-document 'shr-insert-document--for-eww)))
   ;; (advice-add 'eww-display-html :around 'eww-display-html--fill-column)
-  (setq browse-url-browser-function 'eww-browse-url)
+  ;; (setq browse-url-browser-function 'eww-browse-url)
 
   ;; ;; ace-link
   (ace-link-setup-default)
