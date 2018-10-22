@@ -1,7 +1,4 @@
 ;; -*- mode: emacs-lisp -*-
-(global-set-key (kbd "C-x j") 'skk-mode)
-(setq default-input-method "japanese-skk")
-
 (require 'skk-study)                    ; 変換学習機能の追加
 
 ;;変換時に注釈(annotation)を表示する

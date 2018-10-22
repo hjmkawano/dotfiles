@@ -596,6 +596,9 @@ before packages are loaded."
   (set-frame-parameter nil 'alpha '(80 . 40))
   (set-frame-parameter nil 'undecorated t)
 
+  (global-set-key (kbd "C-x j") 'skk-mode)
+  (setq default-input-method "japanese-skk")
+
   (add-hook 'term-mode-hook 'spacemacs/toggle-truncate-lines-on)
 
   (golden-ratio-mode t)
