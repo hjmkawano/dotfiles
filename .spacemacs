@@ -891,9 +891,6 @@ before packages are loaded."
   ;; (ie. dropbox bugs)
   (run-with-timer 0 (* 5 60) 'org-mobile-pull)
 
-
-  (dolist (x (font-family-list)) (print x))
-  ;; (pocket-lib-get)
   ) ;; end of dotspacemacs/user-config
 
 (defun my-lisp-load (filename)
