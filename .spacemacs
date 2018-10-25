@@ -42,10 +42,10 @@ This function should only modify configuration layer settings."
 
        ;; spacemacs-modeline
        (spacemacs-spaceline :location local)
-       (osx :variables
-         osx-command-as 'meta
-         osx-option-as  'none
-         )
+       ;; (osx :variables
+       ;;   osx-command-as 'meta
+       ;;   osx-option-as  'none
+       ;;   )
        (shell :variables
          shell-enable-smart-eshell t
          )
@@ -165,6 +165,10 @@ This function should only modify configuration layer settings."
        pocket-mode
        pocket-reader
        emms
+       flyspell-correct
+       define-word
+       ;; (osx-dictionary :toggle osx-use-dictionary-app)
+       (osx-dictionary)
        )
 
     ;; A list of packages that cannot be updated.
@@ -585,6 +589,7 @@ in the dump."
   (require 'pocket-mode)
   (require 'pocket-reader)
   (require 'emms)
+  (require 'flyspell-correct)
   )
 
 (defun dotspacemacs/user-config ()
@@ -593,6 +598,13 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+  ;; key bindings
+  (when (eq system-type 'darwin) ;; mac specific settings
+    (setq mac-option-modifier 'alt)
+    (setq mac-command-modifier 'meta)
+    ;; (global-set-key [kp-delete] 'delete-char) ;; sets fn-delete to be right-delete
+    )
+
   (set-frame-parameter nil 'alpha '(80 . 40))
   (set-frame-parameter nil 'undecorated t)
 
@@ -847,8 +859,6 @@ before packages are loaded."
   (global-set-key (kbd "H-SPC") 'mpv-pause)
   (global-set-key (kbd "H-b") 'mpv-seek-backward)
 
-
-
   ;;;
   ;; mobile org
   ;;;
@@ -894,6 +904,9 @@ before packages are loaded."
   ;; (ie. dropbox bugs)
   (run-with-timer 0 (* 5 60) 'org-mobile-pull)
 
+  (require 'flyspell-correct-helm)
+  (define-key flyspell-mode-map (kbd "C-;") 'flyspell-correct-wrapper)
+
   ) ;; end of dotspacemacs/user-config
 
 (defun my-lisp-load (filename)
@@ -925,13 +938,13 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode reveal-in-osx-finder restart-emacs ranger rainbow-delimiters quick-preview pyvenv pytest pyenv-mode py-isort pug-mode proof-general prettier-js popwin pocket-reader pocket-mode pippel pipenv pip-requirements persp-mode password-generator paradox pandoc-mode ox-twbs ox-pandoc ox-gfm overseer osx-trash osx-dictionary origami orgit org-super-agenda org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file nameless mwim multi-term mpv move-text mmm-mode markdown-toc magithub magit-todos magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint launchctl json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks engine-mode emoji-cheat-sheet-plus emms emmet-mode elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline dockerfile-mode docker direx diminish diff-hl deft ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-tern company-statistics company-shell company-quickhelp company-go company-emoji company-coq company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote beacon avy-migemo auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atomic-chrome aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+   '(osx-dictionary yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode restart-emacs ranger rainbow-delimiters quick-preview pyvenv pytest pyenv-mode py-isort pug-mode proof-general prettier-js popwin pocket-reader pocket-mode pippel pipenv pip-requirements persp-mode password-generator paradox pandoc-mode ox-twbs ox-pandoc ox-gfm overseer origami orgit org-super-agenda org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file nameless mwim multi-term mpv move-text mmm-mode markdown-toc magithub magit-todos magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks engine-mode emoji-cheat-sheet-plus emms emmet-mode elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline dockerfile-mode docker direx diminish diff-hl deft define-word ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-tern company-statistics company-shell company-quickhelp company-go company-emoji company-coq company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote beacon avy-migemo auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atomic-chrome aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:foreground "#f8f8f8" :background "#26292c")))))
 )
 (custom-set-faces
   '(company-tooltip-common
