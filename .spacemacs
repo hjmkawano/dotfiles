@@ -605,7 +605,7 @@ before packages are loaded."
     ;; (global-set-key [kp-delete] 'delete-char) ;; sets fn-delete to be right-delete
     )
 
-  (set-frame-parameter nil 'alpha '(80 . 40))
+  (set-frame-parameter nil 'alpha '(70 . 40))
   (set-frame-parameter nil 'undecorated t)
 
   (global-set-key (kbd "C-x j") 'skk-mode)
