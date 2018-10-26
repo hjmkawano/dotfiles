@@ -55,7 +55,10 @@ This function should only modify configuration layer settings."
        emacs-lisp
        treemacs
        shell-scripts
-       git
+       (git :variables
+         git-magit-status-fullscreen t
+         ;; git-gutter-use-fringe t
+         )
        github
        emoji
        ;; tmux
@@ -104,6 +107,7 @@ This function should only modify configuration layer settings."
          org-mobile-inbox-for-pull "~/Dropbox/notes/flagged.org"
          org-mobile-directory "~/Dropbox/アプリ/MobileOrg"
          org-capture-ical-file (concat org-directory "org-ical.org")
+         org-enable-github-support t
          )
        pandoc
        yaml
@@ -644,6 +648,7 @@ before packages are loaded."
        (set (make-local-variable 'whitespace-action) nil)))
 
   ;; migemo
+  ;;
   ;; (with-eval-after-load "migemo"
   ;;   (setq migemo-command "cmigemo")
   ;;   (setq migemo-options '("-q" "--emacs" "-i" "\a"))
