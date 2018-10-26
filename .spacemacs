@@ -55,9 +55,10 @@ This function should only modify configuration layer settings."
        emacs-lisp
        treemacs
        shell-scripts
+       version-control
        (git :variables
          git-magit-status-fullscreen t
-         ;; git-gutter-use-fringe t
+         git-gutter-use-fringe t
          )
        github
        emoji
@@ -88,7 +89,6 @@ This function should only modify configuration layer settings."
        html
        spell-checking
        syntax-checking
-       version-control
        (markdown :variables
          markdown-live-preview-engine 'vmd)
        (org :variables
