@@ -117,7 +117,7 @@ This function should only modify configuration layer settings."
        (deft :variables
          deft-directory "~/Dropbox/notes"
          )
-       pdf-tools
+       ;; pdf-tools
        dash
        terraform
        docker
