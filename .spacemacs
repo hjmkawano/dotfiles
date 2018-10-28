@@ -127,12 +127,14 @@ This function should only modify configuration layer settings."
        (erc :variables
          erc-server-list
          '(("irc.freenode.net"
-              :port "6697"
-              :ssl t
-              :nick "jimbeam8y")
+             :port "6697"
+             :ssl t
+             :nick "jimbeam8y")
             )
          )
-       slack
+       (slack :variables
+         slack-spacemacs-layout-name "@Slack"
+         slack-spacemacs-layout-binding "s")
        search-engine
        ;; graphviz
        ;; gnus
@@ -606,7 +608,7 @@ in the dump."
   (require 'mew)
   )
 
- (defun dotspacemacs/user-config ()
+(defun dotspacemacs/user-config ()
   "Configuration for user code:
 This function is called at the very end of Spacemacs startup, after layer
 configuration.
@@ -687,10 +689,10 @@ before packages are loaded."
   ;;   )
 
   ;; eww
-   (with-eval-after-load "eww"
-     (define-key eww-mode-map "p" 'scroll-down)
-     (define-key eww-mode-map "n" 'scroll-up)
-     )
+  (with-eval-after-load "eww"
+    (define-key eww-mode-map "p" 'scroll-down)
+    (define-key eww-mode-map "n" 'scroll-up)
+    )
 
   (defvar eww-disable-colorize t)
   (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
@@ -771,10 +773,11 @@ before packages are loaded."
   (add-hook 'after-init-hook #'fancy-battery-mode)
 
   ;; Slack
-  (setq my-slack-team (my-lisp-load "emacs-slack-team"))
-  (setq my-slack-client-id (my-lisp-load "emacs-slack-client-id"))
-  (setq my-slack-client-secret (my-lisp-load "emacs-slack-client-secret"))
-  (setq my-slack-client-token (my-lisp-load "emacs-slack-client-token"))
+  (with-eval-after-load 'slack
+    (setq my-slack-team (my-lisp-load "emacs-slack-team"))
+    (setq my-slack-client-id (my-lisp-load "emacs-slack-client-id"))
+    (setq my-slack-client-secret (my-lisp-load "emacs-slack-client-secret"))
+    (setq my-slack-client-token (my-lisp-load "emacs-slack-client-token")))
 
   (slack-register-team
     :name my-slack-team
@@ -843,20 +846,20 @@ before packages are loaded."
     (kill-new "- 0:00:00 :: start\n"))
   (defun org-mpv-complete-link (&optional arg)
     (replace-regexp-in-string
-     "file:" "mpv:"
-     (org-file-complete-link arg)
-     t t))
+      "file:" "mpv:"
+      (org-file-complete-link arg)
+      t t))
 
   ;;; 再生位置をM-RETで挿入させる
   (defun org-timer-item--mpv-insert-playback-position (fun &rest args)
     "When no org timer is running but mpv is alive, insert playback position."
     (if (and
-         (not org-timer-start-time)
-         (mpv-live-p))
-        (mpv-insert-playback-position t)
+          (not org-timer-start-time)
+          (mpv-live-p))
+      (mpv-insert-playback-position t)
       (apply fun args)))
   (advice-add 'org-timer-item :around
-              #'org-timer-item--mpv-insert-playback-position)
+    #'org-timer-item--mpv-insert-playback-position)
 
   ;;; 0:01:02のような文字列でC-c C-oしたらその位置にジャンプさせる
   (add-hook 'org-open-at-point-functions #'mpv-seek-to-position-at-point)
@@ -886,17 +889,17 @@ before packages are loaded."
     (when org-mobile-push-timer
       (cancel-timer org-mobile-push-timer))
     (setq org-mobile-push-timer
-          (run-with-idle-timer
-            (* 1 secs) nil 'org-mobile-push)))
+      (run-with-idle-timer
+        (* 1 secs) nil 'org-mobile-push)))
 
   (add-hook 'after-save-hook
-            (lambda ()
-              (when (eq major-mode 'org-mode)
-                (dolist (file (org-mobile-files-alist))
-                  (if (string= (file-truename (expand-file-name (car file)))
-		                           (file-truename (buffer-file-name)))
-                      (org-mobile-push-with-delay 30)))
-                )))
+    (lambda ()
+      (when (eq major-mode 'org-mode)
+        (dolist (file (org-mobile-files-alist))
+          (if (string= (file-truename (expand-file-name (car file)))
+		            (file-truename (buffer-file-name)))
+            (org-mobile-push-with-delay 30)))
+        )))
 
   (run-at-time "00:05" 86400 '(lambda () (org-mobile-push-with-delay 1))) ;; refreshes agenda file each day
   (require 'org-mobile)
@@ -905,17 +908,17 @@ before packages are loaded."
 
   (defun install-monitor (file secs)
     (run-with-timer
-     0 secs
-     (lambda (f p)
-       (unless (< p (float-time (time-since (elt (file-attributes f) 5))))
-         (org-mobile-pull)))
-     file secs))
+      0 secs
+      (lambda (f p)
+        (unless (< p (float-time (time-since (elt (file-attributes f) 5))))
+          (org-mobile-pull)))
+      file secs))
 
   (install-monitor (file-truename
-                    (concat
-                     (file-name-as-directory org-mobile-directory)
-                     org-mobile-capture-file))
-                   5)
+                     (concat
+                       (file-name-as-directory org-mobile-directory)
+                       org-mobile-capture-file))
+    5)
 
   ;; Do a pull every 5 minutes to circumvent problems with timestamping
   ;; (ie. dropbox bugs)
@@ -949,23 +952,23 @@ before packages are loaded."
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(elfeed-feeds
-   '("http://dain.cocolog-nifty.com/myblog/atom.xml" "http://mugi1.hateblo.jp/feed" "http://sandmark.hateblo.jp/feed" "https://blog.cheena.net/feed" "https://note.mu/notemag/m/mdafce2b0ebe1/rss" "https://jp.chibicode.com/feed.xml" "https://nanashi0x.hatenablog.com/feed" "https://blog.github.com/jp/all.atom" "http://syuu1228.hatenablog.com/feed" "https://www.google.com/alerts/feeds/03596739671333966072/2969421641122093887" "https://kakakakakku.hatenablog.com/feed" "https://scrapbox.io/api/feed/remi-tech/" "https://wired.jp/rssfeeder/" "https://news.yahoo.co.jp/byline/rss/yamamotoichiro.xml" "http://emacsrocks.com/atom.xml" "http://d.hatena.ne.jp/ikkou2otosata0/rss" "http://yasuos.com/blog/feed/" "http://rkx1209.hatenablog.com/feed" "http://sugohon.blog.fc2.com/?xml" "http://www.packal.org/new-workflows.xml" "http://ikeuchisatoshi.com/feed/" "http://lineblog.me/yamamotoichiro/index.rdf" "http://warbler.hatenablog.com/feed" "https://developers.cyberagent.co.jp/blog/feed/" "https://cloudplatform-jp.googleblog.com/feeds/posts/default" "https://honda.hatenadiary.jp/feed" "http://toyokeizai.net/list/feed/rss" "http://blog.livedoor.jp/dqnplus/index.rdf"))
- '(magit-log-margin '(t "%Y-%m-%d %H:%m:%S" magit-log-margin-width t 18))
- '(package-selected-packages
-   '(toml-mode sql-indent racer mvn meghanada maven-test-mode jinja2-mode groovy-mode groovy-imports gradle-mode flycheck-rust ensime sbt-mode scala-mode elfeed-web elfeed-org elfeed-goodies ace-jump-mode noflet elfeed company-terraform terraform-mode hcl-mode company-emacs-eclim eclim company-ansible cargo rust-mode ansible-doc ansible yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode restart-emacs ranger rainbow-delimiters quick-preview pyvenv pytest pyenv-mode py-isort pug-mode proof-general prettier-js popwin pocket-reader pocket-mode pippel pipenv pip-requirements persp-mode password-generator paradox pandoc-mode ox-twbs ox-pandoc ox-gfm overseer osx-dictionary origami orgit org-super-agenda org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file ob-ipython nameless mwim multi-term mpv move-text mmm-mode mew markdown-toc magithub magit-todos magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks engine-mode emoji-cheat-sheet-plus emms emmet-mode elisp-slime-nav ein editorconfig dumb-jump dotenv-mode doom-modeline dockerfile-mode docker direx diminish diff-hl deft define-word ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-tern company-statistics company-shell company-quickhelp company-go company-emoji company-coq company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote beacon avy-migemo auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atomic-chrome aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:foreground "#f8f8f8" :background "#26292c")))))
-)
+  (custom-set-variables
+    ;; custom-set-variables was added by Custom.
+    ;; If you edit it by hand, you could mess it up, so be careful.
+    ;; Your init file should contain only one such instance.
+    ;; If there is more than one, they won't work right.
+    '(elfeed-feeds
+       '("http://dain.cocolog-nifty.com/myblog/atom.xml" "http://mugi1.hateblo.jp/feed" "http://sandmark.hateblo.jp/feed" "https://blog.cheena.net/feed" "https://note.mu/notemag/m/mdafce2b0ebe1/rss" "https://jp.chibicode.com/feed.xml" "https://nanashi0x.hatenablog.com/feed" "https://blog.github.com/jp/all.atom" "http://syuu1228.hatenablog.com/feed" "https://www.google.com/alerts/feeds/03596739671333966072/2969421641122093887" "https://kakakakakku.hatenablog.com/feed" "https://scrapbox.io/api/feed/remi-tech/" "https://wired.jp/rssfeeder/" "https://news.yahoo.co.jp/byline/rss/yamamotoichiro.xml" "http://emacsrocks.com/atom.xml" "http://d.hatena.ne.jp/ikkou2otosata0/rss" "http://yasuos.com/blog/feed/" "http://rkx1209.hatenablog.com/feed" "http://sugohon.blog.fc2.com/?xml" "http://www.packal.org/new-workflows.xml" "http://ikeuchisatoshi.com/feed/" "http://lineblog.me/yamamotoichiro/index.rdf" "http://warbler.hatenablog.com/feed" "https://developers.cyberagent.co.jp/blog/feed/" "https://cloudplatform-jp.googleblog.com/feeds/posts/default" "https://honda.hatenadiary.jp/feed" "http://toyokeizai.net/list/feed/rss" "http://blog.livedoor.jp/dqnplus/index.rdf"))
+    '(magit-log-margin '(t "%Y-%m-%d %H:%m:%S" magit-log-margin-width t 18))
+    '(package-selected-packages
+       '(toml-mode sql-indent racer mvn meghanada maven-test-mode jinja2-mode groovy-mode groovy-imports gradle-mode flycheck-rust ensime sbt-mode scala-mode elfeed-web elfeed-org elfeed-goodies ace-jump-mode noflet elfeed company-terraform terraform-mode hcl-mode company-emacs-eclim eclim company-ansible cargo rust-mode ansible-doc ansible yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode restart-emacs ranger rainbow-delimiters quick-preview pyvenv pytest pyenv-mode py-isort pug-mode proof-general prettier-js popwin pocket-reader pocket-mode pippel pipenv pip-requirements persp-mode password-generator paradox pandoc-mode ox-twbs ox-pandoc ox-gfm overseer osx-dictionary origami orgit org-super-agenda org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file ob-ipython nameless mwim multi-term mpv move-text mmm-mode mew markdown-toc magithub magit-todos magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks engine-mode emoji-cheat-sheet-plus emms emmet-mode elisp-slime-nav ein editorconfig dumb-jump dotenv-mode doom-modeline dockerfile-mode docker direx diminish diff-hl deft define-word ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-tern company-statistics company-shell company-quickhelp company-go company-emoji company-coq company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote beacon avy-migemo auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atomic-chrome aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+  (custom-set-faces
+    ;; custom-set-faces was added by Custom.
+    ;; If you edit it by hand, you could mess it up, so be careful.
+    ;; Your init file should contain only one such instance.
+    ;; If there is more than one, they won't work right.
+    '(default ((t (:foreground "#f8f8f8" :background "#26292c")))))
+  )
 (custom-set-faces
   '(company-tooltip-common
      ((t (:inherit company-tooltip :weight bold :underline nil))))
@@ -976,17 +979,17 @@ This function is called at the very end of Spacemacs initialization."
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(neotree yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode treemacs-projectile treemacs-evil toml-mode toc-org tagedit symon string-inflection sql-indent spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode restart-emacs ranger rainbow-delimiters racer quick-preview pyvenv pytest pyenv-mode py-isort pug-mode proof-general prettier-js pocket-reader pocket-mode pippel pipenv pip-requirements persp-mode password-generator paradox pandoc-mode ox-twbs ox-pandoc ox-gfm overseer osx-dictionary origami orgit org-super-agenda org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file ob-ipython nameless mwim mvn multi-term mpv move-text mmm-mode mew meghanada maven-test-mode markdown-toc magithub magit-todos magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc jinja2-mode insert-shebang indent-guide importmagic impatient-mode hungry-delete highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag groovy-mode groovy-imports gradle-mode google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fuzzy font-lock+ flyspell-correct-helm flycheck-rust flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks ensime engine-mode emoji-cheat-sheet-plus emms emmet-mode elisp-slime-nav elfeed-web elfeed-org elfeed-goodies ein editorconfig dumb-jump dotenv-mode doom-modeline dockerfile-mode docker direx diminish diff-hl deft define-word ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-terraform company-tern company-statistics company-shell company-quickhelp company-go company-emoji company-emacs-eclim company-coq company-ansible company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode cargo browse-at-remote beacon avy-migemo auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atomic-chrome ansible-doc ansible aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((((class color) (min-colors 89)) (:background "#292b2e" :foreground "#b2b2b2")))))
-)
+  (custom-set-variables
+    ;; custom-set-variables was added by Custom.
+    ;; If you edit it by hand, you could mess it up, so be careful.
+    ;; Your init file should contain only one such instance.
+    ;; If there is more than one, they won't work right.
+    '(package-selected-packages
+       '(neotree yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode treemacs-projectile treemacs-evil toml-mode toc-org tagedit symon string-inflection sql-indent spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode restart-emacs ranger rainbow-delimiters racer quick-preview pyvenv pytest pyenv-mode py-isort pug-mode proof-general prettier-js pocket-reader pocket-mode pippel pipenv pip-requirements persp-mode password-generator paradox pandoc-mode ox-twbs ox-pandoc ox-gfm overseer osx-dictionary origami orgit org-super-agenda org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file ob-ipython nameless mwim mvn multi-term mpv move-text mmm-mode mew meghanada maven-test-mode markdown-toc magithub magit-todos magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc jinja2-mode insert-shebang indent-guide importmagic impatient-mode hungry-delete highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag groovy-mode groovy-imports gradle-mode google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fuzzy font-lock+ flyspell-correct-helm flycheck-rust flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks ensime engine-mode emoji-cheat-sheet-plus emms emmet-mode elisp-slime-nav elfeed-web elfeed-org elfeed-goodies ein editorconfig dumb-jump dotenv-mode doom-modeline dockerfile-mode docker direx diminish diff-hl deft define-word ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-terraform company-tern company-statistics company-shell company-quickhelp company-go company-emoji company-emacs-eclim company-coq company-ansible company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode cargo browse-at-remote beacon avy-migemo auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atomic-chrome ansible-doc ansible aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+  (custom-set-faces
+    ;; custom-set-faces was added by Custom.
+    ;; If you edit it by hand, you could mess it up, so be careful.
+    ;; Your init file should contain only one such instance.
+    ;; If there is more than one, they won't work right.
+    '(default ((((class color) (min-colors 89)) (:background "#292b2e" :foreground "#b2b2b2")))))
+  )
