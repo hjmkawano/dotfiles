@@ -606,6 +606,7 @@ in the dump."
   (require 'emms)
   (require 'flyspell-correct)
   (require 'mew)
+  (require 'org-mobile)
   )
 
 (defun dotspacemacs/user-config ()
@@ -901,7 +902,6 @@ before packages are loaded."
         )))
 
   (run-at-time "00:05" 86400 '(lambda () (org-mobile-push-with-delay 1))) ;; refreshes agenda file each day
-  (require 'org-mobile)
 
   (org-mobile-pull) ;; run org-mobile-pull at startup
 
