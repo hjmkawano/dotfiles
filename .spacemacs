@@ -132,9 +132,7 @@ This function should only modify configuration layer settings."
              :nick "jimbeam8y")
             )
          )
-       (slack :variables
-         slack-spacemacs-layout-name "@Slack"
-         slack-spacemacs-layout-binding "s")
+       slack
        search-engine
        ;; graphviz
        ;; gnus
@@ -168,9 +166,9 @@ This function should only modify configuration layer settings."
        mpv
        magithub
        ;; https://github.com/alphapapa
-       magit-todos
+       ;; magit-todos
        org-super-agenda
-       ;; https://github.com/alphapapa?utf8=%E2%9C%93&tab=repositories&q=pocket&type=&language=emacs+lisp
+       ;; https://github.com/alphapapa
        pocket-lib
        pocket-mode
        pocket-reader
@@ -307,9 +305,9 @@ It should only modify the values of Spacemacs settings."
     ;; `spacemacs-buffer-startup-lists-length' takes effect.
     dotspacemacs-startup-lists '((recents . 2)
                                   (projects . 2)
-                                  (bookmarks . 2)
-                                  (agenda . 2)
-                                  (todos . 3)
+                                  (bookmarks . 0)
+                                  (agenda . 3)
+                                  (todos . 5)
                                   )
 
     ;; True if the home buffer should respond to resize events. (default t)
@@ -594,7 +592,6 @@ in the dump."
   (require 'skk)
   (require 'eww)
   (require 'spaceline-all-the-icons)
-  (require 'eww)
   (require 'auto-complete-config)
   (require 'company)
   (require 'quick-preview)
@@ -607,6 +604,7 @@ in the dump."
   (require 'flyspell-correct)
   (require 'mew)
   (require 'org-mobile)
+  (require 'magit-todos)
   )
 
 (defun dotspacemacs/user-config ()
@@ -926,6 +924,17 @@ before packages are loaded."
   (require 'flyspell-correct-helm)
   (define-key flyspell-mode-map (kbd "C-;") 'flyspell-correct-wrapper)
 
+  (custom-set-variables
+    `(auth-sources '(,(expand-file-name "authinfo.gpg" user-home-directory))))
+
+  ;; authinfo ファイルの指定
+  (setq nntp-authinfo-file "~/.authinfo.gpg")
+  (setq nnimap-authinfo-file "~/.authinfo.gpg")
+  (setq smtpmail-auth-credentials "~/.authinfo.gpg")
+  ;; 暗号化方式の指定
+  (setq encrypt-file-alist '(("~/.authinfo.gpg" (gpg "AES"))))
+  ;; (setq password-cache-expiry nil)	; パスワードをキャッシュする
+
   ) ;; end of dotspacemacs/user-config
 
 (defun my-lisp-load (filename)
@@ -957,7 +966,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode treemacs-projectile treemacs-evil toml-mode toc-org tagedit symon string-inflection sql-indent spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode restart-emacs ranger rainbow-delimiters racer quick-preview pyvenv pytest pyenv-mode py-isort pug-mode proof-general prettier-js pocket-reader pocket-mode pippel pipenv pip-requirements persp-mode password-generator paradox pandoc-mode ox-twbs ox-pandoc ox-gfm overseer osx-dictionary origami orgit org-super-agenda org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file ob-ipython nameless mwim mvn multi-term mpv move-text mmm-mode mew meghanada maven-test-mode markdown-toc magithub magit-todos magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc jinja2-mode insert-shebang indent-guide importmagic impatient-mode hungry-delete highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag groovy-mode groovy-imports gradle-mode google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fuzzy font-lock+ flyspell-correct-helm flycheck-rust flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks ensime engine-mode emoji-cheat-sheet-plus emms emmet-mode elisp-slime-nav elfeed-web elfeed-org elfeed-goodies ein editorconfig dumb-jump dotenv-mode doom-modeline dockerfile-mode docker direx diminish diff-hl deft define-word ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-terraform company-tern company-statistics company-shell company-quickhelp company-go company-emoji company-emacs-eclim company-coq company-ansible company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode cargo browse-at-remote beacon avy-migemo auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atomic-chrome ansible-doc ansible aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+   '(web-mode treemacs-projectile proof-general git-link emms ein doom-modeline docker cargo anaconda-mode counsel helm hl-todo projectile magit git-commit ghub with-editor treemacs hydra yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-beautify volatile-highlights vmd-mode vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode treepy treemacs-evil toml-mode toc-org tagedit tablist symon swiper string-inflection sql-indent spaceline-all-the-icons smeargle slim-mode slack shrink-path shell-pop scss-mode sass-mode restart-emacs request-deferred ranger rainbow-delimiters racer quick-preview pyvenv pytest pyenv-mode py-isort pug-mode prettier-js pocket-reader pocket-mode pippel pipenv pip-requirements pfuture persp-mode password-generator paradox pandoc-mode ox-twbs ox-pandoc ox-gfm overseer osx-dictionary origami orgit org-super-agenda org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file ob-ipython nameless mwim mvn multi-term mpv move-text mmm-mode mew meghanada maven-test-mode markdown-toc magithub magit-todos magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint json-navigator json-mode js2-refactor js-doc jinja2-mode insert-shebang indent-guide importmagic impatient-mode hungry-delete highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag groovy-mode groovy-imports graphql gradle-mode google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fuzzy font-lock+ flyspell-correct-helm flycheck-rust flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks ensime engine-mode emoji-cheat-sheet-plus emmet-mode elisp-slime-nav elfeed-web elfeed-org elfeed-goodies eldoc-eval editorconfig dumb-jump dotenv-mode dockerfile-mode docker-tramp direx diminish diff-hl deft define-word ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-terraform company-tern company-statistics company-shell company-quickhelp company-go company-emoji company-emacs-eclim company-coq company-ansible company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote beacon avy-migemo auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atomic-chrome ansible-doc ansible aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
