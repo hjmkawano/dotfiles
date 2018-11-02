@@ -34,18 +34,7 @@ This function should only modify configuration layer settings."
     ;; List of configuration layers to load.
     dotspacemacs-configuration-layers
     '(
-       ;; ----------------------------------------------------------------
-       ;; Example of useful layers you may want to use right away.
-       ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
-       ;; <M-m f e R> (Emacs style) to install them.
-       ;; ----------------------------------------------------------------
-
-       ;; spacemacs-modeline
        (spacemacs-spaceline :location local)
-       ;; (osx :variables
-       ;;   osx-command-as 'meta
-       ;;   osx-option-as  'none
-       ;;   )
        (shell :variables
          shell-default-shell 'eshell
          shell-enable-smart-eshell t
@@ -304,10 +293,10 @@ It should only modify the values of Spacemacs settings."
     ;; `recents' `bookmarks' `projects' `agenda' `todos'.
     ;; List sizes may be nil, in which case
     ;; `spacemacs-buffer-startup-lists-length' takes effect.
-    dotspacemacs-startup-lists '((recents . 2)
-                                  (projects . 2)
+    dotspacemacs-startup-lists '((recents . 1)
+                                  (projects . 0)
                                   (bookmarks . 0)
-                                  (agenda . 3)
+                                  (agenda . 4)
                                   (todos . 5)
                                   )
 
@@ -326,11 +315,6 @@ It should only modify the values of Spacemacs settings."
     ;; with 2 themes variants, one dark and one light)
     dotspacemacs-themes '(
                            flatland
-                           ;; misterioso
-                           ;; darktooth
-                           ;; monokai
-                           ;; spacemacs-dark
-                           ;; spacemacs-light)
                            )
 
     ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
@@ -355,8 +339,8 @@ It should only modify the values of Spacemacs settings."
                                  ;; "Ricty Discord for Powerline"
                                  "Hack Nerd Font"
                                  :size 14
-                                 :weight normal
-                                 :width normal
+                                 ;; :weight normal
+                                 ;; :width normal
                                  )
 
     ;; The leader key (default "SPC")
