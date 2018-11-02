@@ -933,7 +933,7 @@ before packages are loaded."
   (setq smtpmail-auth-credentials "~/.authinfo.gpg")
   ;; 暗号化方式の指定
   (setq encrypt-file-alist '(("~/.authinfo.gpg" (gpg "AES"))))
-  ;; (setq password-cache-expiry nil)	; パスワードをキャッシュする
+  (setq password-cache-expiry nil)	; パスワードをキャッシュする
 
   ) ;; end of dotspacemacs/user-config
 
