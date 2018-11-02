@@ -47,6 +47,7 @@ This function should only modify configuration layer settings."
        ;;   osx-option-as  'none
        ;;   )
        (shell :variables
+         shell-default-shell 'eshell
          shell-enable-smart-eshell t
          )
        better-defaults
@@ -78,14 +79,15 @@ This function should only modify configuration layer settings."
          python-sort-imports-on-save t
          python-fill-column 99
          )
+       ipython-notebook
        go
        javascript
        web-beautify
        ;; php
-       ;; ansible
-       ;; java
-       ;; sql
-       ;; rust
+       ansible
+       java
+       sql
+       rust
        html
        spell-checking
        syntax-checking
@@ -115,9 +117,9 @@ This function should only modify configuration layer settings."
        (deft :variables
          deft-directory "~/Dropbox/notes"
          )
-       ;; pdf-tools
+       pdf
        dash
-       ;; terraform
+       terraform
        docker
        ;; vagrant
        ;; chrome
@@ -125,15 +127,16 @@ This function should only modify configuration layer settings."
        (erc :variables
          erc-server-list
          '(("irc.freenode.net"
-              :port "6697"
-              :ssl t
-              :nick "jimbeam8y")
+             :port "6697"
+             :ssl t
+             :nick "jimbeam8y")
             )
          )
        slack
        search-engine
        ;; graphviz
-       gnus
+       ;; gnus
+       elfeed
        evernote
        coq
        )
@@ -163,9 +166,9 @@ This function should only modify configuration layer settings."
        mpv
        magithub
        ;; https://github.com/alphapapa
-       magit-todos
+       ;; magit-todos
        org-super-agenda
-       ;; https://github.com/alphapapa?utf8=%E2%9C%93&tab=repositories&q=pocket&type=&language=emacs+lisp
+       ;; https://github.com/alphapapa
        pocket-lib
        pocket-mode
        pocket-reader
@@ -173,7 +176,8 @@ This function should only modify configuration layer settings."
        flyspell-correct
        define-word
        ;; (osx-dictionary :toggle osx-use-dictionary-app)
-       (osx-dictionary)
+       osx-dictionary
+       eshell-git-prompt
        )
 
     ;; A list of packages that cannot be updated.
@@ -300,8 +304,12 @@ It should only modify the values of Spacemacs settings."
     ;; `recents' `bookmarks' `projects' `agenda' `todos'.
     ;; List sizes may be nil, in which case
     ;; `spacemacs-buffer-startup-lists-length' takes effect.
-    dotspacemacs-startup-lists '((recents . 0)
-                                  (projects . 0))
+    dotspacemacs-startup-lists '((recents . 2)
+                                  (projects . 2)
+                                  (bookmarks . 0)
+                                  (agenda . 3)
+                                  (todos . 5)
+                                  )
 
     ;; True if the home buffer should respond to resize events. (default t)
     dotspacemacs-startup-buffer-responsive t
@@ -489,7 +497,15 @@ It should only modify the values of Spacemacs settings."
     ;;                       text-mode
     ;;   :size-limit-kb 1000)
     ;; (default nil)
-    dotspacemacs-line-numbers nil
+    dotspacemacs-line-numbers '(:relative nil
+                                 :disabled-for-modes dired-mode
+                                 doc-view-mode
+                                 markdown-mode
+                                 org-mode
+                                 pdf-view-mode
+                                 text-mode
+                                 :size-limit-kb 1000)
+
 
     ;; Code folding method. Possible values are `evil' and `origami'.
     ;; (default 'evil)
@@ -582,10 +598,9 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
 This function is called while dumping Spacemacs configuration. You can
 `require' or `load' the libraries of your choice that will be included
 in the dump."
-  (require 'skk nil t)
-  (require 'mew)
-  (require 'spaceline-all-the-icons)
+  (require 'skk)
   (require 'eww)
+  (require 'spaceline-all-the-icons)
   (require 'auto-complete-config)
   (require 'company)
   (require 'quick-preview)
@@ -596,6 +611,9 @@ in the dump."
   (require 'pocket-reader)
   (require 'emms)
   (require 'flyspell-correct)
+  (require 'mew)
+  (require 'org-mobile)
+  (require 'magit-todos)
   )
 
 (defun dotspacemacs/user-config ()
@@ -679,35 +697,37 @@ before packages are loaded."
   ;;   )
 
   ;; eww
-  ;; (define-key eww-mode-map "p" 'scroll-down)
-  ;; (define-key eww-mode-map "n" 'scroll-up)
+  (with-eval-after-load "eww"
+    (define-key eww-mode-map "p" 'scroll-down)
+    (define-key eww-mode-map "n" 'scroll-up)
+    )
 
-  ;; (defvar eww-disable-colorize t)
-  ;; (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
-  ;;   (unless eww-disable-colorize
-  ;;     (funcall orig start end fg)))
-  ;; (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
-  ;; (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
-  ;; (defun eww-disable-color ()
-  ;;   (interactive)
-  ;;   (setq-local eww-disable-colorize t)
-  ;;   (eww-reload))
-  ;; (defun eww-enable-color ()
-  ;;   (interactive)
-  ;;   (setq-local eww-disable-colorize nil
-  ;;   (eww-reload))
+  (defvar eww-disable-colorize t)
+  (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
+    (unless eww-disable-colorize
+      (funcall orig start end fg)))
+  (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
+  (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
+  (defun eww-disable-color ()
+    (interactive)
+    (setq-local eww-disable-colorize t)
+    (eww-reload))
+  (defun eww-enable-color ()
+    (interactive)
+    (setq-local eww-disable-colorize nil)
+    (eww-reload))
 
-  ;; (setq eww-search-prefix "https://www.google.co.jp/search?q=")
+  (setq eww-search-prefix "https://www.google.co.jp/search?q=")
 
-  ;; (defun shr-insert-document--for-eww (&rest them)
-  ;;   (let ((shr-width 100)) (apply them)))
-  ;; (defun eww-display-html--fill-column (&rest them)
-  ;;   (advice-add 'shr-insert-document :around 'shr-insert-document--for-eww)
-  ;;   (unwind-protect
-  ;;     (apply them)
-  ;;     (advice-remove 'shr-insert-document 'shr-insert-document--for-eww)))
-  ;; (advice-add 'eww-display-html :around 'eww-display-html--fill-column)
-  ;; (setq browse-url-browser-function 'eww-browse-url)
+  (defun shr-insert-document--for-eww (&rest them)
+    (let ((shr-width 100)) (apply them)))
+  (defun eww-display-html--fill-column (&rest them)
+    (advice-add 'shr-insert-document :around 'shr-insert-document--for-eww)
+    (unwind-protect
+      (apply them)
+      (advice-remove 'shr-insert-document 'shr-insert-document--for-eww)))
+  (advice-add 'eww-display-html :around 'eww-display-html--fill-column)
+  (setq browse-url-browser-function 'eww-browse-url)
 
   ;; ;; ace-link
   (ace-link-setup-default)
@@ -728,7 +748,7 @@ before packages are loaded."
     :after magit
     :config (magithub-feature-autoinject t))
 
-  ;; (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig")
+  (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig")
   ;; (add-hook 'pdf-view-mode-hook (lambda() (linum-mode -1)))
 
   ;; spaceline
@@ -736,10 +756,10 @@ before packages are loaded."
     :after spaceline
     :config (spaceline-all-the-icons-theme)
     )
-  ;; (spaceline-all-the-icons--setup-anzu)            ;; enable anzu searching
-  ;; (spaceline-all-the-icons--setup-package-updates) ;; enable package update indicator
-  ;; (spaceline-all-the-icons--setup-git-ahead)       ;; enable # of commits ahead of upstream in git
-  ;; (spaceline-all-the-icons--setup-paradox)         ;; enable paradox mode line
+  (spaceline-all-the-icons--setup-anzu)            ;; enable anzu searching
+  (spaceline-all-the-icons--setup-package-updates) ;; enable package update indicator
+  (spaceline-all-the-icons--setup-git-ahead)       ;; enable # of commits ahead of upstream in git
+  (spaceline-all-the-icons--setup-paradox)         ;; enable paradox mode line
 
   (fancy-battery-mode +1)
 
@@ -761,13 +781,13 @@ before packages are loaded."
   (add-hook 'after-init-hook #'fancy-battery-mode)
 
   ;; Slack
-  (setq my-slack-team (my-lisp-load "emacs-slack-team"))
+  ;; (setq my-slack-team (my-lisp-load "emacs-slack-team"))
   (setq my-slack-client-id (my-lisp-load "emacs-slack-client-id"))
   (setq my-slack-client-secret (my-lisp-load "emacs-slack-client-secret"))
   (setq my-slack-client-token (my-lisp-load "emacs-slack-client-token"))
 
   (slack-register-team
-    :name my-slack-team
+    :name (my-lisp-load "emacs-slack-team")
     :default t
     :client-id my-slack-client-id
     :client-secret my-slack-client-secret
@@ -833,20 +853,20 @@ before packages are loaded."
     (kill-new "- 0:00:00 :: start\n"))
   (defun org-mpv-complete-link (&optional arg)
     (replace-regexp-in-string
-     "file:" "mpv:"
-     (org-file-complete-link arg)
-     t t))
+      "file:" "mpv:"
+      (org-file-complete-link arg)
+      t t))
 
   ;;; 再生位置をM-RETで挿入させる
   (defun org-timer-item--mpv-insert-playback-position (fun &rest args)
     "When no org timer is running but mpv is alive, insert playback position."
     (if (and
-         (not org-timer-start-time)
-         (mpv-live-p))
-        (mpv-insert-playback-position t)
+          (not org-timer-start-time)
+          (mpv-live-p))
+      (mpv-insert-playback-position t)
       (apply fun args)))
   (advice-add 'org-timer-item :around
-              #'org-timer-item--mpv-insert-playback-position)
+    #'org-timer-item--mpv-insert-playback-position)
 
   ;;; 0:01:02のような文字列でC-c C-oしたらその位置にジャンプさせる
   (add-hook 'org-open-at-point-functions #'mpv-seek-to-position-at-point)
@@ -863,56 +883,77 @@ before packages are loaded."
             (mpv--enqueue `("seek" ,secs "absolute") #'ignore)
             )))))
 
+
   (global-set-key (kbd "H-SPC") 'mpv-pause)
   (global-set-key (kbd "H-b") 'mpv-seek-backward)
 
   ;;;
   ;; mobile org
   ;;;
-  (defvar org-mobile-push-timer nil
-    "Timer that `org-mobile-push-timer' used to reschedule itself, or nil.")
+  ;; (defvar org-mobile-push-timer nil
+  ;;   "Timer that `org-mobile-push-timer' used to reschedule itself, or nil.")
 
-  (defun org-mobile-push-with-delay (secs)
-    (when org-mobile-push-timer
-      (cancel-timer org-mobile-push-timer))
-    (setq org-mobile-push-timer
-          (run-with-idle-timer
-            (* 1 secs) nil 'org-mobile-push)))
+  ;; (defun org-mobile-push-with-delay (secs)
+  ;;   (when org-mobile-push-timer
+  ;;     (cancel-timer org-mobile-push-timer))
+  ;;   (setq org-mobile-push-timer
+  ;;     (run-with-idle-timer
+  ;;       (* 1 secs) nil 'org-mobile-push)))
 
-  (add-hook 'after-save-hook
-            (lambda ()
-              (when (eq major-mode 'org-mode)
-                (dolist (file (org-mobile-files-alist))
-                  (if (string= (file-truename (expand-file-name (car file)))
-		                           (file-truename (buffer-file-name)))
-                      (org-mobile-push-with-delay 30)))
-                )))
+  ;; (add-hook 'after-save-hook
+  ;;   (lambda ()
+  ;;     (when (eq major-mode 'org-mode)
+  ;;       (dolist (file (org-mobile-files-alist))
+  ;;         (if (string= (file-truename (expand-file-name (car file)))
+	;; 	            (file-truename (buffer-file-name)))
+  ;;           (org-mobile-push-with-delay 30)))
+  ;;       )))
 
-  (run-at-time "00:05" 86400 '(lambda () (org-mobile-push-with-delay 1))) ;; refreshes agenda file each day
-  (require 'org-mobile)
+  ;; (run-at-time "00:05" 86400 '(lambda () (org-mobile-push-with-delay 1))) ;; refreshes agenda file each day
 
-  (org-mobile-pull) ;; run org-mobile-pull at startup
+  ;; (org-mobile-pull) ;; run org-mobile-pull at startup
 
-  (defun install-monitor (file secs)
-    (run-with-timer
-     0 secs
-     (lambda (f p)
-       (unless (< p (float-time (time-since (elt (file-attributes f) 5))))
-         (org-mobile-pull)))
-     file secs))
+  ;; (defun install-monitor (file secs)
+  ;;   (run-with-timer
+  ;;     0 secs
+  ;;     (lambda (f p)
+  ;;       (unless (< p (float-time (time-since (elt (file-attributes f) 5))))
+  ;;         (org-mobile-pull)))
+  ;;     file secs))
 
-  (install-monitor (file-truename
-                    (concat
-                     (file-name-as-directory org-mobile-directory)
-                     org-mobile-capture-file))
-                   5)
+  ;; (install-monitor (file-truename
+  ;;                    (concat
+  ;;                      (file-name-as-directory org-mobile-directory)
+  ;;                      org-mobile-capture-file))
+  ;;   5)
 
-  ;; Do a pull every 5 minutes to circumvent problems with timestamping
-  ;; (ie. dropbox bugs)
-  (run-with-timer 0 (* 5 60) 'org-mobile-pull)
+  ;; ;; Do a pull every 5 minutes to circumvent problems with timestamping
+  ;; ;; (ie. dropbox bugs)
+  ;; (run-with-timer 0 (* 5 60) 'org-mobile-pull)
 
   (require 'flyspell-correct-helm)
   (define-key flyspell-mode-map (kbd "C-;") 'flyspell-correct-wrapper)
+
+  (custom-set-variables
+    `(auth-sources '(,(expand-file-name "authinfo.gpg" user-home-directory))))
+
+  ;; authinfo ファイルの指定
+  (setq nntp-authinfo-file "~/.authinfo.gpg")
+  (setq nnimap-authinfo-file "~/.authinfo.gpg")
+  (setq smtpmail-auth-credentials "~/.authinfo.gpg")
+  ;; 暗号化方式の指定
+  (setq encrypt-file-alist '(("~/.authinfo.gpg" (gpg "AES"))))
+  (setq password-cache-expiry nil)	; パスワードをキャッシュする
+
+  ;; in eshell buffer, type
+  ;; $ use-theme
+  ;;
+  ;; support symbols,
+  ;; 'robbyrussell', 'git-radar', 'powerline', 'simple', 'default'
+  ;; To recover the Eshell default prompt, type
+  ;;   $ use-theme default
+  ;; or M-x eshell-git-prompt-use-theme RET default RET.
+  (eshell-git-prompt-use-theme 'powerline)
 
   ) ;; end of dotspacemacs/user-config
 
@@ -945,7 +986,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(jist yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode treemacs-projectile treemacs-evil toc-org tagedit symon string-inflection spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode restart-emacs ranger rainbow-delimiters quick-preview pyvenv pytest pyenv-mode py-isort pug-mode proof-general prettier-js popwin pocket-reader pocket-mode pippel pipenv pip-requirements persp-mode password-generator paradox pandoc-mode ox-twbs ox-pandoc ox-gfm overseer osx-dictionary origami orgit org-super-agenda org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file nameless mwim multi-term mpv move-text mmm-mode mew markdown-toc magithub magit-todos magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks engine-mode emoji-cheat-sheet-plus emms emmet-mode elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline dockerfile-mode docker direx diminish diff-hl deft define-word ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-tern company-statistics company-shell company-quickhelp company-go company-emoji company-coq company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote beacon avy-migemo auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atomic-chrome aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+   '(yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vmd-mode vimrc-mode vi-tilde-fringe uuidgen use-package unfill twittering-mode treemacs-projectile treemacs-evil toml-mode toc-org tagedit symon string-inflection sql-indent spaceline-all-the-icons smeargle slim-mode slack shell-pop scss-mode sass-mode restart-emacs ranger rainbow-delimiters racer quick-preview pyvenv pytest pyenv-mode py-isort pug-mode proof-general prettier-js pocket-reader pocket-mode pippel pipenv pip-requirements persp-mode pdf-tools pcre2el password-generator paradox pandoc-mode ox-twbs ox-pandoc ox-gfm overseer osx-dictionary origami orgit org-super-agenda org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file ob-ipython nameless mwim mvn multi-term mpv move-text mmm-mode mew meghanada maven-test-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc jinja2-mode insert-shebang indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag groovy-mode groovy-imports gradle-mode google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fuzzy font-lock+ flyspell-correct-helm flycheck-rust flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras eshell-git-prompt esh-help erc-yt erc-view-log erc-terminal-notifier erc-social-graph erc-image erc-hl-nicks ensime engine-mode emoji-cheat-sheet-plus emms emmet-mode elisp-slime-nav elfeed-web elfeed-org elfeed-goodies ein editorconfig dumb-jump dotenv-mode doom-modeline dockerfile-mode docker direx diminish diff-hl deft define-word ddskk dash-at-point dactyl-mode cython-mode counsel-projectile company-web company-terraform company-tern company-statistics company-shell company-quickhelp company-go company-emoji company-emacs-eclim company-coq company-ansible company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode cargo browse-at-remote beacon avy-migemo auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile atomic-chrome ansible-doc ansible aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
