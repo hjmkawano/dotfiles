@@ -23,10 +23,9 @@ set -U FZF_LEGACY_KEYBINDINGS 0
 
 set -x PATH $HOME"/.pyenv/shims" $PATH
 status --is-interactive; and . (pyenv init -|psub)
-## status --is-interactive; and . (plenv init -|psub)
 
-set -gx LDFLAGS "-L/usr/local/opt/zlib/lib"
-set -gx CPPFLAGS "-I/usr/local/opt/zlib/include"
+set -gx LDFLAGS " -L/usr/local/opt/zlib/lib"
+set -gx CPPFLAGS " -I/usr/local/opt/zlib/include"
 set -gx PKG_CONFIG_PATH "/usr/local/opt/zlib/lib/pkgconfig"
 
 alias git hub
@@ -39,3 +38,8 @@ set -g theme_powerline_fonts no
 set -g theme_nerd_fonts yes
 set -g theme_display_docker_machine yes
 set -x VIRTUAL_ENV_DISABLE_PROMPT 1
+
+set -g fish_user_paths "/usr/local/opt/nss/bin" $fish_user_paths
+set -gx LDFLAGS "-L/usr/local/opt/nss/lib" $LDFLAGS
+set -gx CPPFLAGS "-I/usr/local/opt/nss/include" $CPPFLAGS
+set -gx PKG_CONFIG_PATH "/usr/local/opt/nss/lib/pkgconfig:" $PKG_CONFIG_PATH
