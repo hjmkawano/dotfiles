@@ -37,4 +37,5 @@ set fish_plugins theme git rbenv rails brew bundler gem osx pbcopy better-alias 
 
 set -g theme_powerline_fonts no
 set -g theme_nerd_fonts yes
+set -g theme_display_docker_machine yes
 set -x VIRTUAL_ENV_DISABLE_PROMPT 1
