@@ -1,1 +1,0 @@
-/Users/jimbeam8y/.config/fisherman/pipenv/conf.d/pipenv.fish

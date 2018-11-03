@@ -1,1 +1,0 @@
-/Users/jimbeam8y/.config/fisherman/spin/spin.fish
