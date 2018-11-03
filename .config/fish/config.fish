@@ -10,7 +10,7 @@ if not functions -q fisher
     fish -c fisher
 end
 
-set fish_plugins theme git rbenv rails brew bundler gem osx pbcopy better-alias gi peco z tmux ghq spin fzf
+# set fish_plugins theme git rbenv rails brew bundler gem osx pbcopy better-alias gi peco z tmux ghq spin fzf
 
 # this function may be required
 function fish_title
