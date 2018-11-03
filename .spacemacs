@@ -472,6 +472,7 @@ Put your configuration code here, except for variables that should be set
 before packages are loaded."
   (spacemacs/toggle-mode-line-battery-on)
   (spacemacs/toggle-transparency)
+  (spacemacs/toggle-golden-ratio-on)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
