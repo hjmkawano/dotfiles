@@ -1,8 +1,7 @@
 # emacs ansi-term support
-if test -n "$EMACS"
-  set -x TERM eterm-color
-end
-
+# if test -n "$EMACS"
+  # set -x TERM eterm-color
+# end
 
 if not functions -q fisher
     set -q XDG_CONFIG_HOME; or set XDG_CONFIG_HOME ~/.config
