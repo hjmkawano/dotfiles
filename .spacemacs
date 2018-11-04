@@ -46,8 +46,26 @@ This function should only modify configuration layer settings."
        git
        github
        markdown
-       multiple-cursorsneotree
-       org
+       ;; multiple-cursors
+       ;; neotree
+       (org :variables
+         org-directory "~/Dropbox/notes/"
+         org-agenda-files (list org-directory)
+         org-log-done 'time
+         org-enable-github-support t
+         org-enable-bootstrap-support t
+         org-enable-org-journal-support t
+         org-journal-dir "~/Dropbox/notes/journal/"
+         org-journal-file-format "%Y-%mm-%dd"
+         org-journal-date-format "%A, %B %d %Y"
+         org-journal-time-prefix "* "
+         org-journal-time-format "HH:MM"
+         org-projectile-file "TODOs.org"
+         org-mobile-inbox-for-pull "~/Dropbox/notes/flagged.org"
+         org-mobile-directory "~/Dropbox/アプリ/MobileOrg"
+         org-capture-ical-file (concat org-directory "org-ical.org")
+         org-enable-github-support t
+         )
        (shell :variables
          shell-default-height 30
          shell-default-position 'bottom)
@@ -67,6 +85,24 @@ This function should only modify configuration layer settings."
          )
        japanese
        fzf
+       (deft :variables
+         deft-directory "~/Dropbox/notes"
+         )
+       (dash :variables
+         helm-dash-browser-func 'eww)
+       search-engine
+       emoji
+       web-beautify
+       twitter
+       slack
+       elfeed
+       evernote
+       (python :variables
+         python-enable-yapf-format-on-save t
+         python-sort-imports-on-save t
+         python-fill-column 119
+         )
+       ipython-notebook
        )
 
     ;; List of additional packages that will be installed without being
@@ -200,7 +236,7 @@ It should only modify the values of Spacemacs settings."
     ;; Press `SPC T n' to cycle to the next theme in the list (works great
     ;; with 2 themes variants, one dark and one light)
     dotspacemacs-themes '(
-                           ;; wombat
+                           wombat
                            flatland
                            )
 
@@ -384,7 +420,7 @@ It should only modify the values of Spacemacs settings."
 
     ;; If non-nil, start an Emacs server if one is not already running.
     ;; (default nil)
-    dotspacemacs-enable-server nil
+    dotspacemacs-enable-server t
 
     ;; Set the emacs server socket location.
     ;; If nil, uses whatever the Emacs default is, otherwise a directory path
@@ -482,17 +518,17 @@ before packages are loaded."
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-  (custom-set-variables
-    ;; custom-set-variables was added by Custom.
-    ;; If you edit it by hand, you could mess it up, so be careful.
-    ;; Your init file should contain only one such instance.
-    ;; If there is more than one, they won't work right.
-    '(package-selected-packages
-       '(pangu-spacing avy-migemo migemo yasnippet-snippets xterm-color ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org symon string-inflection spaceline-all-the-icons smeargle shell-pop reveal-in-osx-finder restart-emacs rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file neotree nameless mwim multi-term move-text mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum link-hint launchctl japanese-holidays insert-shebang indent-guide hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fzf fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor-ja evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish diff-hl ddskk counsel-projectile company-statistics company-shell column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
-  (custom-set-faces
-    ;; custom-set-faces was added by Custom.
-    ;; If you edit it by hand, you could mess it up, so be careful.
-    ;; Your init file should contain only one such instance.
-    ;; If there is more than one, they won't work right.
-    '(default ((t (:foreground "#f8f8f8" :background "#26292c")))))
-  )
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(web-beautify twittering-mode slack circe oauth2 proof-general ox-twbs ox-gfm org-journal helm-dash geeknote engine-mode emojify emoji-cheat-sheet-plus elfeed-web elfeed-org elfeed-goodies ace-jump-mode noflet elfeed deft dash-at-point company-emoji company-coq company-math math-symbol-lists yasnippet-snippets yapfify xterm-color ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org symon string-inflection spaceline-all-the-icons smeargle shell-pop reveal-in-osx-finder restart-emacs rainbow-delimiters pyvenv pytest pyenv-mode py-isort popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox overseer osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file ob-ipython neotree nameless mwim multi-term move-text mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum live-py-mode link-hint launchctl japanese-holidays insert-shebang indent-guide importmagic hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fzf fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help elisp-slime-nav ein editorconfig dumb-jump dotenv-mode doom-modeline diminish diff-hl ddskk cython-mode counsel-projectile company-statistics company-shell company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:foreground "#f8f8f8" :background "#26292c")))))
+)
