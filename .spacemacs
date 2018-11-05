@@ -5,7 +5,7 @@
 (defun dotspacemacs/layers ()
   "Layer configuration:
 This function should only modify configuration layer settings."
-  (setq-default
+	(setq-default
     ;; Base distribution to use. This is a layer contained in the directory
     ;; `+distribution'. For now available distributions are `spacemacs-base'
     ;; or `spacemacs'. (default 'spacemacs)
@@ -219,8 +219,12 @@ It should only modify the values of Spacemacs settings."
     ;; `recents' `bookmarks' `projects' `agenda' `todos'.
     ;; List sizes may be nil, in which case
     ;; `spacemacs-buffer-startup-lists-length' takes effect.
-    dotspacemacs-startup-lists '((recents . 5)
-                                  (projects . 7))
+    dotspacemacs-startup-lists '((recents . 1)
+                                  (projects . 0)
+                                  (bookmarks . 0)
+                                  (agenda . 4)
+                                  (todos . 5)
+                                  )
 
     ;; True if the home buffer should respond to resize events. (default t)
     dotspacemacs-startup-buffer-responsive t
@@ -255,7 +259,12 @@ It should only modify the values of Spacemacs settings."
 
     ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
     ;; quickly tweak the mode-line size to make separators look not too crappy.
-    dotspacemacs-default-font '("hack nerd font"
+    dotspacemacs-default-font '(
+																 "Hack Nerd Font"
+                                 ;; "Source Code Pro"
+                                 ;; "Ricty Diminished Discord"
+                                 ;; "Ricty Discord"
+                                 ;; "Ricty Discord for Powerline"
                                  :size 14
                                  :weight normal
                                  :width normal)
@@ -322,7 +331,7 @@ It should only modify the values of Spacemacs settings."
     ;; If non-nil, the paste transient-state is enabled. While enabled, after you
     ;; paste something, pressing `C-j' and `C-k' several times cycles through the
     ;; elements in the `kill-ring'. (default nil)
-    dotspacemacs-enable-paste-transient-state nil
+    dotspacemacs-enable-paste-transient-state t
 
     ;; Which-key delay in seconds. The which-key buffer is the popup listing
     ;; the commands bound to the current keystroke sequence. (default 0.4)
@@ -352,7 +361,7 @@ It should only modify the values of Spacemacs settings."
 
     ;; If non-nil `spacemacs/toggle-fullscreen' will not use native fullscreen.
     ;; Use to disable fullscreen animations in OSX. (default nil)
-    dotspacemacs-fullscreen-use-non-native nil
+    dotspacemacs-fullscreen-use-non-native t
 
     ;; If non-nil the frame is maximized when Emacs starts up.
     ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
@@ -506,10 +515,52 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
   (spacemacs/toggle-mode-line-battery-on)
   (spacemacs/toggle-transparency)
   (spacemacs/toggle-golden-ratio-on)
-  )
+  (spacemacs/toggle-which-key-on)
+  (which-function-mode nil)
+
+  ;; authinfo ファイルの指定
+  (setq nntp-authinfo-file "~/.authinfo.gpg")
+  (setq nnimap-authinfo-file "~/.authinfo.gpg")
+  (setq smtpmail-auth-credentials "~/.authinfo.gpg")
+  ;; 暗号化方式の指定
+  (setq encrypt-file-alist '(("~/.authinfo.gpg" (gpg "AES"))))
+  (setq password-cache-expiry nil)	; パスワードをキャッシュする
+
+
+  (defun my-lisp-load (filename)
+    "Load lisp from FILENAME"
+    (let ((fullname (expand-file-name (concat "private/" filename) user-emacs-directory))
+           lisp)
+      (when (file-readable-p fullname)
+        (with-temp-buffer
+          (progn
+            (insert-file-contents fullname)
+            (setq lisp
+              (condition-case nil
+                (read (current-buffer))
+                (error ()))))))
+      lisp))
+
+  ;; Slack
+  ;;
+  ;; (setq my-slack-team (my-lisp-load "emacs-slack-team"))
+  (setq my-slack-client-id (my-lisp-load "emacs-slack-client-id"))
+  (setq my-slack-client-secret (my-lisp-load "emacs-slack-client-secret"))
+  (setq my-slack-client-token (my-lisp-load "emacs-slack-client-token"))
+
+  (slack-register-team
+    :name (my-lisp-load "emacs-slack-team")
+    :default t
+    :client-id my-slack-client-id
+    :client-secret my-slack-client-secret
+    :token my-slack-client-token
+    :subscribed-channels '(general slackbot))
+
+   )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -524,11 +575,11 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(web-beautify twittering-mode slack circe oauth2 proof-general ox-twbs ox-gfm org-journal helm-dash geeknote engine-mode emojify emoji-cheat-sheet-plus elfeed-web elfeed-org elfeed-goodies ace-jump-mode noflet elfeed deft dash-at-point company-emoji company-coq company-math math-symbol-lists yasnippet-snippets yapfify xterm-color ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org symon string-inflection spaceline-all-the-icons smeargle shell-pop reveal-in-osx-finder restart-emacs rainbow-delimiters pyvenv pytest pyenv-mode py-isort popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox overseer osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file ob-ipython neotree nameless mwim multi-term move-text mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum live-py-mode link-hint launchctl japanese-holidays insert-shebang indent-guide importmagic hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fzf fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help elisp-slime-nav ein editorconfig dumb-jump dotenv-mode doom-modeline diminish diff-hl ddskk cython-mode counsel-projectile company-statistics company-shell company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
+   '(slack helm-core projectile magit git-commit with-editor yasnippet-snippets yapfify xterm-color ws-butler winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill twittering-mode toc-org symon string-inflection spaceline-all-the-icons smeargle shell-pop reveal-in-osx-finder restart-emacs rainbow-delimiters pyvenv pytest pyenv-mode py-isort pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox ox-twbs ox-gfm overseer osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file ob-ipython oauth2 neotree nameless mwim multi-term move-text mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum live-py-mode link-hint launchctl japanese-holidays insert-shebang indent-guide importmagic hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-dash helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fzf fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help engine-mode emojify emoji-cheat-sheet-plus elisp-slime-nav elfeed-web elfeed-org elfeed-goodies ein editorconfig dumb-jump dotenv-mode doom-modeline diminish diff-hl deft ddskk dash-at-point cython-mode counsel-projectile company-statistics company-shell company-emoji company-anaconda column-enforce-mode clean-aindent-mode circe centered-cursor-mode browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:foreground "#f8f8f8" :background "#26292c")))))
+ )
 )
