@@ -97,6 +97,7 @@ This function should only modify configuration layer settings."
        slack
        elfeed
        evernote
+       ranger
        (python :variables
          python-enable-yapf-format-on-save t
          python-sort-imports-on-save t
@@ -251,7 +252,8 @@ It should only modify the values of Spacemacs settings."
     ;; refer to the DOCUMENTATION.org for more info on how to create your own
     ;; spaceline theme. Value can be a symbol or list with additional properties.
     ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-    dotspacemacs-mode-line-theme '(all-the-icons :separator slant)
+    ;; dotspacemacs-mode-line-theme '(all-the-icons :separator slant :separator-scale 1.4)
+    dotspacemacs-mode-line-theme '(doom)
 
     ;; If non-nil the cursor color matches the state color in GUI Emacs.
     ;; (default t)
@@ -267,7 +269,9 @@ It should only modify the values of Spacemacs settings."
                                  ;; "Ricty Discord for Powerline"
                                  :size 14
                                  :weight normal
-                                 :width normal)
+                                 :width normal
+                                 ;; :powerline-scale 1.4
+                                 )
 
     ;; The leader key (default "SPC")
     dotspacemacs-leader-key "SPC"
@@ -515,12 +519,12 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+  (setq ns-use-srgb-colorspace nil)
 
   (spacemacs/toggle-mode-line-battery-on)
   (spacemacs/toggle-transparency)
   (spacemacs/toggle-golden-ratio-on)
   (spacemacs/toggle-which-key-on)
-  (which-function-mode nil)
 
   ;; authinfo ファイルの指定
   (setq nntp-authinfo-file "~/.authinfo.gpg")
@@ -560,7 +564,18 @@ before packages are loaded."
     :token my-slack-client-token
     :subscribed-channels '(general slackbot))
 
-   )
+  (spacemacs|define-custom-layout "@Slack"
+    :binding "s"
+    :body
+    (call-interactively 'slack-start)
+    )
+
+  (spacemacs|define-custom-layout "@elfeed"
+    :binding "l"
+    :body
+    (call-interactively 'elfeed)
+    )
+ )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -575,7 +590,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(slack helm-core projectile magit git-commit with-editor yasnippet-snippets yapfify xterm-color ws-butler winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill twittering-mode toc-org symon string-inflection spaceline-all-the-icons smeargle shell-pop reveal-in-osx-finder restart-emacs rainbow-delimiters pyvenv pytest pyenv-mode py-isort pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox ox-twbs ox-gfm overseer osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file ob-ipython oauth2 neotree nameless mwim multi-term move-text mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum live-py-mode link-hint launchctl japanese-holidays insert-shebang indent-guide importmagic hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-dash helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fzf fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help engine-mode emojify emoji-cheat-sheet-plus elisp-slime-nav elfeed-web elfeed-org elfeed-goodies ein editorconfig dumb-jump dotenv-mode doom-modeline diminish diff-hl deft ddskk dash-at-point cython-mode counsel-projectile company-statistics company-shell company-emoji company-anaconda column-enforce-mode clean-aindent-mode circe centered-cursor-mode browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
+   '(ranger yasnippet-snippets yapfify xterm-color ws-butler winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill twittering-mode toc-org symon string-inflection spaceline-all-the-icons smeargle slack shell-pop reveal-in-osx-finder restart-emacs rainbow-delimiters pyvenv pytest pyenv-mode py-isort pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox ox-twbs ox-gfm overseer osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file ob-ipython neotree nameless mwim multi-term move-text mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum live-py-mode link-hint launchctl japanese-holidays insert-shebang indent-guide importmagic hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-dash helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fzf fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help engine-mode emoji-cheat-sheet-plus elisp-slime-nav elfeed-web elfeed-org elfeed-goodies ein editorconfig dumb-jump dotenv-mode doom-modeline diminish diff-hl deft ddskk dash-at-point cython-mode counsel-projectile company-statistics company-shell company-emoji company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
