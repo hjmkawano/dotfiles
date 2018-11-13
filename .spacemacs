@@ -1,4 +1,4 @@
-;; -*- mode: emacs-lisp; lexical-binding: t -*-
+; -*- mode: emacs-lisp; lexical-binding: t -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
 
@@ -56,7 +56,7 @@ This function should only modify configuration layer settings."
          org-enable-bootstrap-support t
          org-enable-org-journal-support t
          org-journal-dir "~/Dropbox/notes/journal/"
-         org-journal-file-format "%Y-%mm-%dd"
+         org-journal-file-format "%Y-%m-%d"
          org-journal-date-format "%A, %B %d %Y"
          org-journal-time-prefix "* "
          org-journal-time-format "HH:MM"
@@ -93,17 +93,41 @@ This function should only modify configuration layer settings."
        search-engine
        emoji
        web-beautify
+       (mu4e :variables
+         mu4e-use-maildirs-extension t
+         mu4e-enable-async-operations t
+         mu4e-enable-notifications t
+         mu4e-enable-mode-line t
+         mu4e-spacemacs-layout-name "@Mu4e"
+         mu4e-spacemacs-layout-binding "m"
+         mu4e-spacemacs-kill-layout-on-exit t)
+       (elfeed :variables
+         rmh-elfeed-org-files (list
+                                "~/Dropbox/notes/elfeed.org"
+                                )
+         rmh-elfeed-org-auto-ignore-invalid-feeds t
+         )
+       pdf
+       epub
        twitter
        slack
-       elfeed
        evernote
+       (wakatime :variables
+         wakatime-api-key (my-lisp-load "wakatime")
+         )
        ranger
+       (treemacs :variables
+         treemacs-use-follow-mode t
+         treemacs-use-filewatch-mode t
+         treemacs-use-collapsed-directories 3)
+       csv
        (python :variables
          python-enable-yapf-format-on-save t
          python-sort-imports-on-save t
          python-fill-column 119
          )
        ipython-notebook
+       javascript
        )
 
     ;; List of additional packages that will be installed without being
@@ -113,7 +137,10 @@ This function should only modify configuration layer settings."
     ;; To use a local version of a package, use the `:location' property:
     ;; '(your-package :location "~/path/to/your-package/")
     ;; Also include the dependencies as they will not be resolved automatically.
-    dotspacemacs-additional-packages '()
+    dotspacemacs-additional-packages
+    '(
+       browse-url-dwim
+       )
 
     ;; A list of packages that cannot be updated.
     dotspacemacs-frozen-packages '()
@@ -201,7 +228,7 @@ It should only modify the values of Spacemacs settings."
     ;; with `:variables' keyword (similar to layers). Check the editing styles
     ;; section of the documentation for details on available variables.
     ;; (default 'vim)
-    dotspacemacs-editing-style 'vim
+    dotspacemacs-editing-style 'hybrid
 
     ;; If non-nil output loading progress in `*Messages*' buffer. (default nil)
     dotspacemacs-verbose-loading nil
@@ -220,8 +247,8 @@ It should only modify the values of Spacemacs settings."
     ;; `recents' `bookmarks' `projects' `agenda' `todos'.
     ;; List sizes may be nil, in which case
     ;; `spacemacs-buffer-startup-lists-length' takes effect.
-    dotspacemacs-startup-lists '((recents . 1)
-                                  (projects . 0)
+    dotspacemacs-startup-lists '((recents . 0)
+                                  (projects . 1)
                                   (bookmarks . 0)
                                   (agenda . 4)
                                   (todos . 5)
@@ -262,15 +289,12 @@ It should only modify the values of Spacemacs settings."
     ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
     ;; quickly tweak the mode-line size to make separators look not too crappy.
     dotspacemacs-default-font '(
-																 "Hack Nerd Font"
                                  ;; "Source Code Pro"
-                                 ;; "Ricty Diminished Discord"
-                                 ;; "Ricty Discord"
-                                 ;; "Ricty Discord for Powerline"
+				                         ;; "Hack Nerd Font"
+                                 "Ricty Diminished Discord"
                                  :size 14
-                                 :weight normal
-                                 :width normal
-                                 ;; :powerline-scale 1.4
+                                 ;; :weight normal
+                                 ;; :width normal
                                  )
 
     ;; The leader key (default "SPC")
@@ -375,12 +399,12 @@ It should only modify the values of Spacemacs settings."
     ;; A value from the range (0..100), in increasing opacity, which describes
     ;; the transparency level of a frame when it's active or selected.
     ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-    dotspacemacs-active-transparency 70
+    dotspacemacs-active-transparency 80
 
     ;; A value from the range (0..100), in increasing opacity, which describes
     ;; the transparency level of a frame when it's inactive or deselected.
     ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-    dotspacemacs-inactive-transparency 40
+    dotspacemacs-inactive-transparency 10
 
     ;; If non-nil show the titles of transient states. (default t)
     dotspacemacs-show-transient-state-title t
@@ -468,7 +492,7 @@ It should only modify the values of Spacemacs settings."
     ;; %z - mnemonics of buffer, terminal, and keyboard coding systems
     ;; %Z - like %z, but including the end-of-line format
     ;; (default "%I@%S")
-    dotspacemacs-frame-title-format "%a @ %t on %I"
+    dotspacemacs-frame-title-format "%a @ in %t"
 
     ;; Format specification for setting the icon title format
     ;; (default nil - same as frame-title-format)
@@ -479,7 +503,7 @@ It should only modify the values of Spacemacs settings."
     ;; `trailing' to delete only the whitespace at end of lines, `changed' to
     ;; delete only whitespace for changed lines or `nil' to disable cleanup.
     ;; (default nil)
-    dotspacemacs-whitespace-cleanup nil
+    dotspacemacs-whitespace-cleanup 'trailing
 
     ;; Either nil or a number of seconds. If non-nil zone out after the specified
     ;; number of seconds. (default nil)
@@ -504,6 +528,21 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
+
+  (defun my-lisp-load (filename)
+    "Load lisp from FILENAME"
+    (let ((fullname (expand-file-name (concat "private/" filename) user-emacs-directory))
+           lisp)
+      (when (file-readable-p fullname)
+        (with-temp-buffer
+          (progn
+            (insert-file-contents fullname)
+            (setq lisp
+              (condition-case nil
+                (read (current-buffer))
+                (error ()))))))
+      lisp))
+
   )
 
 (defun dotspacemacs/user-load ()
@@ -511,6 +550,8 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
 This function is called only while dumping Spacemacs configuration. You can
 `require' or `load' the libraries of your choice that will be included in the
 dump."
+  (require 'ace-link)
+  (require 'browse-url-dwim)
   )
 
 (defun dotspacemacs/user-config ()
@@ -533,21 +574,6 @@ before packages are loaded."
   ;; 暗号化方式の指定
   (setq encrypt-file-alist '(("~/.authinfo.gpg" (gpg "AES"))))
   (setq password-cache-expiry nil)	; パスワードをキャッシュする
-
-
-  (defun my-lisp-load (filename)
-    "Load lisp from FILENAME"
-    (let ((fullname (expand-file-name (concat "private/" filename) user-emacs-directory))
-           lisp)
-      (when (file-readable-p fullname)
-        (with-temp-buffer
-          (progn
-            (insert-file-contents fullname)
-            (setq lisp
-              (condition-case nil
-                (read (current-buffer))
-                (error ()))))))
-      lisp))
 
   ;; Slack
   ;;
@@ -575,6 +601,104 @@ before packages are loaded."
     :body
     (call-interactively 'elfeed)
     )
+
+  (spacemacs|define-custom-layout "@twitter"
+    :binding "t"
+    :body
+    (call-interactively 'twit)
+    )
+
+   (eval-after-load "eww"
+    '(progn
+       ;; 背景色の設定
+       (defvar eww-disable-colorize t)
+       (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
+         (unless eww-disable-colorize
+           (funcall orig start end fg)))
+       (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
+       (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
+       (defun eww-disable-color ()
+         "eww で文字色を反映させない"
+         (interactive)
+         (setq-local eww-disable-colorize t)
+         (eww-reload))
+       (defun eww-enable-color ()
+         "eww で文字色を反映させる"
+         (interactive)
+         (setq-local eww-disable-colorize nil)
+         (eww-reload))
+
+       ;; eww-list-buffers (S にキーバインドされている) 生成した eww を一覧で表示できる.
+       (defun eww-mode-hook--rename-buffer ()
+         "Rename eww browser's buffer so sites open in new page."
+         (rename-buffer "eww" t))
+       (add-hook 'eww-mode-hook 'eww-mode-hook--rename-buffer)
+
+       ;; 現在の url を eww で開く
+       (defun browse-url-with-eww ()
+         (interactive)
+         (let ((url-region (bounds-of-thing-at-point 'url)))
+           ;; url
+           (if url-region
+             (eww-browse-url (buffer-substring-no-properties (car url-region)
+                               (cdr url-region))))
+           ;; org-link
+           (setq browse-url-browser-function 'eww-browse-url)
+           (org-open-at-point)))
+
+       ;; 画像は遅いので表示させない
+       (defun eww-disable-images ()
+         "eww で画像表示させない"
+         (interactive)
+         (setq-local shr-put-image-function 'shr-put-image-alt)
+         (eww-reload))
+       (defun eww-enable-images ()
+         "eww で画像表示させる"
+         (interactive)
+         (setq-local shr-put-image-function 'shr-put-image)
+         (eww-reload))
+       (defun shr-put-image-alt (spec alt &optional flags)
+         (insert alt))
+       ;; はじめから非表示
+       (defun eww-mode-hook--disable-image ()
+         (setq-local shr-put-image-function 'shr-put-image-alt))
+       (add-hook 'eww-mode-hook 'eww-mode-hook--disable-image)
+
+       (setq eww-search-prefix "https://www.google.co.jp/search?ie=UTF-8&oe=UTF-8&num=50&filter=1&gbv=1&q=")
+       ;; (setq eww-search-prefix "https://duckduckgo.com/html/?kl=jp-jp&k1=-1&kc=1&kf=1&q=")
+
+       (define-key eww-mode-map "r" 'eww-reload)
+       (define-key eww-mode-map "c 0" 'eww-copy-page-url)
+       (define-key eww-mode-map "p" 'scroll-down)
+       (define-key eww-mode-map "n" 'scroll-up)
+
+       (ace-link-setup-default)
+
+       ;; make emacs always use its own browser for opening URL links
+       (setq browse-url-browser-function 'eww-browse-url)
+
+       )
+     ) ;; end of eww
+
+  (browse-url-dwim-mode t)
+
+  ;; search engine layer
+  (push '(custom
+           :name "Duck Dock Go ja"
+           :url "https://duckduckgo.com/html/?kl=jp-jp&k1=-1&kc=1&kf=1&q=%s")
+    search-engine-alist)
+
+  ;; mu4e
+  (with-eval-after-load 'mu4e-alert
+    ;; Enable Desktop notifications
+    ;; (mu4e-alert-set-default-style 'notifications)) ; For linux
+    ;; (mu4e-alert-set-default-style 'libnotify))  ; Alternative for linux
+    ;; (mu4e-alert-set-default-style 'notifier))   ; For Mac OSX (through the terminal notifier app)
+    (mu4e-alert-set-default-style 'growl))      ; Alternative for Mac OSX
+
+  ;; wakatime
+  (global-wakatime-mode t)
+
  )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -590,7 +714,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(ranger yasnippet-snippets yapfify xterm-color ws-butler winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill twittering-mode toc-org symon string-inflection spaceline-all-the-icons smeargle slack shell-pop reveal-in-osx-finder restart-emacs rainbow-delimiters pyvenv pytest pyenv-mode py-isort pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox ox-twbs ox-gfm overseer osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file ob-ipython neotree nameless mwim multi-term move-text mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum live-py-mode link-hint launchctl japanese-holidays insert-shebang indent-guide importmagic hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gitignore helm-git-grep helm-flx helm-descbinds helm-dash helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fzf fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help engine-mode emoji-cheat-sheet-plus elisp-slime-nav elfeed-web elfeed-org elfeed-goodies ein editorconfig dumb-jump dotenv-mode doom-modeline diminish diff-hl deft ddskk dash-at-point cython-mode counsel-projectile company-statistics company-shell company-emoji company-anaconda column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
+   '(slack mwim helm-make evil-matchit ein doom-modeline ace-link counsel ivy helm helm-core ghub+ markdown-mode magit git-commit ghub use-package org-plus-contrib hydra yasnippet-snippets yapfify xterm-color ws-butler with-editor winum which-key websocket web-beautify wakatime-mode volatile-highlights vi-tilde-fringe uuidgen unfill twittering-mode treepy treemacs-projectile treemacs-evil toc-org symon swiper string-inflection spaceline-all-the-icons smeargle shrink-path shell-pop reveal-in-osx-finder restart-emacs request-deferred ranger rainbow-delimiters pyvenv pytest pyenv-mode py-isort prettier-js pippel pipenv pip-requirements persp-mode pdf-tools pcre2el password-generator paradox ox-twbs ox-gfm overseer osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file ob-ipython oauth2 nov nameless multi-term mu4e-maildirs-extension mu4e-alert move-text mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint launchctl json-navigator json-mode js2-refactor js-doc japanese-holidays insert-shebang indent-guide importmagic hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mu helm-mode-manager helm-gitignore helm-git-grep helm-flx helm-descbinds helm-dash helm-company helm-c-yasnippet helm-ag graphql google-translate golden-ratio gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fzf fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help engine-mode emojify emoji-cheat-sheet-plus elisp-slime-nav elfeed-web elfeed-org elfeed-goodies eldoc-eval editorconfig dumb-jump dotenv-mode diminish diff-hl deft ddskk dash-at-point cython-mode csv-mode counsel-projectile company-tern company-statistics company-shell company-emoji company-anaconda column-enforce-mode clean-aindent-mode circe centered-cursor-mode browse-url-dwim browse-at-remote bind-key auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apiwrap aggressive-indent ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
