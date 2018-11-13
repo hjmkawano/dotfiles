@@ -97,3 +97,8 @@
 
 ;; カタカナを変換候補に入れる
 (setq skk-search-katakana 'jisx0201-kana)
+
+;; AZIKにする
+;; (require 'skk-azik)
+;; (setq skk-use-azik t)
+;; (setq skk-azik-keyboard-type 'en)
