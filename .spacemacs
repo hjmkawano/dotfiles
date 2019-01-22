@@ -1,4 +1,4 @@
-; -*- mode: emacs-lisp; lexical-binding: t -*-
+;; -*- mode: emacs-lisp; lexical-binding: t -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
 
@@ -33,7 +33,8 @@ This function should only modify configuration layer settings."
 
     ;; List of configuration layers to load.
     dotspacemacs-configuration-layers
-    '(shell-scripts
+    '(html
+       shell-scripts
        ;; ----------------------------------------------------------------
        ;; Example of useful layers you may want to use right away.
        ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
@@ -42,6 +43,7 @@ This function should only modify configuration layer settings."
        helm
        auto-completion
        better-defaults
+       themes-megapack
        emacs-lisp
        git
        github
@@ -55,6 +57,7 @@ This function should only modify configuration layer settings."
          org-enable-github-support t
          org-enable-bootstrap-support t
          org-enable-org-journal-support t
+         org-enable-reveal-js-support t
          org-journal-dir "~/Dropbox/notes/journal/"
          org-journal-file-format "%Y-%m-%d"
          org-journal-date-format "%A, %B %d %Y"
@@ -64,7 +67,6 @@ This function should only modify configuration layer settings."
          org-mobile-inbox-for-pull "~/Dropbox/notes/flagged.org"
          org-mobile-directory "~/Dropbox/アプリ/MobileOrg"
          org-capture-ical-file (concat org-directory "org-ical.org")
-         org-enable-github-support t
          )
        (shell :variables
          shell-default-height 30
@@ -128,6 +130,7 @@ This function should only modify configuration layer settings."
          )
        ipython-notebook
        javascript
+       bibtex
        )
 
     ;; List of additional packages that will be installed without being
@@ -140,6 +143,8 @@ This function should only modify configuration layer settings."
     dotspacemacs-additional-packages
     '(
        browse-url-dwim
+       helm-ghq
+       helm-eww
        )
 
     ;; A list of packages that cannot be updated.
@@ -268,8 +273,9 @@ It should only modify the values of Spacemacs settings."
     ;; Press `SPC T n' to cycle to the next theme in the list (works great
     ;; with 2 themes variants, one dark and one light)
     dotspacemacs-themes '(
-                           wombat
+                           brin
                            flatland
+                           wombat
                            )
 
     ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
@@ -552,6 +558,8 @@ This function is called only while dumping Spacemacs configuration. You can
 dump."
   (require 'ace-link)
   (require 'browse-url-dwim)
+  (require 'helm-eww)
+  (require 'helm-ghq)
   )
 
 (defun dotspacemacs/user-config ()
@@ -628,12 +636,6 @@ before packages are loaded."
          (setq-local eww-disable-colorize nil)
          (eww-reload))
 
-       ;; eww-list-buffers (S にキーバインドされている) 生成した eww を一覧で表示できる.
-       (defun eww-mode-hook--rename-buffer ()
-         "Rename eww browser's buffer so sites open in new page."
-         (rename-buffer "eww" t))
-       (add-hook 'eww-mode-hook 'eww-mode-hook--rename-buffer)
-
        ;; 現在の url を eww で開く
        (defun browse-url-with-eww ()
          (interactive)
@@ -664,8 +666,7 @@ before packages are loaded."
          (setq-local shr-put-image-function 'shr-put-image-alt))
        (add-hook 'eww-mode-hook 'eww-mode-hook--disable-image)
 
-       (setq eww-search-prefix "https://www.google.co.jp/search?ie=UTF-8&oe=UTF-8&num=50&filter=1&gbv=1&q=")
-       ;; (setq eww-search-prefix "https://duckduckgo.com/html/?kl=jp-jp&k1=-1&kc=1&kf=1&q=")
+       ;; (setq eww-search-prefix "https://www.google.co.jp/search?ie=UTF-8&oe=UTF-8&num=50&filter=1&gbv=1&q=")
 
        (define-key eww-mode-map "r" 'eww-reload)
        (define-key eww-mode-map "c 0" 'eww-copy-page-url)
@@ -682,11 +683,15 @@ before packages are loaded."
 
   (browse-url-dwim-mode t)
 
-  ;; search engine layer
-  (push '(custom
-           :name "Duck Dock Go ja"
-           :url "https://duckduckgo.com/html/?kl=jp-jp&k1=-1&kc=1&kf=1&q=%s")
-    search-engine-alist)
+  (setq helm-for-files-preferred-list
+    '(helm-source-buffers-list
+       helm-source-recentf
+       helm-source-bookmarks
+       helm-source-file-cache
+       helm-source-files-in-current-dir
+       helm-source-eww-history
+       helm-source-locate))
+
 
   ;; mu4e
   (with-eval-after-load 'mu4e-alert
@@ -698,6 +703,14 @@ before packages are loaded."
 
   ;; wakatime
   (global-wakatime-mode t)
+
+  (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
+  ;; "#DCDCCC" : pdf-view-midnight-colors
+
+  (setq spaceline-org-clock-p t)
+  (with-eval-after-load 'org
+    ;; ....
+    )
 
  )
 
@@ -714,7 +727,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(slack mwim helm-make evil-matchit ein doom-modeline ace-link counsel ivy helm helm-core ghub+ markdown-mode magit git-commit ghub use-package org-plus-contrib hydra yasnippet-snippets yapfify xterm-color ws-butler with-editor winum which-key websocket web-beautify wakatime-mode volatile-highlights vi-tilde-fringe uuidgen unfill twittering-mode treepy treemacs-projectile treemacs-evil toc-org symon swiper string-inflection spaceline-all-the-icons smeargle shrink-path shell-pop reveal-in-osx-finder restart-emacs request-deferred ranger rainbow-delimiters pyvenv pytest pyenv-mode py-isort prettier-js pippel pipenv pip-requirements persp-mode pdf-tools pcre2el password-generator paradox ox-twbs ox-gfm overseer osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file ob-ipython oauth2 nov nameless multi-term mu4e-maildirs-extension mu4e-alert move-text mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode live-py-mode link-hint launchctl json-navigator json-mode js2-refactor js-doc japanese-holidays insert-shebang indent-guide importmagic hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mu helm-mode-manager helm-gitignore helm-git-grep helm-flx helm-descbinds helm-dash helm-company helm-c-yasnippet helm-ag graphql google-translate golden-ratio gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote fzf fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatland-theme fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help engine-mode emojify emoji-cheat-sheet-plus elisp-slime-nav elfeed-web elfeed-org elfeed-goodies eldoc-eval editorconfig dumb-jump dotenv-mode diminish diff-hl deft ddskk dash-at-point cython-mode csv-mode counsel-projectile company-tern company-statistics company-shell company-emoji company-anaconda column-enforce-mode clean-aindent-mode circe centered-cursor-mode browse-url-dwim browse-at-remote bind-key auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apiwrap aggressive-indent ace-jump-helm-line ac-ispell)))
+   '(treemacs-projectile treemacs-evil treemacs tao-theme slack pyvenv org-ref pdf-tools org-journal org-brain magithub ghub kaolin-themes eyebrowse evil-nerd-commenter evil-matchit eshell-prompt-extras engine-mode ein editorconfig dumb-jump dracula-theme doom-modeline eldoc-eval deft ddskk counsel-projectile counsel ivy color-theme-sanityinc-tomorrow auto-compile apropospriate-theme aggressive-indent smartparens flycheck flyspell-correct company helm helm-core markdown-mode projectile magit git-commit spaceline powerline evil goto-chg async org-plus-contrib zenburn-theme zen-and-art-theme yasnippet-snippets yapfify xterm-color ws-butler writeroom-mode with-editor winum white-sand-theme which-key websocket web-mode web-beautify wakatime-mode volatile-highlights vi-tilde-fringe uuidgen use-package unfill undo-tree underwater-theme ujelly-theme twittering-mode twilight-theme twilight-bright-theme twilight-anti-bright-theme treepy toxi-theme toc-org tangotango-theme tango-plus-theme tango-2-theme tagedit tablist symon swiper sunny-day-theme sublime-themes subatomic256-theme subatomic-theme string-inflection spaceline-all-the-icons spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shrink-path shell-pop seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restart-emacs rebecca-theme ranger rainbow-delimiters railscasts-theme pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme prettier-js planet-theme pippel pipenv pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme pfuture persp-mode pcre2el password-generator paradox packed ox-twbs ox-reveal ox-gfm overseer osx-trash osx-dictionary orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-ipython oauth2 nov noctilux-theme naquadah-theme nameless mwim mustang-theme multi-term mu4e-maildirs-extension mu4e-alert move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-svn magit-gitflow magit-gh-pulls madhat2r-theme macrostep lush-theme lorem-ipsum livid-mode live-py-mode link-hint light-soap-theme launchctl key-chord json-navigator json-mode js2-refactor js-doc jbeans-theme jazz-theme japanese-holidays ir-black-theme insert-shebang inkpot-theme indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mu helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-bibtex helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme graphql grandshell-theme gotham-theme google-translate golden-ratio gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist ghub+ gh-md geeknote gandalf-theme fzf fuzzy font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator farmhouse-theme fancy-battery eziam-theme expand-region exotica-theme evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z esh-help emojify emoji-cheat-sheet-plus emmet-mode elisp-slime-nav elfeed-web elfeed-org elfeed-goodies dotenv-mode doom-themes django-theme diminish diff-hl dash-at-point darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme csv-mode company-web company-tern company-statistics company-shell company-emoji company-anaconda column-enforce-mode color-theme-sanityinc-solarized clues-theme clean-aindent-mode circe cherry-blossom-theme centered-cursor-mode cdb ccc busybee-theme bubbleberry-theme browse-url-dwim browse-at-remote birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme ace-window ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
