@@ -720,7 +720,7 @@ before packages are loaded."
   ;; wakatime
   (global-wakatime-mode)
 
-  (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
+  ;; (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
   ;; "#DCDCCC" : pdf-view-midnight-colors
 
   (setq spaceline-org-clock-p t)
@@ -737,6 +737,7 @@ before packages are loaded."
           (require 'fish-completion nil t))
     (global-fish-completion-mode))
 
+  ;; MPDel
   (require 'mpdel)
   (mpdel-mode)
 
