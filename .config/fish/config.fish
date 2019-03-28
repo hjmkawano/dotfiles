@@ -27,11 +27,11 @@ set -x PATH $HOME"/.local/bin" $PATH
 set -x PATH $HOME"/.yubikey/bin" $PATH
 set -x PATH $GOPATH $PATH
 set -x PATH "/usr/local/opt/coreutils/libexec/gnubin" $PATH
-set -x PATH $HOME/".nodebrew/node/v9.11.1/bin" $PATH
+set -x PATH $HOME/".nodebrew/current/bin" $PATH
 
 set -x MANPATH "/usr/local/opt/coreutils/libexec/gnuman" $MANPATH
 
-set -U GHQ_SELECTOR fzf
+set -x GHQ_SELECTOR fzf
 
 set -gx FZF_DEFAULT_COMMAND 'ag -g ""'
 set -gx FZF_DEFAULT_OPTS '--inline-info --height 50% --border --margin=1,2'
@@ -41,6 +41,7 @@ set -U FZF_LEGACY_KEYBINDINGS 0
 
 set -x PATH $HOME"/.pyenv/shims" $PATH
 status --is-interactive; and . (pyenv init -|psub)
+status --is-interactive; and . (rbenv init -|psub)
 
 set -gx LDFLAGS "-L/usr/local/opt/imagemagick@6/lib -L/usr/local/opt/nss/li -L/usr/local/opt/zlib/lib"
 set -gx CPPFLAGS "-I/usr/local/opt/imagemagick@6/includ -I/usr/local/opt/nss/includ -I/usr/local/opt/zlib/include"
@@ -49,6 +50,7 @@ set -x PKG_CONFIG_PATH "/usr/local/opt/imagemagick@6/lib/pkgconfig:/usr/local/op
 set -g fish_user_paths "/usr/local/opt/nss/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/imagemagick@6/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/sqlite/bin" $fish_user_paths
+set -g fish_user_paths "/usr/local/texlive/2018/bin/x86_64-darwin" $fish_user_paths
 
 set -g theme_powerline_fonts no
 set -g theme_nerd_fonts yes
