@@ -16,10 +16,10 @@ function fish_title
   true
 end
 
-alias git hub
-alias play-my-rock-list 'mpv --no-video --shuffle "https://www.youtube.com/playlist?list=PLvwAzdceyZtKzPv_EswzoRO0w1XFCW1m3"'
-alias play-my-band-maid-list 'mpv --no-video --shuffle "https://www.youtube.com/playlist?list=PLvwAzdceyZtJXQXePGfYchiEUDkZLLjhr"'
-alias parrot 'docker run -ti --network bridge parrotsec/parrot'
+# alias git hub
+# alias play-my-rock-list 'mpv --no-video --shuffle "https://www.youtube.com/playlist?list=PLvwAzdceyZtKzPv_EswzoRO0w1XFCW1m3"'
+# alias play-my-band-maid-list 'mpv --no-video --shuffle "https://www.youtube.com/playlist?list=PLvwAzdceyZtJXQXePGfYchiEUDkZLLjhr"'
+# alias parrot 'docker run -ti --network bridge parrotsec/parrot'
 
 
 set -x GOPATH $HOME
@@ -40,8 +40,8 @@ set -gx FZF_TMUX_HEIGHT 50%
 set -U FZF_LEGACY_KEYBINDINGS 0
 
 set -x PATH $HOME"/.pyenv/shims" $PATH
-status --is-interactive; and . (pyenv init -|psub)
-status --is-interactive; and . (rbenv init -|psub)
+# status --is-interactive; and . (pyenv init -|psub)
+# status --is-interactive; and . (rbenv init -|psub)
 
 set -gx LDFLAGS "-L/usr/local/opt/imagemagick@6/lib -L/usr/local/opt/nss/li -L/usr/local/opt/zlib/lib"
 set -gx CPPFLAGS "-I/usr/local/opt/imagemagick@6/includ -I/usr/local/opt/nss/includ -I/usr/local/opt/zlib/include"
