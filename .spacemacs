@@ -33,20 +33,11 @@ This function should only modify configuration layer settings."
 
     ;; List of configuration layers to load.
     dotspacemacs-configuration-layers
-    '(php
-       html
-       shell-scripts
-       ;; ----------------------------------------------------------------
-       ;; Example of useful layers you may want to use right away.
-       ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
-       ;; `M-m f e R' (Emacs style) to install them.
-       ;; ----------------------------------------------------------------
+    '(
+       better-defaults
+       auto-completion
        ;; helm
        ivy
-       auto-completion
-       better-defaults
-       themes-megapack
-       emacs-lisp
        git
        github
        markdown
@@ -75,8 +66,11 @@ This function should only modify configuration layer settings."
        spell-checking
        syntax-checking
        version-control
+       php
+       html
+       emacs-lisp
+       shell-scripts
        ;;
-       better-defaults
        (osx :variables
          osx-command-as       'meta
          osx-option-as        'alt
@@ -87,7 +81,7 @@ This function should only modify configuration layer settings."
          osx-right-control-as 'left
          )
        japanese
-       fzf
+       ;; fzf
        (deft :variables
          deft-directory "~/Dropbox/notes"
          )
@@ -96,14 +90,14 @@ This function should only modify configuration layer settings."
        search-engine
        emoji
        web-beautify
-       (mu4e :variables
-         mu4e-use-maildirs-extension t
-         mu4e-enable-async-operations t
-         mu4e-enable-notifications t
-         mu4e-enable-mode-line t
-         mu4e-spacemacs-layout-name "@Mu4e"
-         mu4e-spacemacs-layout-binding "m"
-         mu4e-spacemacs-kill-layout-on-exit t)
+       ;; (mu4e :variables
+       ;;   mu4e-use-maildirs-extension t
+       ;;   mu4e-enable-async-operations t
+       ;;   mu4e-enable-notifications t
+       ;;   mu4e-enable-mode-line t
+       ;;   mu4e-spacemacs-layout-name "@Mu4e"
+       ;;   mu4e-spacemacs-layout-binding "m"
+       ;;   mu4e-spacemacs-kill-layout-on-exit t)
        (elfeed :variables
          rmh-elfeed-org-files (list
                                 "~/Dropbox/notes/elfeed.org"
@@ -113,12 +107,9 @@ This function should only modify configuration layer settings."
        pdf
        epub
        twitter
-       slack
+       ;; slack
        evernote
-       (wakatime :variables
-         wakatime-api-key (my-lisp-load "wakatime")
-         )
-       ranger
+       ;; ranger
        (treemacs :variables
          treemacs-use-follow-mode t
          treemacs-use-filewatch-mode t
@@ -159,7 +150,6 @@ This function should only modify configuration layer settings."
        company-box
        fish-completion
        mpdel
-       ivy-posframe
        )
 
     ;; A list of packages that cannot be updated.
@@ -575,8 +565,6 @@ This function is called only while dumping Spacemacs configuration. You can
 dump."
   (require 'ace-link)
   (require 'browse-url-dwim)
-  ;; (require 'helm-eww)
-  ;; (require 'helm-ghq)
   )
 
 (defun dotspacemacs/user-config ()
@@ -585,7 +573,8 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
-  (setq ns-use-srgb-colorspace nil)
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+  (add-to-list 'default-frame-alist '(ns-appearance . dark))
 
   (spacemacs/toggle-mode-line-battery-on)
   (spacemacs/toggle-transparency)
@@ -599,21 +588,6 @@ before packages are loaded."
   ;; 暗号化方式の指定
   (setq encrypt-file-alist '(("~/.authinfo.gpg" (gpg "AES"))))
   (setq password-cache-expiry nil)	; パスワードをキャッシュする
-
-  ;; Slack
-  ;;
-  ;; (setq my-slack-team (my-lisp-load "emacs-slack-team"))
-  (setq my-slack-client-id (my-lisp-load "emacs-slack-client-id"))
-  (setq my-slack-client-secret (my-lisp-load "emacs-slack-client-secret"))
-  (setq my-slack-client-token (my-lisp-load "emacs-slack-client-token"))
-
-  (slack-register-team
-    :name (my-lisp-load "emacs-slack-team")
-    :default t
-    :client-id my-slack-client-id
-    :client-secret my-slack-client-secret
-    :token my-slack-client-token
-    :subscribed-channels '(general slackbot))
 
   (spacemacs|define-custom-layout "@Slack"
     :binding "s"
@@ -700,14 +674,6 @@ before packages are loaded."
 
   (browse-url-dwim-mode t)
 
-  ;; (setq helm-for-files-preferred-list
-  ;;   '(helm-source-buffers-list
-  ;;      helm-source-recentf
-  ;;      helm-source-bookmarks
-  ;;      helm-source-file-cache
-  ;;      helm-source-files-in-current-dir
-  ;;      helm-source-eww-history
-  ;;      helm-source-locate))
 
   ;; mu4e
   (with-eval-after-load 'mu4e-alert
@@ -718,7 +684,7 @@ before packages are loaded."
     (mu4e-alert-set-default-style 'growl))      ; Alternative for Mac OSX
 
   ;; wakatime
-  (global-wakatime-mode)
+  ;; (global-wakatime-mode)
 
   ;; (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
   ;; "#DCDCCC" : pdf-view-midnight-colors
@@ -741,37 +707,7 @@ before packages are loaded."
   (require 'mpdel)
   (mpdel-mode)
 
-  ;; ivy-posframe
-  (require 'ivy-posframe)
-  ;; (setq ivy-display-function #'ivy-posframe-display)
-  (setq ivy-display-function #'ivy-posframe-display-at-frame-center)
-  ;; (setq ivy-display-function #'ivy-posframe-display-at-window-center)
-  ;; (setq ivy-display-function #'ivy-posframe-display-at-frame-bottom-left)
-  ;; (setq ivy-display-function #'ivy-posframe-display-at-window-bottom-left)
-  ;; (setq ivy-display-function #'ivy-posframe-display-at-point)
-  (ivy-posframe-enable)
-
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
-(defun dotspacemacs/emacs-custom-settings ()
-  "Emacs custom settings.
-This is an auto-generated function, do not modify its content directly, use
-Emacs customize menu instead.
-This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(mpdel libmpdel fish-completion zenburn-theme zen-and-art-theme yasnippet-snippets yapfify xterm-color ws-butler writeroom-mode winum white-sand-theme which-key web-mode web-beautify wakatime-mode volatile-highlights vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twittering-mode twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit symon sunny-day-theme sublime-themes subatomic256-theme subatomic-theme string-inflection spaceline-all-the-icons spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode slack shell-pop seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restart-emacs rebecca-theme ranger rainbow-delimiters railscasts-theme pyvenv pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme prettier-js planet-theme pippel pipenv pip-requirements phpunit phpcbf php-extras php-auto-yasnippets phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el password-generator paradox ox-twbs ox-reveal ox-gfm overseer osx-trash osx-dictionary orgit organic-green-theme org-ref org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-ipython nov noctilux-theme neotree naquadah-theme nameless mwim mustang-theme multi-term mu4e-maildirs-extension mu4e-alert move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magithub magit-svn magit-gitflow madhat2r-theme macrostep lush-theme lorem-ipsum livid-mode live-py-mode link-hint light-soap-theme launchctl kaolin-themes json-navigator json-mode js2-refactor js-doc jbeans-theme jazz-theme japanese-holidays ir-black-theme insert-shebang inkpot-theme indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mu helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote gandalf-theme fzf fuzzy forge font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator farmhouse-theme fancy-battery eziam-theme eyebrowse expand-region exotica-theme evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help engine-mode emoji-cheat-sheet-plus emmet-mode elisp-slime-nav elfeed-web elfeed-org elfeed-goodies ein editorconfig dumb-jump drupal-mode dracula-theme dotenv-mode doom-themes doom-modeline django-theme diminish diff-hl deft ddskk dash-at-point darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme csv-mode counsel-projectile company-web company-tern company-statistics company-shell company-php company-emoji company-box company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme centered-cursor-mode busybee-theme bubbleberry-theme browse-url-dwim browse-at-remote birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme ace-window ace-link ace-jump-helm-line ac-ispell))
- '(treemacs-position 'right))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-)
