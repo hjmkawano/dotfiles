@@ -16,6 +16,8 @@ function fish_title
   true
 end
 
+set -x LSCOLORS gxfxcxdxbxegedabagacad
+
 # alias git hub
 # alias play-my-rock-list 'mpv --no-video --shuffle "https://www.youtube.com/playlist?list=PLvwAzdceyZtKzPv_EswzoRO0w1XFCW1m3"'
 # alias play-my-band-maid-list 'mpv --no-video --shuffle "https://www.youtube.com/playlist?list=PLvwAzdceyZtJXQXePGfYchiEUDkZLLjhr"'
@@ -43,14 +45,16 @@ set -x PATH $HOME"/.pyenv/shims" $PATH
 # status --is-interactive; and . (pyenv init -|psub)
 # status --is-interactive; and . (rbenv init -|psub)
 
-set -gx LDFLAGS "-L/usr/local/opt/imagemagick@6/lib -L/usr/local/opt/nss/li -L/usr/local/opt/zlib/lib"
-set -gx CPPFLAGS "-I/usr/local/opt/imagemagick@6/includ -I/usr/local/opt/nss/includ -I/usr/local/opt/zlib/include"
-set -x PKG_CONFIG_PATH "/usr/local/opt/imagemagick@6/lib/pkgconfig:/usr/local/opt/nss/lib/pkgconfig:/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig"
+
+set -gx LDFLAGS "-L/usr/local/opt/imagemagick@6/lib -L/usr/local/opt/nss/li -L/usr/local/opt/zlib/lib -L/usr/local/opt/curl/lib"
+set -gx CPPFLAGS "-I/usr/local/opt/imagemagick@6/includ -I/usr/local/opt/nss/includ -I/usr/local/opt/zlib/include -I/usr/local/opt/curl/include"
+set -x PKG_CONFIG_PATH "/usr/local/opt/imagemagick@6/lib/pkgconfig:/usr/local/opt/nss/lib/pkgconfig:/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig"
 
 set -g fish_user_paths "/usr/local/opt/nss/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/imagemagick@6/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/sqlite/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/texlive/2018/bin/x86_64-darwin" $fish_user_paths
+set -g fish_user_paths "/usr/local/opt/curl/bin" $fish_user_paths
 
 set -g theme_powerline_fonts no
 set -g theme_nerd_fonts yes
@@ -58,3 +62,5 @@ set -g theme_display_docker_machine yes
 set -x VIRTUAL_ENV_DISABLE_PROMPT 1
 
 set -gx GNUPGHOME $HOME"/.gnupg"
+
+source ~/.iterm2_shell_integration.(basename $SHELL)

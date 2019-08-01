@@ -130,7 +130,10 @@ This function should only modify configuration layer settings."
          python-fill-column 119
          )
        ipython-notebook
-       javascript
+       (javascript :variables
+         js2-basic-offset 2
+         js-indent-level 2
+         )
        bibtex
        sql
        )
@@ -302,7 +305,7 @@ It should only modify the values of Spacemacs settings."
     ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
     ;; quickly tweak the mode-line size to make separators look not too crappy.
     dotspacemacs-default-font '(
-                                 ;; "Source Code Pro"
+                                 ;; "Source Han Code JP"
 				                         "Hack Nerd Font"
                                  ;; "Ricty Diminished Discord"
                                  :size 14
@@ -525,7 +528,7 @@ It should only modify the values of Spacemacs settings."
     ;; Run `spacemacs/prettify-org-buffer' when
     ;; visiting README.org files of Spacemacs.
     ;; (default nil)
-    dotspacemacs-pretty-docs nil))
+    dotspacemacs-pretty-docs t))
 
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
@@ -580,6 +583,7 @@ before packages are loaded."
   (spacemacs/toggle-transparency)
   (spacemacs/toggle-golden-ratio-on)
   (spacemacs/toggle-which-key-on)
+  (spacemacs/toggle-menu-bar-off)
 
   ;; authinfo ファイルの指定
   (setq nntp-authinfo-file "~/.authinfo.gpg")
