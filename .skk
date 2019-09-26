@@ -18,7 +18,7 @@
 (setq skk-henkan-face (skk-make-face 'DimGray/PeachPuff1))
 
 (setq skk-server-prog "/usr/local/bin/google-ime-skk") ; google-ime-skkの場所
-(setq skk-server-inhibit-startup-server nil) ; 辞書サーバが起動していなかったときに Emacs からプロセスを立ち上げる
+(setq skk-server-inhibit-startup-server t) ; 辞書サーバが起動していなかったときに Emacs からプロセスを立ち上げる
 (setq skk-server-host "localhost") ; サーバー機能を利用
 (setq skk-server-portnum 55100)     ; ポートはgoogle-ime-skk
 ;; (setq skk-server-portnum 1178)     ; ポートはAquaSKK
@@ -42,7 +42,7 @@
   (add-hook 'evil-normal-state-entry-hook 'my-skk-control))
 
 ;; アスキーモードのカーソルの色
-(setq skk-cursor-latin-color "#5BFBD0")
+(setq skk-cursor-latin-color "#0BAB80")
 
 ;; ミニバッファでは C-j を改行にしない
 (define-key minibuffer-local-map (kbd "C-j") 'skk-kakutei)

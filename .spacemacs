@@ -33,41 +33,42 @@ This function should only modify configuration layer settings."
 
     ;; List of configuration layers to load.
     dotspacemacs-configuration-layers
-    '(php
-       html
-       shell-scripts
-       ;; ----------------------------------------------------------------
-       ;; Example of useful layers you may want to use right away.
-       ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
-       ;; `M-m f e R' (Emacs style) to install them.
-       ;; ----------------------------------------------------------------
-       ;; helm
-       ivy
+    '(
+       (helm :variables
+         helm-enable-auto-resize t
+         helm-no-header t
+         helm-position 'top
+         spacemacs-helm-rg-max-column-number 1024
+         )
+       ;; ivy
        auto-completion
        better-defaults
-       themes-megapack
+       ;; themes-megapack
        emacs-lisp
        git
        github
        markdown
        ;; multiple-cursors
        (org :variables
-         org-directory "~/Dropbox/notes/"
+         org-directory "~/notes/"
          org-agenda-files (list org-directory)
          org-log-done 'time
+         org-image-actual-width '(512)
          org-enable-github-support t
          org-enable-bootstrap-support t
          org-enable-org-journal-support t
          org-enable-reveal-js-support t
-         org-journal-dir "~/Dropbox/notes/journal/"
+         org-journal-dir "~/notes/journal/"
          org-journal-file-format "%Y-%m-%d"
          org-journal-date-format "%A, %B %d %Y"
          org-journal-time-prefix "* "
-         org-journal-time-format "HH:MM"
+         org-journal-time-format "%H:%M"
+         org-journal-carryover-items nil
          org-projectile-file "TODOs.org"
-         org-mobile-inbox-for-pull "~/Dropbox/notes/flagged.org"
-         org-mobile-directory "~/Dropbox/アプリ/MobileOrg"
-         org-capture-ical-file (concat org-directory "org-ical.org")
+         org-default-notes-file (concat org-directory "/notes.org")
+         ;; Jira
+         org-enable-jira-support t
+         jiralib-url "https://mecompany.atlassian.net:443"
          )
        (shell :variables
          shell-default-height 30
@@ -86,45 +87,46 @@ This function should only modify configuration layer settings."
          osx-right-option-as  'hyper
          osx-right-control-as 'left
          )
-       japanese
-       fzf
        (deft :variables
-         deft-directory "~/Dropbox/notes"
+         deft-directory "~/notes"
          )
        (dash :variables
-         helm-dash-browser-func 'eww)
+         helm-dash-browser-func 'eww)   ; TODO できればDash.appにしたい
        search-engine
        emoji
        web-beautify
-       (mu4e :variables
-         mu4e-use-maildirs-extension t
-         mu4e-enable-async-operations t
-         mu4e-enable-notifications t
-         mu4e-enable-mode-line t
-         mu4e-spacemacs-layout-name "@Mu4e"
-         mu4e-spacemacs-layout-binding "m"
-         mu4e-spacemacs-kill-layout-on-exit t)
-       (elfeed :variables
-         rmh-elfeed-org-files (list
-                                "~/Dropbox/notes/elfeed.org"
-                                )
-         rmh-elfeed-org-auto-ignore-invalid-feeds t
-         )
-       pdf
+       ;; (mu4e :variables
+       ;;   mu4e-use-maildirs-extension t
+       ;;   mu4e-enable-async-operations t
+       ;;   mu4e-enable-notifications t
+       ;;   mu4e-enable-mode-line t
+       ;;   mu4e-spacemacs-layout-name "@mu4e"
+       ;;   mu4e-spacemacs-layout-binding "m"
+       ;;   mu4e-spacemacs-kill-layout-on-exit t)
+       ;; ;; (elfeed :variables
+       ;;   rmh-elfeed-org-files (list
+       ;;                          "~/Documents/notes/elfeed.org"
+       ;;                          )
+       ;;   rmh-elfeed-org-auto-ignore-invalid-feeds t
+       ;;   )
+       (pdf :variables
+         pdf-view-display-size 'fit-page
+         pdf-annot-activate-created-annotations t)
        epub
+       ;; bibtex
        twitter
-       slack
-       evernote
-       (wakatime :variables
-         wakatime-api-key (my-lisp-load "wakatime")
-         )
+       ;; slack
+       ;; evernote
+       ;; (wakatime :variables
+       ;;   wakatime-api-key (my-lisp-load "wakatime")
+       ;;   )
        ranger
        (treemacs :variables
          treemacs-use-follow-mode t
          treemacs-use-filewatch-mode t
          treemacs-use-collapsed-directories 3
          treemacs-fringe-indicator nil
-        ;; treemacs-position 'right
+         ;; treemacs-position 'right
          )
        ;; (neotree :variables
        ;;   neo-theme 'icons
@@ -133,15 +135,39 @@ This function should only modify configuration layer settings."
        ;;   neo-window-position 'right
        ;;   )
        csv
+       yaml
+       json
+       lsp
+       dap
+       (plantuml :variables
+         plantuml-jar-path "/usr/local/Cellar/plantuml/1.2019.10/libexec/plantuml.jar"
+         org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2019.10/libexec/plantuml.jar"
+         plantuml-java-args "java.awt.headless=true"
+         )
+       asciidoc
+       docker
+       (go :variables
+         go-use-gometalinter t
+         go-linter 'gometalinter
+         go-backend 'lsp
+         godoc-at-point-function 'godoc-gogetdoc
+         go-format-before-save t
+         gofmt-command "goimports"
+         go-tab-width 4
+         )
        (python :variables
          python-enable-yapf-format-on-save t
          python-sort-imports-on-save t
          python-fill-column 119
          )
        ipython-notebook
+       shell-scripts
+       ruby
+       html
        javascript
-       bibtex
        sql
+       groovy
+       lua
        )
 
     ;; List of additional packages that will be installed without being
@@ -153,13 +179,15 @@ This function should only modify configuration layer settings."
     ;; Also include the dependencies as they will not be resolved automatically.
     dotspacemacs-additional-packages
     '(
+       ddskk
+       helm-ghq
+       helm-eww
        browse-url-dwim
-       ;; helm-ghq
-       ;; helm-eww
        company-box
        fish-completion
-       mpdel
-       ivy-posframe
+       ;; mpdel
+       exec-path-from-shell
+       go-autocomplete
        )
 
     ;; A list of packages that cannot be updated.
@@ -189,7 +217,7 @@ It should only modify the values of Spacemacs settings."
     ;; to compile Emacs 27 from source following the instructions in file
     ;; EXPERIMENTAL.org at to root of the git repository.
     ;; (default nil)
-    dotspacemacs-enable-emacs-pdumper t
+    dotspacemacs-enable-emacs-pdumper nil
 
     ;; File path pointing to emacs 27.1 executable compiled with support
     ;; for the portable dumper (this is currently the branch pdumper).
@@ -268,10 +296,10 @@ It should only modify the values of Spacemacs settings."
     ;; List sizes may be nil, in which case
     ;; `spacemacs-buffer-startup-lists-length' takes effect.
     dotspacemacs-startup-lists '((recents . 0)
-                                  (projects . 1)
+                                  (projects . 5)
                                   (bookmarks . 0)
-                                  (agenda . 4)
-                                  (todos . 5)
+                                  (agenda . 8)
+                                  (todos . 10)
                                   )
 
     ;; True if the home buffer should respond to resize events. (default t)
@@ -458,25 +486,43 @@ It should only modify the values of Spacemacs settings."
     ;;                       text-mode
     ;;   :size-limit-kb 1000)
     ;; (default nil)
-    dotspacemacs-line-numbers nil
+    ;; dotspacemacs-line-numbers '(:relative t
+    ;;                              :enabled-for-modes
+    ;;                              c-mode
+    ;;                              c++-mode
+    ;;                              python-mode
+    ;;                              go-mode
+    ;;                              :size-limit-kb 1000)
+    dotspacemacs-line-numbers '(:relative nil
+                                 :disabled-for-modes
+                                 dired-mode
+                                 doc-view-mode
+                                 markdown-mode
+                                 org-mode
+                                 pdf-view-mode
+                                 text-mode
+                                 image-mode
+                                 image-mode
+                                 :size-limit-kb 1000)
+
 
     ;; Code folding method. Possible values are `evil' and `origami'.
     ;; (default 'evil)
-    dotspacemacs-folding-method 'evil
+    dotspacemacs-folding-method 'origami
 
     ;; If non-nil `smartparens-strict-mode' will be enabled in programming modes.
     ;; (default nil)
-    dotspacemacs-smartparens-strict-mode nil
+    dotspacemacs-smartparens-strict-mode t
 
     ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
     ;; over any automatically added closing parenthesis, bracket, quote, etc…
     ;; This can be temporary disabled by pressing `C-q' before `)'. (default nil)
-    dotspacemacs-smart-closing-parenthesis nil
+    dotspacemacs-smart-closing-parenthesis t
 
     ;; Select a scope to highlight delimiters. Possible values are `any',
     ;; `current', `all' or `nil'. Default is `all' (highlight any scope and
     ;; emphasis the current one). (default 'all)
-    dotspacemacs-highlight-delimiters 'all
+    dotspacemacs-highlight-delimiters 'current
 
     ;; If non-nil, start an Emacs server if one is not already running.
     ;; (default nil)
@@ -535,7 +581,7 @@ It should only modify the values of Spacemacs settings."
     ;; Run `spacemacs/prettify-org-buffer' when
     ;; visiting README.org files of Spacemacs.
     ;; (default nil)
-    dotspacemacs-pretty-docs nil))
+    dotspacemacs-pretty-docs t))
 
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
@@ -573,10 +619,6 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
 This function is called only while dumping Spacemacs configuration. You can
 `require' or `load' the libraries of your choice that will be included in the
 dump."
-  (require 'ace-link)
-  (require 'browse-url-dwim)
-  ;; (require 'helm-eww)
-  ;; (require 'helm-ghq)
   )
 
 (defun dotspacemacs/user-config ()
@@ -585,12 +627,23 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
-  (setq ns-use-srgb-colorspace nil)
 
-  (spacemacs/toggle-mode-line-battery-on)
+  ;; (setq ns-use-srgb-colorspace nil)
+  (use-package ddskk
+    :defer t
+    :bind (("C-x j" . skk-mode)))
+
+  (add-to-list 'default-frame-alist
+    '(ns-transparent-titlebar . t))
+
+  (add-to-list 'default-frame-alist
+    '(ns-appearance . dark)) ;; or dark - depending on your theme
+
   (spacemacs/toggle-transparency)
+  (spacemacs/toggle-mode-line-battery-on)
   (spacemacs/toggle-golden-ratio-on)
   (spacemacs/toggle-which-key-on)
+  (spacemacs/toggle-aggressive-indent-globally-on)
 
   ;; authinfo ファイルの指定
   (setq nntp-authinfo-file "~/.authinfo.gpg")
@@ -600,32 +653,32 @@ before packages are loaded."
   (setq encrypt-file-alist '(("~/.authinfo.gpg" (gpg "AES"))))
   (setq password-cache-expiry nil)	; パスワードをキャッシュする
 
-  ;; Slack
-  ;;
-  ;; (setq my-slack-team (my-lisp-load "emacs-slack-team"))
-  (setq my-slack-client-id (my-lisp-load "emacs-slack-client-id"))
-  (setq my-slack-client-secret (my-lisp-load "emacs-slack-client-secret"))
-  (setq my-slack-client-token (my-lisp-load "emacs-slack-client-token"))
+  ;; ;; Slack
+  ;; ;;
+  ;; ;; (setq my-slack-team (my-lisp-load "emacs-slack-team"))
+  ;; (setq my-slack-client-id (my-lisp-load "emacs-slack-client-id"))
+  ;; (setq my-slack-client-secret (my-lisp-load "emacs-slack-client-secret"))
+  ;; (setq my-slack-client-token (my-lisp-load "emacs-slack-client-token"))
 
-  (slack-register-team
-    :name (my-lisp-load "emacs-slack-team")
-    :default t
-    :client-id my-slack-client-id
-    :client-secret my-slack-client-secret
-    :token my-slack-client-token
-    :subscribed-channels '(general slackbot))
+  ;; (slack-register-team
+  ;;   :name (my-lisp-load "emacs-slack-team")
+  ;;   :default t
+  ;;   :client-id my-slack-client-id
+  ;;   :client-secret my-slack-client-secret
+  ;;   :token my-slack-client-token
+  ;;   :subscribed-channels '(general slackbot))
 
-  (spacemacs|define-custom-layout "@Slack"
-    :binding "s"
-    :body
-    (call-interactively 'slack-start)
-    )
+  ;; (spacemacs|define-custom-layout "@Slack"
+  ;;   :binding "s"
+  ;;   :body
+  ;;   (call-interactively 'slack-start)
+  ;;   )
 
-  (spacemacs|define-custom-layout "@elfeed"
-    :binding "l"
-    :body
-    (call-interactively 'elfeed)
-    )
+  ;; (spacemacs|define-custom-layout "@elfeed"
+  ;;   :binding "l"
+  ;;   :body
+  ;;   (call-interactively 'elfeed)
+  ;;   )
 
   (spacemacs|define-custom-layout "@twitter"
     :binding "t"
@@ -633,81 +686,96 @@ before packages are loaded."
     (call-interactively 'twit)
     )
 
-   (eval-after-load "eww"
-    '(progn
-       ;; 背景色の設定
-       (defvar eww-disable-colorize t)
-       (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
-         (unless eww-disable-colorize
-           (funcall orig start end fg)))
-       (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
-       (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
-       (defun eww-disable-color ()
-         "eww で文字色を反映させない"
-         (interactive)
-         (setq-local eww-disable-colorize t)
-         (eww-reload))
-       (defun eww-enable-color ()
-         "eww で文字色を反映させる"
-         (interactive)
-         (setq-local eww-disable-colorize nil)
-         (eww-reload))
+  (spacemacs|define-custom-layout "@scratch"
+    :binding "S"
+    :body
+    (call-interactively 'spacemacs/switch-to-scratch-buffer)
+    )
 
-       ;; 現在の url を eww で開く
-       (defun browse-url-with-eww ()
-         (interactive)
-         (let ((url-region (bounds-of-thing-at-point 'url)))
-           ;; url
-           (if url-region
-             (eww-browse-url (buffer-substring-no-properties (car url-region)
-                               (cdr url-region))))
-           ;; org-link
-           (setq browse-url-browser-function 'eww-browse-url)
-           (org-open-at-point)))
+  (spacemacs|define-custom-layout "@eww"
+    :binding "w"
+    :body
+    (call-interactively 'eww-browse-url)
+    )
 
-       ;; 画像は遅いので表示させない
-       (defun eww-disable-images ()
-         "eww で画像表示させない"
-         (interactive)
-         (setq-local shr-put-image-function 'shr-put-image-alt)
-         (eww-reload))
-       (defun eww-enable-images ()
-         "eww で画像表示させる"
-         (interactive)
-         (setq-local shr-put-image-function 'shr-put-image)
-         (eww-reload))
-       (defun shr-put-image-alt (spec alt &optional flags)
-         (insert alt))
-       ;; はじめから非表示
-       (defun eww-mode-hook--disable-image ()
-         (setq-local shr-put-image-function 'shr-put-image-alt))
-       (add-hook 'eww-mode-hook 'eww-mode-hook--disable-image)
+  ;; (eval-after-load "eww"
+  ;;   '(progn
+  ;;      ;; 背景色の設定
+  ;;      (defvar eww-disable-colorize t)
+  ;;      (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
+  ;;        (unless eww-disable-colorize
+  ;;          (funcall orig start end fg)))
+  ;;      (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
+  ;;      (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
+  ;;      (defun eww-disable-color ()
+  ;;        "eww で文字色を反映させない"
+  ;;        (interactive)
+  ;;        (setq-local eww-disable-colorize t)
+  ;;        (eww-reload))
+  ;;      (defun eww-enable-color ()
+  ;;        "eww で文字色を反映させる"
+  ;;        (interactive)
+  ;;        (setq-local eww-disable-colorize nil)
+  ;;        (eww-reload))
 
-       ;; (setq eww-search-prefix "https://www.google.co.jp/search?ie=UTF-8&oe=UTF-8&num=50&filter=1&gbv=1&q=")
+  ;;      ;; 現在の url を eww で開く
+  ;;      (defun browse-url-with-eww ()
+  ;;        (interactive)
+  ;;        (let ((url-region (bounds-of-thing-at-point 'url)))
+  ;;          ;; url
+  ;;          (if url-region
+  ;;            (eww-browse-url (buffer-substring-no-properties (car url-region)
+  ;;                              (cdr url-region))))
+  ;;          ;; org-link
+  ;;          (setq browse-url-browser-function 'eww-browse-url)
+  ;;          (org-open-at-point)))
 
-       (define-key eww-mode-map "r" 'eww-reload)
-       (define-key eww-mode-map "c 0" 'eww-copy-page-url)
-       (define-key eww-mode-map "p" 'scroll-down)
-       (define-key eww-mode-map "n" 'scroll-up)
+  ;;      ;; 画像は遅いので表示させない
+  ;;      (defun eww-disable-images ()
+  ;;        "eww で画像表示させない"
+  ;;        (interactive)
+  ;;        (setq-local shr-put-image-function 'shr-put-image-alt)
+  ;;        (eww-reload))
+  ;;      (defun eww-enable-images ()
+  ;;        "eww で画像表示させる"
+  ;;        (interactive)
+  ;;        (setq-local shr-put-image-function 'shr-put-image)
+  ;;        (eww-reload))
+  ;;      (defun shr-put-image-alt (spec alt &optional flags)
+  ;;        (insert alt))
+  ;;      ;; はじめから非表示
+  ;;      (defun eww-mode-hook--disable-image ()
+  ;;        (setq-local shr-put-image-function 'shr-put-image-alt))
+  ;;      (add-hook 'eww-mode-hook 'eww-mode-hook--disable-image)
 
-       (ace-link-setup-default)
+  ;;      ;; (setq eww-search-prefix "https://www.google.co.jp/search?ie=UTF-8&oe=UTF-8&num=50&filter=1&gbv=1&q=")
 
-       ;; make emacs always use its own browser for opening URL links
-       (setq browse-url-browser-function 'eww-browse-url)
+  ;;      (define-key eww-mode-map "r" 'eww-reload)
+  ;;      (define-key eww-mode-map "c 0" 'eww-copy-page-url)
+  ;;      (define-key eww-mode-map "p" 'scroll-down)
+  ;;      (define-key eww-mode-map "n" 'scroll-up)
 
-       )
-     ) ;; end of eww
+  ;;      (ace-link-setup-default)
+
+  ;;      ;; make emacs always use its own browser for opening URL links
+  ;;      (setq browse-url-browser-function 'eww-browse-url)
+
+  ;;      )
+  ;;   ) ;; end of eww
 
   (browse-url-dwim-mode t)
+  (require 'ace-link)
+  (require 'browse-url-dwim)
 
-  ;; (setq helm-for-files-preferred-list
-  ;;   '(helm-source-buffers-list
-  ;;      helm-source-recentf
-  ;;      helm-source-bookmarks
-  ;;      helm-source-file-cache
-  ;;      helm-source-files-in-current-dir
-  ;;      helm-source-eww-history
-  ;;      helm-source-locate))
+  ;; Helm
+  (setq helm-for-files-preferred-list
+    '(helm-source-buffers-list
+       helm-source-recentf
+       helm-source-bookmarks
+       helm-source-file-cache
+       helm-source-files-in-current-dir
+       helm-source-eww-history
+       helm-source-locate))
 
   ;; mu4e
   (with-eval-after-load 'mu4e-alert
@@ -718,60 +786,112 @@ before packages are loaded."
     (mu4e-alert-set-default-style 'growl))      ; Alternative for Mac OSX
 
   ;; wakatime
-  (global-wakatime-mode)
+  ;; (global-wakatime-mode)
 
-  ;; (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
+  ;; for pdf layer(pdf-tools)
+  (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig")
+  ;; (add-hook 'pdf-view-mode-hook (lambda() (linum-mode -1)))
+  ;; https://stackoverflow.com/questions/16132234/how-can-i-speed-up-emacs-docview-mode
+  (global-linum-mode -1)
+  (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
+  (add-hook 'pdf-view-midnight-minor-mode-hook (
+                                                 lambda()
+                                                 (setq pdf-view-midnight-colors '("#FFFFFF" . "#002b36"))
+                                                 ))
   ;; "#DCDCCC" : pdf-view-midnight-colors
 
-  (setq spaceline-org-clock-p t)
+  ;; (use-package org-pdftools
+  ;;   :config (setq org-pdftools-root-dir
+  ;;             "~/Dropbox/Documents/pdf"))
+
   (with-eval-after-load 'org
-    ;; ....
+    ;; (org-babel-do-load-languages
+    ;;   'org-babel-load-languages
+    ;;   '((ditaa . t)))
+    (setq org-ditaa-jar-path "/usr/local/bin/ditaa")
+    (setq org-refile-targets '((org-agenda-files :maxlevel . 2)))
+
+;;     (setq org-capture-templates
+;;       '(("e" "experiment" entry (file+headline "~/dropbox/notes/experiment.org" "experiment")
+;;           "* %? %u %i\n
+;; #+begin_src emacs-lisp
+
+;; #+end_src")
+;;          ("i" "idea" entry (file+headline "~/dropbox/notes/idea.org" "idea")
+;;            "* %? %u %i")
+;;          ("r" "remember" entry (file+headline "~/dropbox/notes/remember.org" "remember")
+;;            "* %? %u %i")
+;;          ("m" "memo" entry (file+headline "~/dropbox/notes/memo.org" "memo")
+;;            "* %? %u %i")
+;;          ("s" "story" entry (file+headline "~/dropbox/emacs/org/story.org" "story")
+;;            "* %? %u %i")
+;;          ("f" "future task" entry (file+headline "~/dropbox/notes/task_future.org" "future task")
+;;            "** todo %? \n")
+;;          ("t" "task" entry (file+headline "~/dropbox/notes/notes.org" "tasks")
+;;            "** todo %? \n   scheduled: %^t \n")
+;;          ("p" "priority task" entry (file "~/dropbox/notes/priority_task.org")
+;;            "* %?\n" :clock-in t :clock-resume t)))
     )
 
   (use-package company-box
     :hook (company-mode . company-box-mode))
-  (setq comjpany-box-backends-colors nil)
-  (global-company-mode t)
+  ;; (setq comjpany-box-backends-colors nil)
+  ;; (global-company-mode t)
 
   (when (and (executable-find "fish")
           (require 'fish-completion nil t))
     (global-fish-completion-mode))
 
+  ;; projectile
+  (setq projectile-enable-caching t)
+
   ;; MPDel
-  (require 'mpdel)
-  (mpdel-mode)
+  ;; (require 'mpdel)
+  ;; (mpdel-mode)
 
-  ;; ivy-posframe
-  (require 'ivy-posframe)
-  ;; (setq ivy-display-function #'ivy-posframe-display)
-  (setq ivy-display-function #'ivy-posframe-display-at-frame-center)
-  ;; (setq ivy-display-function #'ivy-posframe-display-at-window-center)
-  ;; (setq ivy-display-function #'ivy-posframe-display-at-frame-bottom-left)
-  ;; (setq ivy-display-function #'ivy-posframe-display-at-window-bottom-left)
-  ;; (setq ivy-display-function #'ivy-posframe-display-at-point)
-  (ivy-posframe-enable)
+  (with-eval-after-load 'ivy
+    (require 'ivy-posframe)
+    (setq ivy-display-function #'ivy-posframe-display)
+    (setq ivy-display-function #'ivy-posframe-display-at-frame-center)
+    (setq ivy-display-function #'ivy-posframe-display-at-window-center)
+    (setq ivy-display-function #'ivy-posframe-display-at-frame-bottom-left)
+    (setq ivy-display-function #'ivy-posframe-display-at-window-bottom-left)
+    (setq ivy-display-function #'ivy-posframe-display-at-point)
+    (ivy-posframe-enable)
+    )
 
-  )
+  ;; Go
+  (setenv "GO111MODULE" "on")
+  (add-to-list 'exec-path "~/bin/")
 
-;; Do not write anything past this comment. This is where Emacs will
-;; auto-generate custom variable definitions.
-(defun dotspacemacs/emacs-custom-settings ()
-  "Emacs custom settings.
-This is an auto-generated function, do not modify its content directly, use
-Emacs customize menu instead.
-This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(mpdel libmpdel fish-completion zenburn-theme zen-and-art-theme yasnippet-snippets yapfify xterm-color ws-butler writeroom-mode winum white-sand-theme which-key web-mode web-beautify wakatime-mode volatile-highlights vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twittering-mode twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit symon sunny-day-theme sublime-themes subatomic256-theme subatomic-theme string-inflection spaceline-all-the-icons spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode slack shell-pop seti-theme scss-mode sass-mode reverse-theme reveal-in-osx-finder restart-emacs rebecca-theme ranger rainbow-delimiters railscasts-theme pyvenv pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme prettier-js planet-theme pippel pipenv pip-requirements phpunit phpcbf php-extras php-auto-yasnippets phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el password-generator paradox ox-twbs ox-reveal ox-gfm overseer osx-trash osx-dictionary orgit organic-green-theme org-ref org-projectile org-present org-pomodoro org-mime org-journal org-download org-bullets org-brain open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-ipython nov noctilux-theme neotree naquadah-theme nameless mwim mustang-theme multi-term mu4e-maildirs-extension mu4e-alert move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magithub magit-svn magit-gitflow madhat2r-theme macrostep lush-theme lorem-ipsum livid-mode live-py-mode link-hint light-soap-theme launchctl kaolin-themes json-navigator json-mode js2-refactor js-doc jbeans-theme jazz-theme japanese-holidays ir-black-theme insert-shebang inkpot-theme indent-guide importmagic impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mu helm-mode-manager helm-make helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md geeknote gandalf-theme fzf fuzzy forge font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-bashate flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator farmhouse-theme fancy-battery eziam-theme eyebrowse expand-region exotica-theme evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help engine-mode emoji-cheat-sheet-plus emmet-mode elisp-slime-nav elfeed-web elfeed-org elfeed-goodies ein editorconfig dumb-jump drupal-mode dracula-theme dotenv-mode doom-themes doom-modeline django-theme diminish diff-hl deft ddskk dash-at-point darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme csv-mode counsel-projectile company-web company-tern company-statistics company-shell company-php company-emoji company-box company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme clean-aindent-mode cherry-blossom-theme centered-cursor-mode busybee-theme bubbleberry-theme browse-url-dwim browse-at-remote birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme ace-window ace-link ace-jump-helm-line ac-ispell))
- '(treemacs-position 'right))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-)
+  (use-package exec-path-from-shell
+    :ensure t
+    :config
+    (progn
+      (exec-path-from-shell-initialize) ))
+
+  ;; https://github.com/alecthomas/gometalinter/blob/master/README.md
+  ;; https://github.com/favadi/flycheck-gometalinter/blob/master/README.md
+  (use-package flycheck-gometalinter
+    :ensure t
+    :config
+    (progn
+      (flycheck-gometalinter-setup)))
+
+  ;; LSP
+  (use-package lsp-mode
+    :hook (XXX-mode . lsp)
+    :commands lsp)
+
+  ;; optionally
+  (use-package lsp-ui :commands lsp-ui-mode)
+  (use-package company-lsp :commands company-lsp)
+  (use-package helm-lsp :commands helm-lsp-workspace-symbol)
+  (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+  ;; optionally if you want to use debugger
+  (use-package dap-mode)
+  (use-package dap-go)
+  ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+
+
+  ) ;; end of user-config

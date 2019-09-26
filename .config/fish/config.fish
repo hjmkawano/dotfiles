@@ -17,13 +17,13 @@ function fish_title
 end
 
 alias git hub
-alias play-my-rock-list 'mpv --no-video --shuffle "https://www.youtube.com/playlist?list=PLvwAzdceyZtKzPv_EswzoRO0w1XFCW1m3"'
-alias play-my-band-maid-list 'mpv --no-video --shuffle "https://www.youtube.com/playlist?list=PLvwAzdceyZtJXQXePGfYchiEUDkZLLjhr"'
-alias parrot 'docker run -ti --network bridge parrotsec/parrot'
+# alias parrot 'docker run -ti --network bridge parrotsec/parrot'
+alias ps 'ps ax|fzf'
 
 
 set -x GOPATH $HOME
 set -x PATH $HOME"/.local/bin" $PATH
+set -x PATH $HOME"/bin" $PATH
 set -x PATH $HOME"/.yubikey/bin" $PATH
 set -x PATH $GOPATH $PATH
 set -x PATH "/usr/local/opt/coreutils/libexec/gnubin" $PATH
@@ -39,15 +39,15 @@ set -gx FZF_TMUX 0
 set -gx FZF_TMUX_HEIGHT 50%
 set -U FZF_LEGACY_KEYBINDINGS 0
 
-set -x PATH $HOME"/.pyenv/shims" $PATH
-status --is-interactive; and . (pyenv init -|psub)
-status --is-interactive; and . (rbenv init -|psub)
+status --is-interactive; and source (anyenv init -|psub)
+direnv hook fish | source
 
-set -gx LDFLAGS "-L/usr/local/opt/imagemagick@6/lib -L/usr/local/opt/nss/li -L/usr/local/opt/zlib/lib"
-set -gx CPPFLAGS "-I/usr/local/opt/imagemagick@6/includ -I/usr/local/opt/nss/includ -I/usr/local/opt/zlib/include"
+set -gx LDFLAGS "-L/usr/local/opt/imagemagick@6/lib -L/usr/local/opt/nss/lib -L/usr/local/opt/qt/lib -L/usr/local/opt/zlib/lib"
+set -gx CPPFLAGS "-I/usr/local/opt/imagemagick@6/includ -I/usr/local/opt/nss/include -I/usr/local/opt/qt/include -I/usr/local/opt/zlib/include"
 set -x PKG_CONFIG_PATH "/usr/local/opt/imagemagick@6/lib/pkgconfig:/usr/local/opt/nss/lib/pkgconfig:/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig"
 
 set -g fish_user_paths "/usr/local/opt/nss/bin" $fish_user_paths
+set -g fish_user_paths "/usr/local/opt/qt/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/imagemagick@6/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/sqlite/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/texlive/2018/bin/x86_64-darwin" $fish_user_paths
@@ -55,6 +55,9 @@ set -g fish_user_paths "/usr/local/texlive/2018/bin/x86_64-darwin" $fish_user_pa
 set -g theme_powerline_fonts no
 set -g theme_nerd_fonts yes
 set -g theme_display_docker_machine yes
+set -g fish_prompt_pwd_dir_length 1
 set -x VIRTUAL_ENV_DISABLE_PROMPT 1
 
 set -gx GNUPGHOME $HOME"/.gnupg"
+
+test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish

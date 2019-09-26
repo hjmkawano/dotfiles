@@ -5,3 +5,6 @@ mono.addins
 wireshark
 fisher
 omf
+joplin-desktop
+direnv
+anyenv
