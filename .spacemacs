@@ -44,6 +44,9 @@ This function should only modify configuration layer settings."
        auto-completion
        better-defaults
        ;; themes-megapack
+       (copy-as-format :variables
+         copy-as-format-default "slack"
+         )
        emacs-lisp
        git
        github
@@ -121,19 +124,12 @@ This function should only modify configuration layer settings."
        ;;   wakatime-api-key (my-lisp-load "wakatime")
        ;;   )
        ranger
-       (treemacs :variables
-         treemacs-use-follow-mode t
-         treemacs-use-filewatch-mode t
-         treemacs-use-collapsed-directories 3
-         treemacs-fringe-indicator nil
-         ;; treemacs-position 'right
+       (neotree :variables
+         neo-theme 'icons
+         neo-persist-show t
+         neo-smart-open t
+         neo-window-position 'right
          )
-       ;; (neotree :variables
-       ;;   neo-theme 'icons
-       ;;   neo-persist-show t
-       ;;   neo-smart-open t
-       ;;   neo-window-position 'right
-       ;;   )
        csv
        yaml
        json
@@ -811,26 +807,26 @@ before packages are loaded."
     (setq org-ditaa-jar-path "/usr/local/bin/ditaa")
     (setq org-refile-targets '((org-agenda-files :maxlevel . 2)))
 
-;;     (setq org-capture-templates
-;;       '(("e" "experiment" entry (file+headline "~/dropbox/notes/experiment.org" "experiment")
-;;           "* %? %u %i\n
-;; #+begin_src emacs-lisp
+    ;;     (setq org-capture-templates
+    ;;       '(("e" "experiment" entry (file+headline "~/dropbox/notes/experiment.org" "experiment")
+    ;;           "* %? %u %i\n
+    ;; #+begin_src emacs-lisp
 
-;; #+end_src")
-;;          ("i" "idea" entry (file+headline "~/dropbox/notes/idea.org" "idea")
-;;            "* %? %u %i")
-;;          ("r" "remember" entry (file+headline "~/dropbox/notes/remember.org" "remember")
-;;            "* %? %u %i")
-;;          ("m" "memo" entry (file+headline "~/dropbox/notes/memo.org" "memo")
-;;            "* %? %u %i")
-;;          ("s" "story" entry (file+headline "~/dropbox/emacs/org/story.org" "story")
-;;            "* %? %u %i")
-;;          ("f" "future task" entry (file+headline "~/dropbox/notes/task_future.org" "future task")
-;;            "** todo %? \n")
-;;          ("t" "task" entry (file+headline "~/dropbox/notes/notes.org" "tasks")
-;;            "** todo %? \n   scheduled: %^t \n")
-;;          ("p" "priority task" entry (file "~/dropbox/notes/priority_task.org")
-;;            "* %?\n" :clock-in t :clock-resume t)))
+    ;; #+end_src")
+    ;;          ("i" "idea" entry (file+headline "~/dropbox/notes/idea.org" "idea")
+    ;;            "* %? %u %i")
+    ;;          ("r" "remember" entry (file+headline "~/dropbox/notes/remember.org" "remember")
+    ;;            "* %? %u %i")
+    ;;          ("m" "memo" entry (file+headline "~/dropbox/notes/memo.org" "memo")
+    ;;            "* %? %u %i")
+    ;;          ("s" "story" entry (file+headline "~/dropbox/emacs/org/story.org" "story")
+    ;;            "* %? %u %i")
+    ;;          ("f" "future task" entry (file+headline "~/dropbox/notes/task_future.org" "future task")
+    ;;            "** todo %? \n")
+    ;;          ("t" "task" entry (file+headline "~/dropbox/notes/notes.org" "tasks")
+    ;;            "** todo %? \n   scheduled: %^t \n")
+    ;;          ("p" "priority task" entry (file "~/dropbox/notes/priority_task.org")
+    ;;            "* %?\n" :clock-in t :clock-resume t)))
     )
 
   (use-package company-box
@@ -895,3 +891,23 @@ before packages are loaded."
 
 
   ) ;; end of user-config
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+  (custom-set-variables
+    ;; custom-set-variables was added by Custom.
+    ;; If you edit it by hand, you could mess it up, so be careful.
+    ;; Your init file should contain only one such instance.
+    ;; If there is more than one, they won't work right.
+    '(package-selected-packages
+       (quote
+         (copy-as-format flycheck-gometalinter yasnippet-snippets yapfify yaml-mode xterm-color ws-butler writeroom-mode winum which-key web-mode web-beautify vterm volatile-highlights vi-tilde-fringe uuidgen use-package unfill twittering-mode toc-org tagedit symon symbol-overlay string-inflection sql-indent spaceline-all-the-icons smeargle slim-mode shell-pop seeing-is-believing scss-mode sass-mode rvm ruby-tools ruby-test-mode ruby-refactor ruby-hash-syntax rubocopfmt rubocop rspec-mode robe reveal-in-osx-finder restart-emacs rbenv ranger rake rainbow-delimiters pytest pyenv-mode py-isort pug-mode prettier-js popwin plantuml-mode pippel pipenv pip-requirements persp-mode pdf-tools password-generator paradox ox-twbs ox-jira ox-gfm overseer osx-trash osx-dictionary osx-clipboard origami orgit org-re-reveal org-projectile org-present org-pomodoro org-mime org-journal org-jira org-download org-cliplink org-bullets org-brain open-junk-file ob-ipython nov nodejs-repl neotree nameless mwim multi-term move-text mmm-mode minitest markdown-toc magit-svn magit-gitflow macrostep lsp-ui lsp-python-ms lorem-ipsum livid-mode live-py-mode link-hint launchctl json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hybrid-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag groovy-mode groovy-imports google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc go-autocomplete gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fuzzy forge font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-package flycheck-bashate flx-ido fish-mode fish-completion fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help engine-mode emojify emoji-cheat-sheet-plus emmet-mode elisp-slime-nav ein editorconfig dumb-jump dotenv-mode doom-themes doom-modeline dockerfile-mode docker diminish diff-hl devdocs deft ddskk dash-at-point dap-mode cython-mode csv-mode company-web company-tern company-statistics company-shell company-lua company-lsp company-go company-emoji company-box company-anaconda column-enforce-mode clean-aindent-mode chruby centered-cursor-mode bundler browse-url-dwim browse-at-remote blacken auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adoc-mode ace-window ace-link ace-jump-helm-line ac-ispell))))
+  (custom-set-faces
+    ;; custom-set-faces was added by Custom.
+    ;; If you edit it by hand, you could mess it up, so be careful.
+    ;; Your init file should contain only one such instance.
+    ;; If there is more than one, they won't work right.
+    )
+  )
