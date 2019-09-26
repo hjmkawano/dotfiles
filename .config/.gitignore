@@ -7,4 +7,5 @@ fisher
 omf
 joplin-desktop
 direnv
+fish/fish_variables
 anyenv
