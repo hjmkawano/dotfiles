@@ -36,8 +36,9 @@ This function should only modify configuration layer settings."
     '(
        better-defaults
        auto-completion
-       ;; helm
-       ivy
+       helm
+       (copy-as-format :variables
+         copy-as-format-default "slack")
        git
        github
        markdown
@@ -54,7 +55,7 @@ This function should only modify configuration layer settings."
          org-journal-file-format "%Y-%m-%d"
          org-journal-date-format "%A, %B %d %Y"
          org-journal-time-prefix "* "
-         org-journal-time-format "HH:MM"
+         org-journal-time-format "<%Y-%m-%d %R> "
          org-projectile-file "TODOs.org"
          org-mobile-inbox-for-pull "~/Dropbox/notes/flagged.org"
          org-mobile-directory "~/Dropbox/アプリ/MobileOrg"
@@ -110,19 +111,19 @@ This function should only modify configuration layer settings."
        ;; slack
        evernote
        ;; ranger
-       (treemacs :variables
-         treemacs-use-follow-mode t
-         treemacs-use-filewatch-mode t
-         treemacs-use-collapsed-directories 3
-         treemacs-fringe-indicator nil
-        ;; treemacs-position 'right
-         )
-       ;; (neotree :variables
-       ;;   neo-theme 'icons
-       ;;   neo-persist-show t
-       ;;   neo-smart-open t
-       ;;   neo-window-position 'right
+       ;; (treemacs :variables
+       ;;   treemacs-use-follow-mode t
+       ;;   treemacs-use-filewatch-mode t
+       ;;   treemacs-use-collapsed-directories 3
+       ;;   treemacs-fringe-indicator nil
+       ;;  ;; treemacs-position 'right
        ;;   )
+       (neotree :variables
+         neo-theme 'icons
+         neo-persist-show t
+         neo-smart-open t
+         neo-window-position 'right
+         )
        csv
        (python :variables
          python-enable-yapf-format-on-save t
@@ -134,8 +135,11 @@ This function should only modify configuration layer settings."
          js2-basic-offset 2
          js-indent-level 2
          )
-       bibtex
+       ;; bibtex
        sql
+       (plantuml :variables
+         org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2019.10/libexec/plantuml.jar"
+         )
        )
 
     ;; List of additional packages that will be installed without being
@@ -148,8 +152,8 @@ This function should only modify configuration layer settings."
     dotspacemacs-additional-packages
     '(
        browse-url-dwim
-       ;; helm-ghq
-       ;; helm-eww
+       helm-ghq
+       helm-eww
        company-box
        fish-completion
        mpdel
@@ -182,7 +186,7 @@ It should only modify the values of Spacemacs settings."
     ;; to compile Emacs 27 from source following the instructions in file
     ;; EXPERIMENTAL.org at to root of the git repository.
     ;; (default nil)
-    dotspacemacs-enable-emacs-pdumper t
+    dotspacemacs-enable-emacs-pdumper nil
 
     ;; File path pointing to emacs 27.1 executable compiled with support
     ;; for the portable dumper (this is currently the branch pdumper).
@@ -305,12 +309,10 @@ It should only modify the values of Spacemacs settings."
     ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
     ;; quickly tweak the mode-line size to make separators look not too crappy.
     dotspacemacs-default-font '(
-                                 ;; "Source Han Code JP"
-				                         "Hack Nerd Font"
+;;                                  "Source Han Code JP"
+	                               "Hack Nerd Font"
                                  ;; "Ricty Diminished Discord"
-                                 :size 14
-                                 ;; :weight normal
-                                 ;; :width normal
+                                 :size 15
                                  )
 
     ;; The leader key (default "SPC")
@@ -451,11 +453,20 @@ It should only modify the values of Spacemacs settings."
     ;;                       text-mode
     ;;   :size-limit-kb 1000)
     ;; (default nil)
-    dotspacemacs-line-numbers nil
+    dotspacemacs-line-numbers '(:relative nil
+                                 :disabled-for-modes
+                                 dired-mode
+                                 doc-view-mode
+                                 markdown-mode
+                                 org-mode
+                                 pdf-view-mode
+                                 text-mode
+                                 image-mode
+                                 :size-limit-kb 1000)
 
     ;; Code folding method. Possible values are `evil' and `origami'.
     ;; (default 'evil)
-    dotspacemacs-folding-method 'evil
+    dotspacemacs-folding-method 'origami
 
     ;; If non-nil `smartparens-strict-mode' will be enabled in programming modes.
     ;; (default nil)
@@ -585,7 +596,9 @@ before packages are loaded."
   (spacemacs/toggle-which-key-on)
   (spacemacs/toggle-menu-bar-off)
 
-  ;; authinfo ファイルの指定
+  (add-hook 'pdf-view-mode-hook (lambda() (linum-mode -1)))
+
+    ;; authinfo ファイルの指定
   (setq nntp-authinfo-file "~/.authinfo.gpg")
   (setq nnimap-authinfo-file "~/.authinfo.gpg")
   (setq smtpmail-auth-credentials "~/.authinfo.gpg")
@@ -690,12 +703,33 @@ before packages are loaded."
   ;; wakatime
   ;; (global-wakatime-mode)
 
-  ;; (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
+  (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
   ;; "#DCDCCC" : pdf-view-midnight-colors
 
   (setq spaceline-org-clock-p t)
   (with-eval-after-load 'org
     ;; ....
+    (setq org-capture-templates `(
+	                                 ("p" "Protocol" entry (file+headline ,(concat org-directory "notes.org") "Inbox")
+                                     "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?")
+	                                 ("L" "Protocol Link" entry (file+headline ,(concat org-directory "notes.org") "Inbox")
+                                     "* %? [[%:link][%:description]]\n")
+                                   ))
+    ;; Kill the frame if one was created for the capture
+    (defvar kk/delete-frame-after-capture 0 "Whether to delete the last frame after the current capture")
+
+    (defun kk/delete-frame-if-neccessary (&rest r)
+      (cond
+        ((= kk/delete-frame-after-capture 0) nil)
+        ((> kk/delete-frame-after-capture 1)
+          (setq kk/delete-frame-after-capture (- kk/delete-frame-after-capture 1)))
+        (t
+          (setq kk/delete-frame-after-capture 0)
+          (delete-frame))))
+
+    (advice-add 'org-capture-finalize :after 'kk/delete-frame-if-neccessary)
+    (advice-add 'org-capture-kill :after 'kk/delete-frame-if-neccessary)
+    (advice-add 'org-capture-refile :after 'kk/delete-frame-if-neccessary)
     )
 
   (use-package company-box
@@ -710,7 +744,6 @@ before packages are loaded."
   ;; MPDel
   (require 'mpdel)
   (mpdel-mode)
-
   )
 
 ;; Do not write anything past this comment. This is where Emacs will

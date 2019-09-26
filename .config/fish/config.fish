@@ -48,7 +48,7 @@ set -x PATH $HOME"/.pyenv/shims" $PATH
 
 set -gx LDFLAGS "-L/usr/local/opt/imagemagick@6/lib -L/usr/local/opt/nss/li -L/usr/local/opt/zlib/lib -L/usr/local/opt/curl/lib"
 set -gx CPPFLAGS "-I/usr/local/opt/imagemagick@6/includ -I/usr/local/opt/nss/includ -I/usr/local/opt/zlib/include -I/usr/local/opt/curl/include"
-set -x PKG_CONFIG_PATH "/usr/local/opt/imagemagick@6/lib/pkgconfig:/usr/local/opt/nss/lib/pkgconfig:/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig"
+set -x PKG_CONFIG_PATH "/usr/local/Cellar/libffi/3.2.1/lib/pkgconfig:/usr/local/opt/imagemagick@6/lib/pkgconfig:/usr/local/opt/nss/lib/pkgconfig:/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig:/usr/local/opt/curl/lib/pkgconfig"
 
 set -g fish_user_paths "/usr/local/opt/nss/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/imagemagick@6/bin" $fish_user_paths
