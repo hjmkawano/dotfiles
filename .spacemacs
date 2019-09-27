@@ -889,8 +889,13 @@ before packages are loaded."
   (use-package dap-go)
   ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 
+  (eval-after-load "magit-log"
+    '(progn
+       (custom-set-variables
+         '(magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 18)))))
 
   ) ;; end of user-config
+
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
 This is an auto-generated function, do not modify its content directly, use
