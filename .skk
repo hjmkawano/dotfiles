@@ -17,11 +17,12 @@
 
 (setq skk-henkan-face (skk-make-face 'DimGray/PeachPuff1))
 
+(setq skk-server-host "localhost") ; サーバー機能を利用
+;; (setq skk-server-portnum 1178)     ; ポートはAquaSKK
 (setq skk-server-prog "/usr/local/bin/google-ime-skk") ; google-ime-skkの場所
 (setq skk-server-inhibit-startup-server t) ; 辞書サーバが起動していなかったときに Emacs からプロセスを立ち上げる
-(setq skk-server-host "localhost") ; サーバー機能を利用
 (setq skk-server-portnum 55100)     ; ポートはgoogle-ime-skk
-;; (setq skk-server-portnum 1178)     ; ポートはAquaSKK
+
 (setq skk-share-private-jisyo t)   ; 複数 skk 辞書を共有
 
 (setq skk-large-jisyo "~/Library/Application Support/AquaSKK/SKK-JISYO.L")
@@ -30,8 +31,23 @@
            "~/Library/Application Support/AquaSKK/SKK-JISYO.fullname"
            "~/Library/Application Support/AquaSKK/SKK-JISYO.jinmei"
            "~/Library/Application Support/AquaSKK/SKK-JISYO.propernoun"
-           "~/Library/Application Support/AquaSKK/SKK-JISYO.station"))
-)
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.station"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.JIS2"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.JIS2004"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.JIS3_4"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.assoc"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.edict"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.itaiji"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.itaiji.JIS3_4"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.law"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.mazegaki"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.office.zipcode"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.propernoun"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.station"
+           "~/Library/Application Support/AquaSKK/SKK-JISYO.zipcode"
+           "~/Library/Application Support/AquaSKK/skk-jisyo.utf8"
+           ))
+  )
 
 ;; ノーマルステート時に状態遷移した時に、skkが起動している場合、自動的にアスキーモードにする
 (when (locate-library "skk")
@@ -74,6 +90,13 @@
 ;; 動的補完時にC-nで次の補完へ
 ;; たぶんひらがなモードの時だけにするといいかも
 ;; (define-key skk-j-mode-map (kbd "C-n") 'skk-completion-wrapper)
+
+
+;; サーバコンプリージョン/Server completion
+;; (add-to-list 'skk-completion-prog-list
+;;   '(skk-comp-by-server-completion) t)
+;; (add-to-list 'skk-search-prog-list
+;;   '(skk-server-completion-search) t)
 
 ;; 動作
 (setq skk-egg-like-newline t) ; Enterで改行しない
