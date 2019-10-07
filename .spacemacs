@@ -56,7 +56,7 @@ This function should only modify configuration layer settings."
          org-directory "~/notes/"
          org-agenda-files (list org-directory)
          org-log-done 'time
-         org-image-actual-width '(512)
+         org-image-actual-width '(800)
          org-enable-github-support t
          org-enable-bootstrap-support t
          org-enable-org-journal-support t
@@ -116,6 +116,8 @@ This function should only modify configuration layer settings."
          pdf-view-display-size 'fit-page
          pdf-annot-activate-created-annotations t)
        epub
+       pandoc
+       asciidoc
        ;; bibtex
        twitter
        ;; slack
@@ -128,7 +130,7 @@ This function should only modify configuration layer settings."
          neo-theme 'icons
          neo-persist-show t
          neo-smart-open t
-         neo-window-position 'right
+         ;; neo-window-position 'right
          )
        csv
        yaml
@@ -249,7 +251,7 @@ It should only modify the values of Spacemacs settings."
     ;; If non-nil then Spacelpa repository is the primary source to install
     ;; a locked version of packages. If nil then Spacemacs will install the
     ;; latest version of packages from MELPA. (default nil)
-    dotspacemacs-use-spacelpa nil
+    dotspacemacs-use-spacelpa t
 
     ;; If non-nil then verify the signature for downloaded Spacelpa archives.
     ;; (default nil)
@@ -497,7 +499,6 @@ It should only modify the values of Spacemacs settings."
                                  org-mode
                                  pdf-view-mode
                                  text-mode
-                                 image-mode
                                  image-mode
                                  :size-limit-kb 1000)
 
@@ -875,9 +876,9 @@ before packages are loaded."
       (flycheck-gometalinter-setup)))
 
   ;; LSP
-  (use-package lsp-mode
-    :hook (XXX-mode . lsp)
-    :commands lsp)
+  ;; (use-package lsp-mode
+  ;;   :hook (XXX-mode . lsp)
+  ;;   :commands lsp)
 
   ;; optionally
   (use-package lsp-ui :commands lsp-ui-mode)
@@ -889,30 +890,10 @@ before packages are loaded."
   (use-package dap-go)
   ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 
+  ;; Magit
   (eval-after-load "magit-log"
     '(progn
        (custom-set-variables
          '(magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 18)))))
 
   ) ;; end of user-config
-
-(defun dotspacemacs/emacs-custom-settings ()
-  "Emacs custom settings.
-This is an auto-generated function, do not modify its content directly, use
-Emacs customize menu instead.
-This function is called at the very end of Spacemacs initialization."
-  (custom-set-variables
-    ;; custom-set-variables was added by Custom.
-    ;; If you edit it by hand, you could mess it up, so be careful.
-    ;; Your init file should contain only one such instance.
-    ;; If there is more than one, they won't work right.
-    '(package-selected-packages
-       (quote
-         (copy-as-format flycheck-gometalinter yasnippet-snippets yapfify yaml-mode xterm-color ws-butler writeroom-mode winum which-key web-mode web-beautify vterm volatile-highlights vi-tilde-fringe uuidgen use-package unfill twittering-mode toc-org tagedit symon symbol-overlay string-inflection sql-indent spaceline-all-the-icons smeargle slim-mode shell-pop seeing-is-believing scss-mode sass-mode rvm ruby-tools ruby-test-mode ruby-refactor ruby-hash-syntax rubocopfmt rubocop rspec-mode robe reveal-in-osx-finder restart-emacs rbenv ranger rake rainbow-delimiters pytest pyenv-mode py-isort pug-mode prettier-js popwin plantuml-mode pippel pipenv pip-requirements persp-mode pdf-tools password-generator paradox ox-twbs ox-jira ox-gfm overseer osx-trash osx-dictionary osx-clipboard origami orgit org-re-reveal org-projectile org-present org-pomodoro org-mime org-journal org-jira org-download org-cliplink org-bullets org-brain open-junk-file ob-ipython nov nodejs-repl neotree nameless mwim multi-term move-text mmm-mode minitest markdown-toc magit-svn magit-gitflow macrostep lsp-ui lsp-python-ms lorem-ipsum livid-mode live-py-mode link-hint launchctl json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hybrid-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-lsp helm-gitignore helm-git-grep helm-ghq helm-flx helm-eww helm-descbinds helm-dash helm-css-scss helm-company helm-c-yasnippet helm-ag groovy-mode groovy-imports google-translate golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc go-autocomplete gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md fuzzy forge font-lock+ flyspell-correct-helm flycheck-pos-tip flycheck-package flycheck-bashate flx-ido fish-mode fish-completion fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help engine-mode emojify emoji-cheat-sheet-plus emmet-mode elisp-slime-nav ein editorconfig dumb-jump dotenv-mode doom-themes doom-modeline dockerfile-mode docker diminish diff-hl devdocs deft ddskk dash-at-point dap-mode cython-mode csv-mode company-web company-tern company-statistics company-shell company-lua company-lsp company-go company-emoji company-box company-anaconda column-enforce-mode clean-aindent-mode chruby centered-cursor-mode bundler browse-url-dwim browse-at-remote blacken auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adoc-mode ace-window ace-link ace-jump-helm-line ac-ispell))))
-  (custom-set-faces
-    ;; custom-set-faces was added by Custom.
-    ;; If you edit it by hand, you could mess it up, so be careful.
-    ;; Your init file should contain only one such instance.
-    ;; If there is more than one, they won't work right.
-    )
-  )
