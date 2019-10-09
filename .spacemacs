@@ -73,6 +73,9 @@ This function should only modify configuration layer settings."
          org-enable-jira-support t
          jiralib-url "https://mecompany.atlassian.net:443"
          )
+       (imenu-list :variables
+         imenu-list-auto-resize nil
+         imenu-list-size 0.2)
        (shell :variables
          shell-default-height 30
          shell-default-position 'bottom)
@@ -98,20 +101,6 @@ This function should only modify configuration layer settings."
        search-engine
        emoji
        web-beautify
-       ;; (mu4e :variables
-       ;;   mu4e-use-maildirs-extension t
-       ;;   mu4e-enable-async-operations t
-       ;;   mu4e-enable-notifications t
-       ;;   mu4e-enable-mode-line t
-       ;;   mu4e-spacemacs-layout-name "@mu4e"
-       ;;   mu4e-spacemacs-layout-binding "m"
-       ;;   mu4e-spacemacs-kill-layout-on-exit t)
-       ;; ;; (elfeed :variables
-       ;;   rmh-elfeed-org-files (list
-       ;;                          "~/Documents/notes/elfeed.org"
-       ;;                          )
-       ;;   rmh-elfeed-org-auto-ignore-invalid-feeds t
-       ;;   )
        (pdf :variables
          pdf-view-display-size 'fit-page
          pdf-annot-activate-created-annotations t)
@@ -121,10 +110,6 @@ This function should only modify configuration layer settings."
        ;; bibtex
        twitter
        ;; slack
-       ;; evernote
-       ;; (wakatime :variables
-       ;;   wakatime-api-key (my-lisp-load "wakatime")
-       ;;   )
        ranger
        (neotree :variables
          neo-theme 'icons
@@ -165,8 +150,7 @@ This function should only modify configuration layer settings."
        javascript
        sql
        groovy
-       lua
-       )
+       lua)
 
     ;; List of additional packages that will be installed without being
     ;; wrapped in a layer. If you need some configuration for these
@@ -828,6 +812,14 @@ before packages are loaded."
     ;;            "** todo %? \n   scheduled: %^t \n")
     ;;          ("p" "priority task" entry (file "~/dropbox/notes/priority_task.org")
     ;;            "* %?\n" :clock-in t :clock-resume t)))
+
+    (setq org-capture-templates
+      '(("t" "New TODO" entry
+          (file+headline "~/notes/notes.org" "tasks")
+          "* TODO %?\n\n%a")
+         ("m" "Memo" entry
+           (file+headline "~/notes/memo.org" "memo")
+           "* %U%?\n%i\n%a")))
     )
 
   (use-package company-box
