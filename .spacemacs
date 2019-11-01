@@ -38,15 +38,15 @@ This function should only modify configuration layer settings."
          auto-completion-enable-snippets-in-popup t
          auto-completion-enable-help-tooltip t
          auto-completion-use-company-box t)
-       (helm :variables
-         helm-enable-auto-resize t
-         helm-no-header t
-         helm-position 'top
-         spacemacs-helm-rg-max-column-number 1024
-         )
-       ;; ivy
+       ;; (helm :variables
+       ;;   helm-enable-auto-resize t
+       ;;   helm-no-header t
+       ;;   helm-position 'top
+       ;;   spacemacs-helm-rg-max-column-number 1024
+       ;;   )
+       (ivy :variables
+         ivy-enable-advanced-buffer-information t)
        better-defaults
-       ;; themes-megapack
        (copy-as-format :variables
          copy-as-format-default "slack"
          )
@@ -99,8 +99,9 @@ This function should only modify configuration layer settings."
        (deft :variables
          deft-directory "~/notes"
          )
-       (dash :variables
-         helm-dash-browser-func 'eww)   ; TODO できればDash.appにしたい
+       ;; (dash :variables
+       ;;   helm-dash-browser-func 'eww)   ; TODO できればDash.appにしたい
+       dash
        search-engine
        emoji
        web-beautify
@@ -175,10 +176,9 @@ This function should only modify configuration layer settings."
     dotspacemacs-additional-packages
     '(
        ddskk
-       helm-ghq
-       helm-eww
        browse-url-dwim
-       ;; company-box
+       ;; helm-ghq
+       ;; helm-eww
        fish-completion
        ;; mpdel
        exec-path-from-shell
@@ -858,16 +858,16 @@ before packages are loaded."
   ;; (require 'mpdel)
   ;; (mpdel-mode)
 
-  (with-eval-after-load 'ivy
-    (require 'ivy-posframe)
-    (setq ivy-display-function #'ivy-posframe-display)
-    (setq ivy-display-function #'ivy-posframe-display-at-frame-center)
-    (setq ivy-display-function #'ivy-posframe-display-at-window-center)
-    (setq ivy-display-function #'ivy-posframe-display-at-frame-bottom-left)
-    (setq ivy-display-function #'ivy-posframe-display-at-window-bottom-left)
-    (setq ivy-display-function #'ivy-posframe-display-at-point)
-    (ivy-posframe-enable)
-    )
+  ;; (with-eval-after-load 'ivy
+  ;;   (require 'ivy-posframe)
+  ;;   (setq ivy-display-function #'ivy-posframe-display)
+  ;;   (setq ivy-display-function #'ivy-posframe-display-at-frame-center)
+  ;;   (setq ivy-display-function #'ivy-posframe-display-at-window-center)
+  ;;   (setq ivy-display-function #'ivy-posframe-display-at-frame-bottom-left)
+  ;;   (setq ivy-display-function #'ivy-posframe-display-at-window-bottom-left)
+  ;;   (setq ivy-display-function #'ivy-posframe-display-at-point)
+  ;;   (ivy-posframe-enable)
+  ;;   )
 
   ;; Go
   (setenv "GO111MODULE" "on")
@@ -895,7 +895,7 @@ before packages are loaded."
   ;; optionally
   (use-package lsp-ui :commands lsp-ui-mode)
   (use-package company-lsp :commands company-lsp)
-  (use-package helm-lsp :commands helm-lsp-workspace-symbol)
+  ;; (use-package helm-lsp :commands helm-lsp-workspace-symbol)
   (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
   ;; optionally if you want to use debugger
   (use-package dap-mode)
