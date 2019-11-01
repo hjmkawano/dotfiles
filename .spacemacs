@@ -54,7 +54,7 @@ This function should only modify configuration layer settings."
        git
        github
        markdown
-       ;; multiple-cursors
+       multiple-cursors
        (org :variables
          org-directory "~/notes/"
          org-agenda-files (list org-directory)
@@ -184,6 +184,7 @@ This function should only modify configuration layer settings."
        exec-path-from-shell
        go-autocomplete
        ox-asciidoc
+       jenkins
        )
 
     ;; A list of packages that cannot be updated.
@@ -907,5 +908,16 @@ before packages are loaded."
     '(progn
        (custom-set-variables
          '(magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 18)))))
+
+  ;; jenkins.el
+  (with-eval-after-load 'jenkins
+    (setq jenkins-api-token "11f24f43355259f412180476a0700cffc4")
+    (setq jenkins-url "http://jenkins/")
+    (setq jenkins-username "kawano")
+    ;;    (setq jenkins-viewname "<viewname>") ;; if you're not using views skip this line
+    (setq jenkins-colwidth-name 70) ;; or jenkins-colwidth-id, jenkins-colwidth-last-status
+    (setq jenkins-colwidth-id 10)
+    (setq jenkins-colwidth-last-status 60)
+    )
 
   ) ;; end of user-config
