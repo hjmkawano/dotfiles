@@ -93,15 +93,14 @@
 
 
 ;; サーバコンプリージョン/Server completion
-(add-to-list 'skk-completion-prog-list
-  '(skk-comp-by-server-completion) t)
-(add-to-list 'skk-search-prog-list
-  '(skk-server-completion-search) t)
-(add-hook 'skk-search-excluding-word-pattern-function
-  #'(lambda (kakutei-word)
-      (eq (aref skk-henkan-key (1- (length skk-henkan-key)))
-        skk-server-completion-search-char)))
-
+;; (add-to-list 'skk-completion-prog-list
+;;   '(skk-comp-by-server-completion) t)
+;; (add-to-list 'skk-search-prog-list
+;;   '(skk-server-completion-search) t)
+;; (add-hook 'skk-search-excluding-word-pattern-function
+;;   #'(lambda (kakutei-word)
+;;       (eq (aref skk-henkan-key (1- (length skk-henkan-key)))
+;;         skk-server-completion-search-char)))
 
 ;; 動作
 (setq skk-egg-like-newline t) ; Enterで改行しない
@@ -125,6 +124,13 @@
 
 ;; カタカナを変換候補に入れる
 (setq skk-search-katakana 'jisx0201-kana)
+
+(setq skk-rom-kana-rule-list
+  (append skk-rom-kana-rule-list
+    '(("!" nil "!")
+       (":" nil ":")
+       (";" nil ";")
+       ("?" nil "?"))))
 
 ;; AZIKにする
 ;; (require 'skk-azik)

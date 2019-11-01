@@ -34,6 +34,10 @@ This function should only modify configuration layer settings."
     ;; List of configuration layers to load.
     dotspacemacs-configuration-layers
     '(
+       (auto-completion :variables
+         auto-completion-enable-snippets-in-popup t
+         auto-completion-enable-help-tooltip t
+         auto-completion-use-company-box t)
        (helm :variables
          helm-enable-auto-resize t
          helm-no-header t
@@ -41,7 +45,6 @@ This function should only modify configuration layer settings."
          spacemacs-helm-rg-max-column-number 1024
          )
        ;; ivy
-       auto-completion
        better-defaults
        ;; themes-megapack
        (copy-as-format :variables
@@ -111,11 +114,15 @@ This function should only modify configuration layer settings."
        twitter
        ;; slack
        ranger
-       (neotree :variables
-         neo-theme 'icons
-         neo-persist-show t
-         neo-smart-open t
-         ;; neo-window-position 'right
+       ;; (neotree :variables
+       ;;   neo-theme 'icons
+       ;;   neo-persist-show t
+       ;;   neo-smart-open t
+       ;;   ;; neo-window-position 'right
+       ;;   )
+       (treemacs :variables
+         treemacs-use-follow-mode t
+         treemacs-lock-width t
          )
        csv
        yaml
@@ -136,7 +143,6 @@ This function should only modify configuration layer settings."
          godoc-at-point-function 'godoc-gogetdoc
          go-format-before-save t
          gofmt-command "goimports"
-         go-tab-width 4
          )
        (python :variables
          python-enable-yapf-format-on-save t
@@ -148,9 +154,16 @@ This function should only modify configuration layer settings."
        ruby
        html
        javascript
-       sql
+       (sql :variables
+         sql-capitalize-keywords t
+         sql-capitalize-keywords-disable-interactive t
+         sql-capitalize-keywords-blacklist '("name" "varchar")
+         sqlfmt-executable "pg_format"
+         sqlfmt-options '()
+         )
        groovy
-       lua)
+       lua
+       ansible)
 
     ;; List of additional packages that will be installed without being
     ;; wrapped in a layer. If you need some configuration for these
@@ -165,11 +178,12 @@ This function should only modify configuration layer settings."
        helm-ghq
        helm-eww
        browse-url-dwim
-       company-box
+       ;; company-box
        fish-completion
        ;; mpdel
        exec-path-from-shell
        go-autocomplete
+       ox-asciidoc
        )
 
     ;; A list of packages that cannot be updated.
@@ -822,10 +836,16 @@ before packages are loaded."
            "* %U%?\n%i\n%a")))
     )
 
-  (use-package company-box
-    :hook (company-mode . company-box-mode))
+  ;; (use-package company-box
+  ;; :hook (company-mode . company-box-mode))
   ;; (setq comjpany-box-backends-colors nil)
   ;; (global-company-mode t)
+  ;; (use-package company-box
+  ;;   :after (company all-the-icons)
+  ;;   :hook ((company-mode . company-box-mode))
+  ;;   :custom
+  ;;   (company-box-icons-alist 'company-box-icons-all-the-icons)
+  ;;   (company-box-doc-enable nil))
 
   (when (and (executable-find "fish")
           (require 'fish-completion nil t))
