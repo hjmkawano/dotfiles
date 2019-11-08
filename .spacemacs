@@ -38,12 +38,6 @@ This function should only modify configuration layer settings."
          auto-completion-enable-snippets-in-popup t
          auto-completion-enable-help-tooltip t
          auto-completion-use-company-box t)
-       ;; (helm :variables
-       ;;   helm-enable-auto-resize t
-       ;;   helm-no-header t
-       ;;   helm-position 'top
-       ;;   spacemacs-helm-rg-max-column-number 1024
-       ;;   )
        (ivy :variables
          ivy-enable-advanced-buffer-information t)
        better-defaults
@@ -99,8 +93,6 @@ This function should only modify configuration layer settings."
        (deft :variables
          deft-directory "~/notes"
          )
-       ;; (dash :variables
-       ;;   helm-dash-browser-func 'eww)   ; TODO できればDash.appにしたい
        dash
        search-engine
        emoji
@@ -177,14 +169,18 @@ This function should only modify configuration layer settings."
     '(
        ddskk
        browse-url-dwim
-       ;; helm-ghq
-       ;; helm-eww
        fish-completion
        ;; mpdel
        exec-path-from-shell
        go-autocomplete
        ox-asciidoc
        jenkins
+       counsel-osx-app
+       counsel-world-clock
+       flyspell-correct-ivy
+       org-recent-headings
+       all-the-icons-ivy
+       ivy-posframe
        )
 
     ;; A list of packages that cannot be updated.
@@ -763,16 +759,6 @@ before packages are loaded."
   (require 'ace-link)
   (require 'browse-url-dwim)
 
-  ;; Helm
-  (setq helm-for-files-preferred-list
-    '(helm-source-buffers-list
-       helm-source-recentf
-       helm-source-bookmarks
-       helm-source-file-cache
-       helm-source-files-in-current-dir
-       helm-source-eww-history
-       helm-source-locate))
-
   ;; mu4e
   (with-eval-after-load 'mu4e-alert
     ;; Enable Desktop notifications
@@ -859,16 +845,160 @@ before packages are loaded."
   ;; (require 'mpdel)
   ;; (mpdel-mode)
 
-  ;; (with-eval-after-load 'ivy
-  ;;   (require 'ivy-posframe)
-  ;;   (setq ivy-display-function #'ivy-posframe-display)
-  ;;   (setq ivy-display-function #'ivy-posframe-display-at-frame-center)
-  ;;   (setq ivy-display-function #'ivy-posframe-display-at-window-center)
-  ;;   (setq ivy-display-function #'ivy-posframe-display-at-frame-bottom-left)
-  ;;   (setq ivy-display-function #'ivy-posframe-display-at-window-bottom-left)
-  ;;   (setq ivy-display-function #'ivy-posframe-display-at-point)
-  ;;   (ivy-posframe-enable)
-  ;;   )
+  (with-eval-after-load 'ivy
+    (require 'ivy-posframe)
+
+    ;; package 経由のインストールなら，M-x counsel-world-clock ですぐ使える．
+    (require 'counsel-world-clock nil t)
+    (setq ivy-count-format "(%d/%d) ")
+
+    )
+
+  (with-eval-after-load "ivy"
+    (defun my-pre-prompt-function ()
+      (if window-system
+        (format "%s\n%s "
+          (make-string 40 ?\x5F) ;; "__"
+          (all-the-icons-faicon "sort-amount-asc")) ;; ""
+        (format "%s\n" (make-string (1- (frame-width)) ?\x2D))))
+    (setq ivy-pre-prompt-function #'my-pre-prompt-function))
+
+  (with-eval-after-load "ivy-posframe"
+    ;; https://github.com/tumashu/ivy-posframe
+
+    (setq ivy-posframe-height-alist '((swiper . 20)
+                                       (t      . 40)))
+
+    ;; Different command can use different display function.
+    (setq ivy-posframe-display-functions-alist
+      '((swiper          . nil)
+         (complete-symbol . ivy-posframe-display-at-point)
+         (counsel-M-x     . ivy-posframe-display-at-frame-bottom-window-center)
+         (t               . ivy-posframe-display-at-frame-top-center))
+      )
+    (ivy-posframe-mode 1)
+
+    (setq ivy-posframe-parameters
+      '((left-fringe . 8)
+         (right-fringe . 8)))
+    (ivy-posframe-enable))
+
+  (when (require 'counsel-selected nil t)
+    (define-key selected-keymap (kbd "l") 'counsel-selected))
+
+  (global-set-key (kbd "C-M-1") 'counsel-osx-app)
+  (with-eval-after-load "counsel-osx-app"
+    (custom-set-variables
+      '(counsel-osx-app-location
+         '("/Applications" "/Applications/Utilities"
+            "/System/Applications"
+            "/Applications/Microsoft Remote Desktop.localized"))))
+
+  (when (require 'flyspell-correct-ivy nil t)
+    (setq flyspell-correct-interface '#'flyspell-correct-ivy)
+    (global-set-key (kbd "<f7>") 'flyspell-correct-word-generic))
+
+  (use-package org-recent-headings
+    :config (org-recent-headings-mode))
+
+  ;; for Ivy interface
+  (global-set-key (kbd "C-c f r") 'org-recent-headings-ivy)
+
+  (with-eval-after-load "org-recent-headings"
+    ;; デフォルトでは `ivy-string<' が使われてしまい，使用履歴が反映されない．
+    ;; つまり， recent-headings.dat に記録された順が反映されない．
+    (setf (alist-get 'org-recent-headings-ivy ivy-sort-functions-alist) nil)
+
+    ;; 履歴の保存先を調整
+    (setq org-recent-headings-save-file "~/.emacs.d/org-recent-headings.dat")
+
+    ;; 選択した箇所に直接移動する (C-M-n/C-M-p のプレビューは効かない)
+    (setq org-recent-headings-show-entry-function
+      'org-recent-headings--show-entry-direct)
+
+    ;; 履歴の更新をキックするコマンドの指定
+    (setq org-recent-headings-advise-functions
+      '(org-agenda-goto
+         org-agenda-show
+         org-agenda-show-mouse
+         org-show-entry
+         org-reveal
+         org-refile
+         org-tree-to-indirect-buffer
+         org-bookmark-jump))
+
+    ;; アクティベート
+    (org-recent-headings-mode))
+
+  (when (require 'prescient nil t)
+    ;; ivy インターフェイスでコマンドを実行するたびに，キャッシュをファイル保存
+    (setq prescient-aggressive-file-save t)
+
+    ;; ファイルの保存先
+    (setq prescient-save-file
+      (expand-file-name "~/.emacs.d/prescient-save.el"))
+
+    ;; アクティベート
+    (prescient-persist-mode 1))
+
+  (when (require 'ivy-prescient nil t)
+
+    ;; =ivy= の face 情報を引き継ぐ（ただし，完全ではない印象）
+    (setq ivy-prescient-retain-classic-highlighting t)
+
+    ;; コマンドを追加
+    (dolist (command '(counsel-world-clock ;; Merged!
+                        counsel-app)) ;; add :caller
+      (add-to-list 'ivy-prescient-sort-commands command))
+
+    ;; フィルタの影響範囲を限定する．以下の3つは順番が重要．
+    ;; (1) マイナーモードの有効化
+    (ivy-prescient-mode 1)
+    ;; (2) =counsel-M-x= をイニシャル入力対応にする
+    (setf (alist-get 'counsel-M-x ivy-re-builders-alist)
+      #'ivy-prescient-re-builder)
+    ;; (3) デフォルトのイニシャル入力を上書きする
+    (setf (alist-get t ivy-re-builders-alist) #'ivy--regex-ignore-order))
+
+  (defface my-ivy-arrow-visible
+    '((((class color) (background light)) :foreground "orange")
+       (((class color) (background dark)) :foreground "#EE6363"))
+    "Face used by Ivy for highlighting the arrow.")
+
+  (defface my-ivy-arrow-invisible
+    '((((class color) (background light)) :foreground "#FFFFFF")
+       (((class color) (background dark)) :foreground "#31343F"))
+    "Face used by Ivy for highlighting the invisible arrow.")
+
+  (if window-system
+    (when (require 'all-the-icons nil t)
+      (defun my-ivy-format-function-arrow (cands)
+        "Transform CANDS into a string for minibuffer."
+        (ivy--format-function-generic
+          (lambda (str)
+            (concat (all-the-icons-faicon
+                      "hand-o-right"
+                      :v-adjust -0.2 :face 'my-ivy-arrow-visible)
+              " " (ivy--add-face str 'ivy-current-match)))
+          (lambda (str)
+            (concat (all-the-icons-faicon
+                      "hand-o-right" :face 'my-ivy-arrow-invisible) " " str))
+          cands
+          "\n"))
+      (setq ivy-format-functions-alist
+        '((t . my-ivy-format-function-arrow))))
+    (setq ivy-format-functions-alist '((t . ivy-format-function-arrow))))
+
+  (use-package all-the-icons-ivy
+    :ensure t
+    :config
+    (all-the-icons-ivy-setup))
+
+  (when (require 'all-the-icons-ivy nil t)
+    (dolist (command '(counsel-projectile-switch-project
+                        counsel-ibuffer))
+      (add-to-list 'all-the-icons-ivy-buffer-commands command))
+    (all-the-icons-ivy-setup))
 
   ;; Go
   (setenv "GO111MODULE" "on")
@@ -882,11 +1012,11 @@ before packages are loaded."
 
   ;; https://github.com/alecthomas/gometalinter/blob/master/README.md
   ;; https://github.com/favadi/flycheck-gometalinter/blob/master/README.md
-  (use-package flycheck-gometalinter
-    :ensure t
-    :config
-    (progn
-      (flycheck-gometalinter-setup)))
+  ;; (use-package flycheck-gometalinter
+  ;;   :ensure t
+  ;;   :config
+  ;;   (progn
+  ;;     (flycheck-gometalinter-setup)))
 
   ;; LSP
   ;; (use-package lsp-mode
@@ -896,7 +1026,6 @@ before packages are loaded."
   ;; optionally
   (use-package lsp-ui :commands lsp-ui-mode)
   (use-package company-lsp :commands company-lsp)
-  ;; (use-package helm-lsp :commands helm-lsp-workspace-symbol)
   (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
   ;; optionally if you want to use debugger
   (use-package dap-mode)
