@@ -1,1 +1,0 @@
-/Users/jimbeam8y/.config/fisherman/z/conf.d/z.fish

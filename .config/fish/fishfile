@@ -1,8 +1,2 @@
-oh-my-fish/theme-bobthefish
-fisherman/docker-completion
-fisherman/fzf
-fisherman/getopts
-decors/fish-ghq
-fisherman/pipenv
-fisherman/spin
-fisherman/z
+fishpkg/fish-prompt-mono
+fishpkg/fish-prompt-metro
