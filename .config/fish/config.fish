@@ -19,6 +19,12 @@ function fish_title
   true
 end
 
+# uses dircolors template
+#eval (gdircolors ~/src/github.com/seebi/dircolors-solarized/dircolors.256dark)
+
+# Aliases
+#alias ls='gls --color=auto'
+
 set -x PATH $HOME"/.local/bin" $PATH
 set -x PATH $HOME"/.yubikey/bin" $PATH
 
