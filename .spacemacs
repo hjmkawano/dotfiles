@@ -46,7 +46,7 @@ This function should only modify configuration layer settings."
          )
        emacs-lisp
        git
-       github
+       ;; github
        markdown
        multiple-cursors
        (org :variables
@@ -68,18 +68,18 @@ This function should only modify configuration layer settings."
          org-default-notes-file (concat org-directory "/notes.org")
          ;; Jira
          org-enable-jira-support t
-         jiralib-url "https://mecompany.atlassian.net:443"
+         jiralib-url "https://mecompany.atlassian.net"
          )
        (imenu-list :variables
          imenu-list-auto-resize nil
          imenu-list-size 0.2)
        (shell :variables
+         shell-default-term-shell "/bin/bash"
          shell-default-height 30
          shell-default-position 'bottom)
        spell-checking
        syntax-checking
        version-control
-       ;;
        better-defaults
        (osx :variables
          osx-command-as       'meta
@@ -105,14 +105,8 @@ This function should only modify configuration layer settings."
        asciidoc
        ;; bibtex
        twitter
-       ;; slack
+       slack
        ranger
-       ;; (neotree :variables
-       ;;   neo-theme 'icons
-       ;;   neo-persist-show t
-       ;;   neo-smart-open t
-       ;;   ;; neo-window-position 'right
-       ;;   )
        (treemacs :variables
          treemacs-use-follow-mode t
          treemacs-lock-width t
@@ -126,6 +120,8 @@ This function should only modify configuration layer settings."
          plantuml-jar-path "/usr/local/Cellar/plantuml/1.2019.10/libexec/plantuml.jar"
          org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2019.10/libexec/plantuml.jar"
          plantuml-java-args "java.awt.headless=true"
+         plantuml-default-exec-mode 'executable
+         ;; plantuml-server-url "http://localhost:8080/plantuml"
          )
        asciidoc
        docker
@@ -137,6 +133,7 @@ This function should only modify configuration layer settings."
          go-format-before-save t
          gofmt-command "goimports"
          )
+       protobuf
        (python :variables
          python-enable-yapf-format-on-save t
          python-sort-imports-on-save t
@@ -156,7 +153,8 @@ This function should only modify configuration layer settings."
          )
        groovy
        lua
-       ansible)
+       ansible
+       )
 
     ;; List of additional packages that will be installed without being
     ;; wrapped in a layer. If you need some configuration for these
@@ -169,8 +167,6 @@ This function should only modify configuration layer settings."
     '(
        ddskk
        browse-url-dwim
-       fish-completion
-       ;; mpdel
        exec-path-from-shell
        go-autocomplete
        ox-asciidoc
@@ -180,7 +176,11 @@ This function should only modify configuration layer settings."
        flyspell-correct-ivy
        org-recent-headings
        all-the-icons-ivy
-       ivy-posframe
+       ;; ivy-posframe
+       jq-mode
+       ob-sql-mode
+       ob-go
+       wrap-region
        )
 
     ;; A list of packages that cannot be updated.
@@ -267,12 +267,12 @@ It should only modify the values of Spacemacs settings."
     ;; `hybrid' is like `vim' except that `insert state' is replaced by the
     ;; `hybrid state' with `emacs' key bindings. The value can also be a list
     ;; with `:variables' keyword (similar to layers). Check the editing styles
-    ;; section of the documentation for details on available variables.
-    ;; (default 'vim)
+    ;; section of the documentatemacsr details on available variables.
+    ;; (emacslt 'vim)
     dotspacemacs-editing-style 'emacs
 
     ;; If non-nil output loading progress in `*Messages*' buffer. (default nil)
-    dotspacemacs-verbose-loading nil
+    dotspacemacs-verbose-loadinemacs nil
 
     ;; Specify the startup banner. Default value is `official', it displays
     ;; the official spacemacs logo. An integer value is the index of text
@@ -380,7 +380,7 @@ It should only modify the values of Spacemacs settings."
 
     ;; If non-nil then the last auto saved layouts are resumed automatically upon
     ;; start. (default nil)
-    dotspacemacs-auto-resume-layouts nil
+    dotspacemacs-auto-resume-layouts t
 
     ;; If non-nil, auto-generate layout name when creating new layouts. Only has
     ;; effect when using the "jump to layout by number" commands. (default nil)
@@ -389,7 +389,7 @@ It should only modify the values of Spacemacs settings."
     ;; Size (in MB) above which spacemacs will prompt to open the large file
     ;; literally to avoid performance issues. Opening a file literally means that
     ;; no major mode or minor modes are active. (default is 1)
-    dotspacemacs-large-file-size 1
+    dotspacemacs-large-file-size 2
 
     ;; Location where to auto-save files. Possible values are `original' to
     ;; auto-save the file in-place, `cache' to auto-save the file to another
@@ -407,7 +407,7 @@ It should only modify the values of Spacemacs settings."
 
     ;; Which-key delay in seconds. The which-key buffer is the popup listing
     ;; the commands bound to the current keystroke sequence. (default 0.4)
-    dotspacemacs-which-key-delay 0.1
+    dotspacemacs-which-key-delay 0.2
 
     ;; Which-key frame position. Possible values are `right', `bottom' and
     ;; `right-then-bottom'. right-then-bottom tries to display the frame to the
@@ -500,7 +500,7 @@ It should only modify the values of Spacemacs settings."
 
     ;; Code folding method. Possible values are `evil' and `origami'.
     ;; (default 'evil)
-    dotspacemacs-folding-method 'origami
+    dotspacemacs-folding-method 'evil
 
     ;; If non-nil `smartparens-strict-mode' will be enabled in programming modes.
     ;; (default nil)
@@ -590,6 +590,8 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
+  (require 'semantic/db-file)
+
   (defun my-lisp-load (filename)
     "Load lisp from FILENAME"
     (let ((fullname (expand-file-name (concat "private/" filename) user-emacs-directory))
@@ -631,13 +633,13 @@ before packages are loaded."
   (add-to-list 'default-frame-alist
     '(ns-appearance . dark)) ;; or dark - depending on your theme
 
-  (spacemacs/toggle-transparency)
+  ;; (spacemacs/toggle-transparency)
+  (spacemacs/toggle-golden-ratio-off)
   (spacemacs/toggle-mode-line-battery-on)
-  (spacemacs/toggle-golden-ratio-on)
   (spacemacs/toggle-which-key-on)
   (spacemacs/toggle-aggressive-indent-globally-on)
 
-  ;; authinfo ファイルの指定
+  ;;; authinfo ファイルの指定
   (setq nntp-authinfo-file "~/.authinfo.gpg")
   (setq nnimap-authinfo-file "~/.authinfo.gpg")
   (setq smtpmail-auth-credentials "~/.authinfo.gpg")
@@ -660,11 +662,11 @@ before packages are loaded."
   ;;   :token my-slack-client-token
   ;;   :subscribed-channels '(general slackbot))
 
-  ;; (spacemacs|define-custom-layout "@Slack"
-  ;;   :binding "s"
-  ;;   :body
-  ;;   (call-interactively 'slack-start)
-  ;;   )
+  (spacemacs|define-custom-layout "@Slack"
+    :binding "s"
+    :body
+    (call-interactively 'slack-start)
+    )
 
   ;; (spacemacs|define-custom-layout "@elfeed"
   ;;   :binding "l"
@@ -792,6 +794,14 @@ before packages are loaded."
     ;;   '((ditaa . t)))
     (setq org-ditaa-jar-path "/usr/local/bin/ditaa")
     (setq org-refile-targets '((org-agenda-files :maxlevel . 2)))
+    (require 'ob-go)
+    (org-babel-do-load-languages 'org-babel-load-languages
+      (append org-babel-load-languages
+        '((go . t)
+           ))
+      )
+
+    (require 'ob-sql-mode)
 
     ;;     (setq org-capture-templates
     ;;       '(("e" "experiment" entry (file+headline "~/dropbox/notes/experiment.org" "experiment")
@@ -834,9 +844,9 @@ before packages are loaded."
   ;;   (company-box-icons-alist 'company-box-icons-all-the-icons)
   ;;   (company-box-doc-enable nil))
 
-  (when (and (executable-find "fish")
-          (require 'fish-completion nil t))
-    (global-fish-completion-mode))
+  ;; (when (and (executable-find "fish")
+  ;;         (require 'fish-completion nil t))
+  ;;   (global-fish-completion-mode))
 
   ;; projectile
   (setq projectile-enable-caching t)
@@ -846,7 +856,7 @@ before packages are loaded."
   ;; (mpdel-mode)
 
   (with-eval-after-load 'ivy
-    (require 'ivy-posframe)
+    ;; (require 'ivy-posframe)
 
     ;; package 経由のインストールなら，M-x counsel-world-clock ですぐ使える．
     (require 'counsel-world-clock nil t)
@@ -863,25 +873,31 @@ before packages are loaded."
         (format "%s\n" (make-string (1- (frame-width)) ?\x2D))))
     (setq ivy-pre-prompt-function #'my-pre-prompt-function))
 
-  (with-eval-after-load "ivy-posframe"
-    ;; https://github.com/tumashu/ivy-posframe
+  ;; 一時無効化する
+  ;; (with-eval-after-load "ivy-posframe"
+  ;;   ;; https://github.com/tumashu/ivy-posframe
 
-    (setq ivy-posframe-height-alist '((swiper . 20)
-                                       (t      . 40)))
+  ;;   (setq ivy-posframe-height-alist '((swiper . 20)
+  ;;                                      (t      . 30)))
 
-    ;; Different command can use different display function.
-    (setq ivy-posframe-display-functions-alist
-      '((swiper          . nil)
-         (complete-symbol . ivy-posframe-display-at-point)
-         (counsel-M-x     . ivy-posframe-display-at-frame-bottom-window-center)
-         (t               . ivy-posframe-display-at-frame-top-center))
-      )
-    (ivy-posframe-mode 1)
+  ;;   ;; Different command can use different display function.
+  ;;   (setq ivy-posframe-display-functions-alist
+  ;;     '((swiper          . nil)
+  ;;        (swiper-all      . nil)
+  ;;        (complete-symbol . nil)
+  ;;        (counsel-M-x     . nil)
+  ;;        (counsel-find-file . nil)
+  ;;        (t               . ivy-posframe-display-at-frame-top-center))
+  ;;     )
+  ;;   (setq ivy-posframe-parameters
+  ;;     '((left-fringe . 8)
+  ;;        (right-fringe . 8)))
+  ;;   (ivy-posframe-mode 1))
 
-    (setq ivy-posframe-parameters
-      '((left-fringe . 8)
-         (right-fringe . 8)))
-    (ivy-posframe-enable))
+  ;; (use-package treemacs-icons-dired
+  ;;   :after treemacs dired
+  ;;   :ensure t
+  ;;   :config (treemacs-icons-dired-mode))
 
   (when (require 'counsel-selected nil t)
     (define-key selected-keymap (kbd "l") 'counsel-selected))
@@ -890,9 +906,10 @@ before packages are loaded."
   (with-eval-after-load "counsel-osx-app"
     (custom-set-variables
       '(counsel-osx-app-location
-         '("/Applications" "/Applications/Utilities"
-            "/System/Applications"
-            "/Applications/Microsoft Remote Desktop.localized"))))
+         '("/Applications" "/Applications/Utilities" "/System/Applications")
+         )
+      )
+    )
 
   (when (require 'flyspell-correct-ivy nil t)
     (setq flyspell-correct-interface '#'flyspell-correct-ivy)
@@ -1038,6 +1055,8 @@ before packages are loaded."
        (custom-set-variables
          '(magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 18)))))
 
+  ;;; You need to customize ‘magit-repository-directories’ before you can list repositories
+
   ;; jenkins.el
   (with-eval-after-load 'jenkins
     (setq jenkins-api-token "11f24f43355259f412180476a0700cffc4")
@@ -1048,5 +1067,27 @@ before packages are loaded."
     (setq jenkins-colwidth-id 10)
     (setq jenkins-colwidth-last-status 60)
     )
+
+  (with-eval-after-load "json-mode"
+    (define-key json-mode-map (kbd "C-c C-j") #'jq-interactively))
+
+  (org-babel-do-load-languages 'org-babel-load-languages
+    (append org-babel-load-languages
+      '((jq . t)
+         ))
+    )
+
+  (require 'wrap-region)
+
+  ;; emacs-ja.info
+  ;; https://ayatakesi.github.io/
+  (add-to-list 'Info-directory-list "~/info/")
+  (defun Info-find-node--info-ja (orig-fn filename &rest args)
+    (apply orig-fn
+      (pcase filename
+        ("emacs" "emacs263-ja")
+        (t filename))
+      args))
+  (advice-add 'Info-find-node :around 'Info-find-node--info-ja)
 
   ) ;; end of user-config

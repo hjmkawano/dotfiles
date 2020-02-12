@@ -68,3 +68,5 @@ set tabstop=2
 set shiftwidth=4
 set cursorline
 set number
+
+set rtp+=/usr/local/opt/fzf
