@@ -9,7 +9,7 @@ if not functions -q fisher
     fish -c fisher
 end
 
-set fish_plugins theme git rbenv rails brew bundler gem osx pbcopy better-alias gi peco z tmux ghq spin fzf
+set fish_plugins theme git rbenv rails brew bundler gem osx pbcopy better-alias z tmux ghq spin fzf
 
 # this function may be required
 function fish_title
@@ -21,23 +21,18 @@ alias git hub
 alias ps 'ps ax|fzf'
 
 
-set -x GOPATH $HOME
+# set -x GOPATH $HOME
 set -x PATH $HOME"/.local/bin" $PATH
 set -x PATH $HOME"/bin" $PATH
 set -x PATH $HOME"/.yubikey/bin" $PATH
-set -x PATH $GOPATH $PATH
+# set -x PATH $GOPATH $PATH
 set -x PATH "/usr/local/opt/coreutils/libexec/gnubin" $PATH
 set -x PATH $HOME/".nodebrew/current/bin" $PATH
+set -x PATH $HOME/"/Library/Python/3.7/bin" $PATH
 
 set -x MANPATH "/usr/local/opt/coreutils/libexec/gnuman" $MANPATH
 
 set -x GHQ_SELECTOR fzf
-
-set -gx FZF_DEFAULT_COMMAND 'ag -g ""'
-set -gx FZF_DEFAULT_OPTS '--inline-info --height 50% --border --margin=1,2'
-set -gx FZF_TMUX 0
-set -gx FZF_TMUX_HEIGHT 50%
-set -U FZF_LEGACY_KEYBINDINGS 0
 
 status --is-interactive; and source (anyenv init -|psub)
 direnv hook fish | source
@@ -51,6 +46,7 @@ set -g fish_user_paths "/usr/local/opt/qt/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/imagemagick@6/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/sqlite/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/texlive/2018/bin/x86_64-darwin" $fish_user_paths
+set -g fish_user_paths "/usr/local/opt/mysql-client/bin" $fish_user_paths
 
 set -g theme_powerline_fonts no
 set -g theme_nerd_fonts yes
