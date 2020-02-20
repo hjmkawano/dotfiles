@@ -45,7 +45,8 @@ This function should only modify configuration layer settings."
          copy-as-format-default "slack"
          )
        emacs-lisp
-       git
+       ;; git
+       (git :packages (not fancy-battery))
        ;; github
        markdown
        multiple-cursors
@@ -55,7 +56,7 @@ This function should only modify configuration layer settings."
          org-log-done 'time
          org-image-actual-width '(800)
          org-enable-github-support t
-         org-enable-bootstrap-support t
+         org-enable-bootstrap-support nil
          org-enable-org-journal-support t
          org-enable-reveal-js-support t
          org-journal-dir "~/notes/journal/"
@@ -68,6 +69,7 @@ This function should only modify configuration layer settings."
          org-default-notes-file (concat org-directory "/notes.org")
          ;; Jira
          org-enable-jira-support t
+         org-enable-epub-support t
          jiralib-url "https://mecompany.atlassian.net"
          )
        (imenu-list :variables
@@ -128,6 +130,7 @@ This function should only modify configuration layer settings."
        (go :variables
          go-use-gometalinter t
          go-linter 'gometalinter
+         go-use-golangci-lint t
          go-backend 'lsp
          godoc-at-point-function 'godoc-gogetdoc
          go-format-before-save t
@@ -170,17 +173,18 @@ This function should only modify configuration layer settings."
        exec-path-from-shell
        go-autocomplete
        ox-asciidoc
+       ox-confluence
        jenkins
        counsel-osx-app
        counsel-world-clock
        flyspell-correct-ivy
        org-recent-headings
        all-the-icons-ivy
-       ;; ivy-posframe
        jq-mode
        ob-sql-mode
        ob-go
        wrap-region
+       (justify-kp :location "~/.emacs.d/private/local")
        )
 
     ;; A list of packages that cannot be updated.
@@ -241,7 +245,7 @@ It should only modify the values of Spacemacs settings."
     ;; This is an advanced option and should not be changed unless you suspect
     ;; performance issues due to garbage collection operations.
     ;; (default '(100000000 0.1))
-    dotspacemacs-gc-cons '(100000000 0.1)
+    dotspacemacs-gc-cons '(200000000 0.1)
 
     ;; If non-nil then Spacelpa repository is the primary source to install
     ;; a locked version of packages. If nil then Spacemacs will install the
@@ -605,7 +609,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
                 (read (current-buffer))
                 (error ()))))))
       lisp))
-
+  (setq read-process-output-max (* 1024 1024)) ;; 1mb
   )
 
 (defun dotspacemacs/user-load ()
@@ -634,7 +638,7 @@ before packages are loaded."
     '(ns-appearance . dark)) ;; or dark - depending on your theme
 
   ;; (spacemacs/toggle-transparency)
-  (spacemacs/toggle-golden-ratio-off)
+  (spacemacs/toggle-golden-ratio-on)
   (spacemacs/toggle-mode-line-battery-on)
   (spacemacs/toggle-which-key-on)
   (spacemacs/toggle-aggressive-indent-globally-on)
@@ -899,6 +903,13 @@ before packages are loaded."
   ;;   :ensure t
   ;;   :config (treemacs-icons-dired-mode))
 
+  ;;; treemacs
+  (with-eval-after-load 'treemacs
+    (defun treemacs-custom-filter (file _)
+      (or (s-ends-with? ".aux" file)
+        (s-equals? "journal" file)))
+    (push #'treemacs-custom-filter treemacs-ignored-file-predicates))
+
   (when (require 'counsel-selected nil t)
     (define-key selected-keymap (kbd "l") 'counsel-selected))
 
@@ -1018,8 +1029,8 @@ before packages are loaded."
     (all-the-icons-ivy-setup))
 
   ;; Go
-  (setenv "GO111MODULE" "on")
-  (add-to-list 'exec-path "~/bin/")
+  ;; (setenv "GO111MODULE" "on")
+  ;; (add-to-list 'exec-path "~/bin/")
 
   (use-package exec-path-from-shell
     :ensure t
@@ -1036,18 +1047,35 @@ before packages are loaded."
   ;;     (flycheck-gometalinter-setup)))
 
   ;; LSP
-  ;; (use-package lsp-mode
-  ;;   :hook (XXX-mode . lsp)
-  ;;   :commands lsp)
+  (use-package lsp-mode
+    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+    :init (setq lsp-keymap-prefix "s-l")
+    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+            (go-mode . lsp)
+            ;; if you want which-key integration
+            (lsp-mode . lsp-enable-which-key-integration))
+    :commands lsp)
 
   ;; optionally
   (use-package lsp-ui :commands lsp-ui-mode)
   (use-package company-lsp :commands company-lsp)
+  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
   (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
   ;; optionally if you want to use debugger
   (use-package dap-mode)
-  (use-package dap-go)
   ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+  (use-package dap-go)
+
+  ;; optional if you want which-key integration
+  (use-package which-key
+    :config
+    (which-key-mode))
+
+  ;; Optional: use company-capf . Although company-lsp also supports caching
+  ;; lsp-mode’s company-capf does that by default. To achieve that uninstall
+  ;; company-lsp or put these lines in your config:
+  (setq lsp-prefer-capf t)
 
   ;; Magit
   (eval-after-load "magit-log"
@@ -1089,5 +1117,45 @@ before packages are loaded."
         (t filename))
       args))
   (advice-add 'Info-find-node :around 'Info-find-node--info-ja)
+
+
+  ;; epub
+  (defun my-nov-font-setup ()
+    (face-remap-add-relative 'variable-pitch :family "Liberation Serif"
+      :height 1.0))
+  (add-hook 'nov-mode-hook 'my-nov-font-setup)
+
+  (setq nov-text-width t)
+  (setq visual-fill-column-center-text t)
+  (add-hook 'nov-mode-hook 'visual-line-mode)
+  (add-hook 'nov-mode-hook 'visual-fill-column-mode)
+
+  (require 'justify-kp)
+  (setq nov-text-width t)
+
+  (defun my-nov-window-configuration-change-hook ()
+    (my-nov-post-html-render-hook)
+    (remove-hook 'window-configuration-change-hook
+      'my-nov-window-configuration-change-hook
+      t))
+
+  (defun my-nov-post-html-render-hook ()
+    (if (get-buffer-window)
+      (let ((max-width (pj-line-width))
+             buffer-read-only)
+        (save-excursion
+          (goto-char (point-min))
+          (while (not (eobp))
+            (when (not (looking-at "^[[:space:]]*$"))
+              (goto-char (line-end-position))
+              (when (> (shr-pixel-column) max-width)
+                (goto-char (line-beginning-position))
+                (pj-justify)))
+            (forward-line 1))))
+      (add-hook 'window-configuration-change-hook
+        'my-nov-window-configuration-change-hook
+        nil t)))
+
+  (add-hook 'nov-post-html-render-hook 'my-nov-post-html-render-hook)
 
   ) ;; end of user-config

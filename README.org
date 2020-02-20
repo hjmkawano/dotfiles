@@ -1,0 +1,4 @@
+* How to Install
+  #+begin_src shell
+  brew install emacs-head --HEAD --with-cocoa --with-imagemagick --with-pdumper
+  #+end_src
