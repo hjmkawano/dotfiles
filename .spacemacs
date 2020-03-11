@@ -173,13 +173,13 @@ This function should only modify configuration layer settings."
        exec-path-from-shell
        go-autocomplete
        ox-asciidoc
-       ox-confluence
        jenkins
        counsel-osx-app
        counsel-world-clock
        flyspell-correct-ivy
        org-recent-headings
-       all-the-icons-ivy
+       all-the-icons-ivy-rich
+       ivy-rich
        jq-mode
        ob-sql-mode
        ob-go
@@ -313,7 +313,8 @@ It should only modify the values of Spacemacs settings."
     ;; Press `SPC T n' to cycle to the next theme in the list (works great
     ;; with 2 themes variants, one dark and one light)
     dotspacemacs-themes '(
-                           doom-one
+                           doom-nord
+                           ;; doom-one
                            ;; leuven
                            ;; brin
                            ;; flatland
@@ -594,7 +595,11 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
-  (require 'semantic/db-file)
+  (setq tramp-ssh-controlmaster-options
+    "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+
+  ;; (require 'semantic/db-file)
+  (setq read-process-output-max (* 1024 1024)) ;; 1mb
 
   (defun my-lisp-load (filename)
     "Load lisp from FILENAME"
@@ -609,7 +614,6 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
                 (read (current-buffer))
                 (error ()))))))
       lisp))
-  (setq read-process-output-max (* 1024 1024)) ;; 1mb
   )
 
 (defun dotspacemacs/user-load ()
@@ -777,7 +781,7 @@ before packages are loaded."
   ;; (global-wakatime-mode)
 
   ;; for pdf layer(pdf-tools)
-  (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig")
+  ;; (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig")
   ;; (add-hook 'pdf-view-mode-hook (lambda() (linum-mode -1)))
   ;; https://stackoverflow.com/questions/16132234/how-can-i-speed-up-emacs-docview-mode
   (global-linum-mode -1)
@@ -1017,16 +1021,33 @@ before packages are loaded."
         '((t . my-ivy-format-function-arrow))))
     (setq ivy-format-functions-alist '((t . ivy-format-function-arrow))))
 
-  (use-package all-the-icons-ivy
-    :ensure t
-    :config
-    (all-the-icons-ivy-setup))
+  ;; (use-package all-the-icons-ivy
+  ;;   :ensure t
+  ;;   :config
+  ;;   (all-the-icons-ivy-setup))
 
-  (when (require 'all-the-icons-ivy nil t)
-    (dolist (command '(counsel-projectile-switch-project
-                        counsel-ibuffer))
-      (add-to-list 'all-the-icons-ivy-buffer-commands command))
-    (all-the-icons-ivy-setup))
+  ;; (when (require 'all-the-icons-ivy nil t)
+  ;;   (dolist (command '(counsel-projectile-switch-project
+  ;;                       counsel-ibuffer))
+  ;;     (add-to-list 'all-the-icons-ivy-buffer-commands command))
+  ;;   (all-the-icons-ivy-setup))
+  (use-package all-the-icons-ivy-rich
+    :ensure t
+    :init (all-the-icons-ivy-rich-mode 1))
+
+  (use-package ivy-rich
+    :ensure t
+    :init (ivy-rich-mode 1))
+
+  (with-eval-after-load "all-the-icons-ivy"
+    (defvar my-tab-width tab-width)
+    (defun my-tab-width-2 () (setq tab-width 2))
+    (defun my-tab-width-1 () (setq tab-width 1))
+    (defun my-tab-width-8 () (setq tab-width 8))
+    (defun my-tab-width-original ()
+      (setq tab-width my-tab-width))
+    (add-hook 'minibuffer-setup-hook #'my-tab-width-2)
+    (add-hook 'minibuffer-exit-hook #'my-tab-width-original))
 
   ;; Go
   ;; (setenv "GO111MODULE" "on")
