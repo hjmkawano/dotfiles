@@ -2,9 +2,6 @@ fishpkg/fish-prompt-mono
 fishpkg/fish-prompt-metro
 jethrokuan/z
 jethrokuan/fzf
-<<<<<<< Updated upstream
-decors/fish-ghq
-=======
 oh-my-fish/plugin-battery
 laughedelic/brew-completions
 decors/fish-ghq
@@ -12,4 +9,3 @@ upamune/fish-todoist
 dsanson/fish-completion-pandoc
 jethrokuan/z
 rafaelrinaldi/pure
->>>>>>> Stashed changes
