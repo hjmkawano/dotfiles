@@ -26,14 +26,16 @@ set -x PATH $HOME"/bin" $PATH
 set -x PATH $HOME"/.yubikey/bin" $PATH
 
 set -x PATH "/usr/local/opt/coreutils/libexec/gnubin" $PATH
-set -x PATH $HOME/".nodebrew/current/bin" $PATH
-set -x PATH $HOME/"/Library/Python/3.7/bin" $PATH
-
 set -x MANPATH "/usr/local/opt/coreutils/libexec/gnuman" $MANPATH
+
+set -x PATH $HOME/".nodebrew/current/bin" $PATH
+# set -x PATH $HOME/"/Library/Python/3.7/bin" $PATH
 
 set -x GHQ_SELECTOR fzf
 
 status --is-interactive; and source (anyenv init -|psub)
+status --is-interactive; and source (pyenv init -|psub)
+
 set -x GOENV_DISABLE_GOPATH 1
 direnv hook fish | source
 
@@ -47,6 +49,7 @@ set -g fish_user_paths "/usr/local/opt/imagemagick@6/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/sqlite/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/texlive/2018/bin/x86_64-darwin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/mysql-client/bin" $fish_user_paths
+set -g fish_user_paths "/usr/local/sbin" $fish_user_paths
 
 set -g theme_powerline_fonts no
 set -g theme_nerd_fonts yes
@@ -57,4 +60,3 @@ set -x VIRTUAL_ENV_DISABLE_PROMPT 1
 set -gx GNUPGHOME $HOME"/.gnupg"
 
 test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
-set -g fish_user_paths "/usr/local/sbin" $fish_user_paths
