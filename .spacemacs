@@ -33,7 +33,7 @@ This function should only modify configuration layer settings."
 
     ;; List of configuration layers to load.
     dotspacemacs-configuration-layers
-    '(
+    '(rust
        (auto-completion :variables
          auto-completion-enable-snippets-in-popup t
          auto-completion-enable-help-tooltip t
@@ -80,7 +80,8 @@ This function should only modify configuration layer settings."
          shell-default-height 30
          shell-default-position 'bottom)
        spell-checking
-       syntax-checking
+       (syntax-checking :variables
+         syntax-checking-use-original-bitmaps t)
        version-control
        better-defaults
        (osx :variables
@@ -114,7 +115,8 @@ This function should only modify configuration layer settings."
          treemacs-lock-width t
          )
        csv
-       yaml
+       (yaml :variables
+         yaml-enable-lsp t)
        json
        lsp
        dap
@@ -128,6 +130,7 @@ This function should only modify configuration layer settings."
        asciidoc
        docker
        (go :variables
+         go-tab-width 4
          go-use-gometalinter t
          go-linter 'gometalinter
          go-use-golangci-lint t
@@ -184,7 +187,10 @@ This function should only modify configuration layer settings."
        ob-sql-mode
        ob-go
        wrap-region
+       company-lsp
        (justify-kp :location "~/.emacs.d/private/local")
+       ripgrep
+       toml-mode
        )
 
     ;; A list of packages that cannot be updated.
@@ -339,9 +345,10 @@ It should only modify the values of Spacemacs settings."
     ;; quickly tweak the mode-line size to make separators look not too crappy.
     dotspacemacs-default-font '(
                                  ;; "Source Code Pro"
-				                         "Hack Nerd Font"
                                  ;; "Ricty Diminished Discord"
-                                 :size 14
+				                         ;; "Hack Nerd Font"
+                                 "Source Han Code JP"
+                                 :size 15
                                  ;; :weight normal
                                  ;; :width normal
                                  )
@@ -646,6 +653,8 @@ before packages are loaded."
   (spacemacs/toggle-mode-line-battery-on)
   (spacemacs/toggle-which-key-on)
   (spacemacs/toggle-aggressive-indent-globally-on)
+
+  (global-flycheck-mode)
 
   ;;; authinfo ファイルの指定
   (setq nntp-authinfo-file "~/.authinfo.gpg")
@@ -1079,9 +1088,18 @@ before packages are loaded."
 
   ;; optionally
   (use-package lsp-ui :commands lsp-ui-mode)
-  (use-package company-lsp :commands company-lsp)
   (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
   (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+  (use-package company-lsp
+    :config
+    (setq company-lsp-cache-candidates 'auto)
+    (push 'company-lsp company-backends)
+    :commands company-lsp
+    )
+
+  (setq company-minimum-prefix-length 1
+    company-idle-delay 0.0) ;; default is 0.2
 
   ;; optionally if you want to use debugger
   (use-package dap-mode)
@@ -1096,7 +1114,8 @@ before packages are loaded."
   ;; Optional: use company-capf . Although company-lsp also supports caching
   ;; lsp-mode’s company-capf does that by default. To achieve that uninstall
   ;; company-lsp or put these lines in your config:
-  (setq lsp-prefer-capf t)
+  ;; (setq lsp-prefer-capf t)
+
 
   ;; Magit
   (eval-after-load "magit-log"
@@ -1127,6 +1146,8 @@ before packages are loaded."
     )
 
   (require 'wrap-region)
+  (add-hook 'org-mode-hook 'wrap-region-mode)
+  (add-hook 'markdown-mode-hook 'wrap-region-mode)
 
   ;; emacs-ja.info
   ;; https://ayatakesi.github.io/
@@ -1138,7 +1159,6 @@ before packages are loaded."
         (t filename))
       args))
   (advice-add 'Info-find-node :around 'Info-find-node--info-ja)
-
 
   ;; epub
   (defun my-nov-font-setup ()
