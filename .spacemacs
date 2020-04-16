@@ -160,6 +160,8 @@ This function should only modify configuration layer settings."
        groovy
        lua
        ansible
+       (ietf :variables
+         ietf-docs-cache "~/Downloads/ietf-docs-cache")
        )
 
     ;; List of additional packages that will be installed without being
