@@ -28,13 +28,11 @@ set -x PATH $HOME"/.yubikey/bin" $PATH
 set -x PATH "/usr/local/opt/coreutils/libexec/gnubin" $PATH
 set -x MANPATH "/usr/local/opt/coreutils/libexec/gnuman" $MANPATH
 
-set -x PATH $HOME/".nodebrew/current/bin" $PATH
-# set -x PATH $HOME/"/Library/Python/3.7/bin" $PATH
-
 set -x GHQ_SELECTOR fzf
 
 status --is-interactive; and source (anyenv init -|psub)
 status --is-interactive; and source (pyenv init -|psub)
+status --is-interactive; and source (nodenv init -|psub)
 
 set -x GOENV_DISABLE_GOPATH 1
 direnv hook fish | source

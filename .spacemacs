@@ -108,7 +108,6 @@ This function should only modify configuration layer settings."
        asciidoc
        ;; bibtex
        twitter
-       slack
        ranger
        (treemacs :variables
          treemacs-use-follow-mode t
@@ -117,7 +116,9 @@ This function should only modify configuration layer settings."
        csv
        (yaml :variables
          yaml-enable-lsp t)
-       json
+       (json :variables
+         js-indent-level 4
+         json-fmt-tool 'web-beautify)
        lsp
        dap
        (plantuml :variables
@@ -128,7 +129,8 @@ This function should only modify configuration layer settings."
          ;; plantuml-server-url "http://localhost:8080/plantuml"
          )
        asciidoc
-       docker
+       (docker :variables
+         docker-dockerfile-backend 'lsp)
        (go :variables
          go-tab-width 4
          go-use-gometalinter t
@@ -188,6 +190,7 @@ This function should only modify configuration layer settings."
        jq-mode
        ob-sql-mode
        ob-go
+       ob-mongo
        wrap-region
        company-lsp
        (justify-kp :location "~/.emacs.d/private/local")
@@ -300,9 +303,9 @@ It should only modify the values of Spacemacs settings."
     ;; `recents' `bookmarks' `projects' `agenda' `todos'.
     ;; List sizes may be nil, in which case
     ;; `spacemacs-buffer-startup-lists-length' takes effect.
-    dotspacemacs-startup-lists '((recents . 0)
+    dotspacemacs-startup-lists '((recents . 2)
                                   (projects . 5)
-                                  (bookmarks . 0)
+                                  (bookmarks . 3)
                                   (agenda . 8)
                                   (todos . 10)
                                   )
@@ -322,11 +325,6 @@ It should only modify the values of Spacemacs settings."
     ;; with 2 themes variants, one dark and one light)
     dotspacemacs-themes '(
                            doom-nord
-                           ;; doom-one
-                           ;; leuven
-                           ;; brin
-                           ;; flatland
-                           ;; wombat
                            )
 
     ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
