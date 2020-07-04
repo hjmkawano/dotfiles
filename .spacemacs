@@ -45,9 +45,8 @@ This function should only modify configuration layer settings."
          copy-as-format-default "slack"
          )
        emacs-lisp
-       ;; git
        (git :packages (not fancy-battery))
-       ;; github
+       github
        markdown
        multiple-cursors
        (org :variables
@@ -58,6 +57,9 @@ This function should only modify configuration layer settings."
          org-enable-github-support t
          org-enable-bootstrap-support nil
          org-enable-org-journal-support t
+         org-enable-sticky-header t
+         org-enable-epub-support t
+         org-enable-verb-support t
          org-enable-reveal-js-support t
          org-journal-dir "~/notes/journal/"
          org-journal-file-format "%Y-%m-%d"
@@ -69,11 +71,10 @@ This function should only modify configuration layer settings."
          org-default-notes-file (concat org-directory "/notes.org")
          ;; Jira
          org-enable-jira-support t
-         org-enable-epub-support t
-         jiralib-url "https://mecompany.atlassian.net"
+         jiralib-url "https://mecompany.atlassian.net:443"
          )
        (imenu-list :variables
-         imenu-list-auto-resize nil
+         imenu-list-auto-resize t
          imenu-list-size 0.2)
        (shell :variables
          shell-default-term-shell "/bin/bash"
@@ -99,28 +100,6 @@ This function should only modify configuration layer settings."
        dash
        search-engine
        emoji
-       web-beautify
-       (pdf :variables
-         pdf-view-display-size 'fit-page
-         pdf-annot-activate-created-annotations t)
-       epub
-       pandoc
-       asciidoc
-       ;; bibtex
-       twitter
-       ranger
-       (treemacs :variables
-         treemacs-use-follow-mode t
-         treemacs-lock-width t
-         )
-       csv
-       (yaml :variables
-         yaml-enable-lsp t)
-       (json :variables
-         js-indent-level 4
-         json-fmt-tool 'web-beautify)
-       lsp
-       dap
        (plantuml :variables
          plantuml-jar-path "/usr/local/Cellar/plantuml/1.2019.10/libexec/plantuml.jar"
          org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2019.10/libexec/plantuml.jar"
@@ -129,25 +108,52 @@ This function should only modify configuration layer settings."
          ;; plantuml-server-url "http://localhost:8080/plantuml"
          )
        asciidoc
+       web-beautify
+       (pdf :variables
+         pdf-view-display-size 'fit-page
+         pdf-annot-activate-created-annotations t)
+       epub
+       pandoc
+       asciidoc
+       ;; bibtex
+       ;; twitter
+       ranger
+       (treemacs :variables
+         treemacs-use-follow-mode t
+         treemacs-use-git-mode 'deferred  ; simple, extended, deferred
+         treemacs-use-scope-type 'Perspectives
+         treemacs-lock-width t
+         )
+       (lsp :variables
+         lsp-navigation 'peek
+         )
        (docker :variables
          docker-dockerfile-backend 'lsp)
+       csv
+       (yaml :variables
+         yaml-enable-lsp t)
+       (json :variables
+         js-indent-level 4
+         json-fmt-tool 'web-beautify)
        (go :variables
          go-tab-width 4
          go-use-gometalinter t
          go-linter 'gometalinter
-         go-use-golangci-lint t
          go-backend 'lsp
+         ;; go-use-golangci-lint t
+         ;; lsp-diagnostic-package :none
          godoc-at-point-function 'godoc-gogetdoc
          go-format-before-save t
          gofmt-command "goimports"
          )
+       dap
        protobuf
        (python :variables
          python-enable-yapf-format-on-save t
          python-sort-imports-on-save t
          python-fill-column 119
          )
-       ipython-notebook
+       ;; ipython-notebook
        shell-scripts
        ruby
        html
@@ -191,11 +197,13 @@ This function should only modify configuration layer settings."
        ob-sql-mode
        ob-go
        ob-mongo
+       ob-translate
+       ;; (org-roam :location (recipe :fetcher github :repo "jethrokuan/org-roam"))
        wrap-region
-       company-lsp
        (justify-kp :location "~/.emacs.d/private/local")
        ripgrep
        toml-mode
+       lsp-treemacs
        )
 
     ;; A list of packages that cannot be updated.
@@ -347,10 +355,15 @@ It should only modify the values of Spacemacs settings."
                                  ;; "Source Code Pro"
                                  ;; "Ricty Diminished Discord"
 				                         ;; "Hack Nerd Font"
-                                 "Source Han Code JP"
-                                 :size 15
-                                 ;; :weight normal
-                                 ;; :width normal
+                                 ;; "Source Han Code JP"
+                                 ;; :size 14
+                                 ;; ;; :weight normal
+                                 ;; ;; :width normal
+                                 ;;
+                                 ;; "HackGenNerd"
+                                 "HackGenNerd Console"
+                                 :size 16
+                                 :line-spacing 0.25
                                  )
 
     ;; The leader key (default "SPC")
@@ -847,8 +860,29 @@ before packages are loaded."
           "* TODO %?\n\n%a")
          ("m" "Memo" entry
            (file+headline "~/notes/memo.org" "memo")
-           "* %U%?\n%i\n%a")))
+           "* %U%?\n%i\n%a")
+         ;; ("d" "default" plain (function org-roam-capture--get-point)
+         ;;   "%?"
+         ;;   :file-name "%<%Y%m%d%H%M%S>-${slug}"
+         ;;   :head "#+TITLE: ${title}\n"
+         ;;   :unnarrowed t)
+         )
+      )
     )
+
+  ;; Org-roam
+  ;; (use-package org-roam
+  ;;   :after org
+  ;;   :hook (org-mode . org-roam-mode)
+  ;;   :custom
+  ;;   (org-roam-directory "~/notes/")
+  ;;   :bind
+  ;;   ("C-c n l" . org-roam)
+  ;;   ("C-c n t" . org-roam-today)
+  ;;   ("C-c n f" . org-roam-find-file)
+  ;;   ("C-c n i" . org-roam-insert)
+  ;;   ("C-c n g" . org-roam-show-graph))
+
 
   ;; (use-package company-box
   ;; :hook (company-mode . company-box-mode))
@@ -876,19 +910,20 @@ before packages are loaded."
     ;; (require 'ivy-posframe)
 
     ;; package 経由のインストールなら，M-x counsel-world-clock ですぐ使える．
-    (require 'counsel-world-clock nil t)
-    (setq ivy-count-format "(%d/%d) ")
 
     )
 
   (with-eval-after-load "ivy"
+    (require 'counsel-world-clock nil t)
+    (setq ivy-count-format "(%d/%d) ")
+    (setq ivy-pre-prompt-function #'my-pre-prompt-function)
     (defun my-pre-prompt-function ()
       (if window-system
         (format "%s\n%s "
           (make-string 40 ?\x5F) ;; "__"
           (all-the-icons-faicon "sort-amount-asc")) ;; ""
         (format "%s\n" (make-string (1- (frame-width)) ?\x2D))))
-    (setq ivy-pre-prompt-function #'my-pre-prompt-function))
+    )
 
   ;; 一時無効化する
   ;; (with-eval-after-load "ivy-posframe"
@@ -911,11 +946,6 @@ before packages are loaded."
   ;;        (right-fringe . 8)))
   ;;   (ivy-posframe-mode 1))
 
-  ;; (use-package treemacs-icons-dired
-  ;;   :after treemacs dired
-  ;;   :ensure t
-  ;;   :config (treemacs-icons-dired-mode))
-
   ;;; treemacs
   (with-eval-after-load 'treemacs
     (defun treemacs-custom-filter (file _)
@@ -923,6 +953,7 @@ before packages are loaded."
         (s-equals? "journal" file)))
     (push #'treemacs-custom-filter treemacs-ignored-file-predicates))
 
+  ;; counsel-selected
   (when (require 'counsel-selected nil t)
     (define-key selected-keymap (kbd "l") 'counsel-selected))
 
@@ -970,6 +1001,9 @@ before packages are loaded."
 
     ;; アクティベート
     (org-recent-headings-mode))
+
+  (with-eval-after-load 'org-jira
+    (setq org-jira-working-dir (concat org-directory "/org-jira")))
 
   (when (require 'prescient nil t)
     ;; ivy インターフェイスでコマンドを実行するたびに，キャッシュをファイル保存
@@ -1048,7 +1082,7 @@ before packages are loaded."
     :ensure t
     :init (ivy-rich-mode 1))
 
-  (with-eval-after-load "all-the-icons-ivy"
+  (with-eval-after-load 'all-the-icons-ivy
     (defvar my-tab-width tab-width)
     (defun my-tab-width-2 () (setq tab-width 2))
     (defun my-tab-width-1 () (setq tab-width 1))
@@ -1079,27 +1113,27 @@ before packages are loaded."
   ;; LSP
   (use-package lsp-mode
     ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-    :init (setq lsp-keymap-prefix "s-l")
-    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-            (go-mode . lsp)
-            ;; if you want which-key integration
+    :init
+    (setq lsp-keymap-prefix "s-l"
+      lsp-gopls-codelens nil)
+    ;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+    :hook ( (go-mode . lsp)
             (lsp-mode . lsp-enable-which-key-integration))
-    :commands lsp)
-
-  ;; optionally
-  (use-package lsp-ui :commands lsp-ui-mode)
-  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-  (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
-
-  (use-package company-lsp
-    :config
-    (setq company-lsp-cache-candidates 'auto)
-    (push 'company-lsp company-backends)
-    :commands company-lsp
+    :commands lsp
     )
 
-  (setq company-minimum-prefix-length 1
-    company-idle-delay 0.0) ;; default is 0.2
+  ;; optionally
+  (use-package lsp-ui
+    :init
+    (setq
+      ;; lsp-ui-doc-use-webkit t
+      lsp-ui-doc-use-childframe t
+      lsp-ui-doc-include-signature t)
+    :commands lsp-ui-mode)
+  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+  (use-package lsp-treemacs
+    :init (lsp-treemacs-sync-mode 1)
+    :commands lsp-treemacs-errors-list)
 
   ;; optionally if you want to use debugger
   (use-package dap-mode)
@@ -1111,17 +1145,11 @@ before packages are loaded."
     :config
     (which-key-mode))
 
-  ;; Optional: use company-capf . Although company-lsp also supports caching
-  ;; lsp-mode’s company-capf does that by default. To achieve that uninstall
-  ;; company-lsp or put these lines in your config:
-  ;; (setq lsp-prefer-capf t)
-
 
   ;; Magit
-  (eval-after-load "magit-log"
-    '(progn
-       (custom-set-variables
-         '(magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 18)))))
+  (with-eval-after-load 'magit-log
+    (setq (magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 18)))
+    )
 
   ;;; You need to customize ‘magit-repository-directories’ before you can list repositories
 
@@ -1136,7 +1164,7 @@ before packages are loaded."
     (setq jenkins-colwidth-last-status 60)
     )
 
-  (with-eval-after-load "json-mode"
+  (with-eval-after-load 'json-mode
     (define-key json-mode-map (kbd "C-c C-j") #'jq-interactively))
 
   (org-babel-do-load-languages 'org-babel-load-languages
