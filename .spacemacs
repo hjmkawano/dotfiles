@@ -37,7 +37,8 @@ This function should only modify configuration layer settings."
        (auto-completion :variables
          auto-completion-enable-snippets-in-popup t
          auto-completion-enable-help-tooltip t
-         auto-completion-use-company-box t)
+         auto-completion-use-company-box t
+         auto-completion-enable-sort-by-usage t)
        (ivy :variables
          ivy-enable-advanced-buffer-information t)
        better-defaults
@@ -57,7 +58,7 @@ This function should only modify configuration layer settings."
          org-enable-github-support t
          org-enable-bootstrap-support nil
          org-enable-org-journal-support t
-         org-enable-sticky-header t
+         org-enable-sticky-header nil  ;; errorになるのでnil
          org-enable-epub-support t
          org-enable-verb-support t
          org-enable-reveal-js-support t
@@ -669,13 +670,12 @@ before packages are loaded."
 
   (global-flycheck-mode)
 
-  ;;; authinfo ファイルの指定
   (setq nntp-authinfo-file "~/.authinfo.gpg")
   (setq nnimap-authinfo-file "~/.authinfo.gpg")
   (setq smtpmail-auth-credentials "~/.authinfo.gpg")
-  ;; 暗号化方式の指定
+
   (setq encrypt-file-alist '(("~/.authinfo.gpg" (gpg "AES"))))
-  (setq password-cache-expiry nil)	; パスワードをキャッシュする
+  (setq password-cache-expiry nil)
 
   ;; ;; Slack
   ;; ;;
@@ -1028,7 +1028,7 @@ before packages are loaded."
 
     ;; フィルタの影響範囲を限定する．以下の3つは順番が重要．
     ;; (1) マイナーモードの有効化
-    (ivy-prescient-mode 1)
+    (ivy-prescient-mode t)
     ;; (2) =counsel-M-x= をイニシャル入力対応にする
     (setf (alist-get 'counsel-M-x ivy-re-builders-alist)
       #'ivy-prescient-re-builder)
@@ -1076,11 +1076,11 @@ before packages are loaded."
   ;;   (all-the-icons-ivy-setup))
   (use-package all-the-icons-ivy-rich
     :ensure t
-    :init (all-the-icons-ivy-rich-mode 1))
+    :init (all-the-icons-ivy-rich-mode t))
 
   (use-package ivy-rich
     :ensure t
-    :init (ivy-rich-mode 1))
+    :init (ivy-rich-mode t))
 
   (with-eval-after-load 'all-the-icons-ivy
     (defvar my-tab-width tab-width)
@@ -1132,7 +1132,7 @@ before packages are loaded."
     :commands lsp-ui-mode)
   (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
   (use-package lsp-treemacs
-    :init (lsp-treemacs-sync-mode 1)
+    :init (lsp-treemacs-sync-mode t)
     :commands lsp-treemacs-errors-list)
 
   ;; optionally if you want to use debugger
