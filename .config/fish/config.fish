@@ -3,6 +3,9 @@
   # set -x TERM eterm-color
 # end
 
+set -x LANG en_US.UTF-8
+set -x LC_CTYPE $LANG
+
 if not functions -q fisher
     set -q XDG_CONFIG_HOME; or set XDG_CONFIG_HOME ~/.config
     curl https://git.io/fisher --create-dirs -sLo $XDG_CONFIG_HOME/fish/functions/fisher.fish
@@ -16,7 +19,7 @@ function fish_title
   true
 end
 
-alias git hub
+# alias git hub
 # alias parrot 'docker run -ti --network bridge parrotsec/parrot'
 alias ps 'ps ax|fzf'
 
@@ -28,14 +31,17 @@ set -x PATH $HOME"/.yubikey/bin" $PATH
 set -x PATH "/usr/local/opt/coreutils/libexec/gnubin" $PATH
 set -x MANPATH "/usr/local/opt/coreutils/libexec/gnuman" $MANPATH
 
+set -x LESSCHARSET utf-8
+
 set -x GHQ_SELECTOR fzf
 
 status --is-interactive; and source (anyenv init -|psub)
 status --is-interactive; and source (pyenv init -|psub)
 status --is-interactive; and source (nodenv init -|psub)
-
+status --is-interactive; and source (goenv init -|psub)
 set -x GOENV_DISABLE_GOPATH 1
-direnv hook fish | source
+
+eval (direnv hook fish)
 
 set -gx LDFLAGS "-L/usr/local/opt/imagemagick@6/lib -L/usr/local/opt/nss/lib -L/usr/local/opt/qt/lib -L/usr/local/opt/zlib/lib"
 set -gx CPPFLAGS "-I/usr/local/opt/imagemagick@6/includ -I/usr/local/opt/nss/include -I/usr/local/opt/qt/include -I/usr/local/opt/zlib/include"
