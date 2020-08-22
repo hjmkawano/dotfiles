@@ -158,7 +158,8 @@ This function should only modify configuration layer settings."
        shell-scripts
        ruby
        html
-       javascript
+       (javascript :variables
+         javascript-backend 'lsp)
        (sql :variables
          sql-capitalize-keywords t
          sql-capitalize-keywords-disable-interactive t
@@ -362,7 +363,7 @@ It should only modify the values of Spacemacs settings."
                                  ;; ;; :width normal
                                  ;;
                                  ;; "HackGenNerd"
-                                 "HackGenNerd Console"
+                                 "HackGen35Nerd Console"
                                  :size 16
                                  :line-spacing 0.25
                                  )
@@ -1175,6 +1176,7 @@ before packages are loaded."
 
   (require 'wrap-region)
   (add-hook 'org-mode-hook 'wrap-region-mode)
+  (add-hook 'org-mode-hook 'emojify-mode)
   (add-hook 'markdown-mode-hook 'wrap-region-mode)
 
   ;; emacs-ja.info
