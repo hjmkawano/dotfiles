@@ -22,6 +22,7 @@ end
 # alias git hub
 # alias parrot 'docker run -ti --network bridge parrotsec/parrot'
 alias ps 'ps ax|fzf'
+alias mysql 'mysql --pager=less -S -n -i -F -X'
 
 
 set -x PATH $HOME"/.local/bin" $PATH
