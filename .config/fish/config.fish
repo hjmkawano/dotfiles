@@ -49,6 +49,7 @@ set -gx CPPFLAGS "-I/usr/local/opt/imagemagick@6/includ -I/usr/local/opt/nss/inc
 set -x PKG_CONFIG_PATH "/usr/local/opt/imagemagick@6/lib/pkgconfig:/usr/local/opt/nss/lib/pkgconfig:/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig"
 
 set -g fish_user_paths "/usr/local/opt/nss/bin" $fish_user_paths
+set -g fish_user_paths "/usr/local/opt/openjdk/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/qt/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/imagemagick@6/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/sqlite/bin" $fish_user_paths
