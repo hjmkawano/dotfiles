@@ -167,7 +167,9 @@ This function should only modify configuration layer settings."
          sqlfmt-executable "pg_format"
          sqlfmt-options '()
          )
-       groovy
+       (groovy :variables
+         groovy-backend 'lsp
+         groovy-lsp-jar-path "~/src/github.com/prominic/groovy-language-server/build/libs/groovy-language-server-all.jar")
        lua
        ansible
        (ietf :variables
@@ -363,7 +365,9 @@ It should only modify the values of Spacemacs settings."
                                  ;; ;; :width normal
                                  ;;
                                  ;; "HackGenNerd"
-                                 "HackGen35Nerd Console"
+                                 ;; "HackGen35Nerd"
+                                 "HackGenNerd Console"
+                                 ;; "HackGen35Nerd Console"
                                  :size 16
                                  :line-spacing 0.25
                                  )
@@ -670,6 +674,7 @@ before packages are loaded."
   (spacemacs/toggle-aggressive-indent-globally-on)
 
   (global-flycheck-mode)
+  (global-emojify-mode)
 
   (setq nntp-authinfo-file "~/.authinfo.gpg")
   (setq nnimap-authinfo-file "~/.authinfo.gpg")
@@ -869,6 +874,7 @@ before packages are loaded."
          ;;   :unnarrowed t)
          )
       )
+    (add-hook 'dired-mode-hook 'org-download-enable)
     )
 
   ;; Org-roam
