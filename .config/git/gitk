@@ -52,7 +52,7 @@ set circlecolors {white blue gray blue blue}
 set linkfgcolor blue
 set circleoutlinecolor black
 set web_browser open
-set geometry(main) 1945x1456+5+28
+set geometry(main) 1945x1456+26+51
 set geometry(state) normal
 set geometry(topwidth) 1945
 set geometry(topheight) 336

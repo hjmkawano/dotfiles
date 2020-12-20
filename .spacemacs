@@ -1,7 +1,6 @@
 ;; -*- mode: emacs-lisp; lexical-binding: t -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
-
 (defun dotspacemacs/layers ()
   "Layer configuration:
 This function should only modify configuration layer settings."
@@ -33,7 +32,8 @@ This function should only modify configuration layer settings."
 
     ;; List of configuration layers to load.
     dotspacemacs-configuration-layers
-    '(rust
+    '(
+       spacemacs-purpose
        (auto-completion :variables
          auto-completion-enable-snippets-in-popup t
          auto-completion-enable-help-tooltip t
@@ -43,13 +43,15 @@ This function should only modify configuration layer settings."
          ivy-enable-advanced-buffer-information t)
        better-defaults
        (copy-as-format :variables
-         copy-as-format-default "slack"
-         )
+         copy-as-format-default "slack")
+       themes-megapack
        emacs-lisp
-       (git :packages (not fancy-battery))
+       (git :packages
+         (not fancy-battery))
        github
        markdown
-       multiple-cursors
+       (multiple-cursors :variables
+         multiple-cursors-backend 'mc)
        (org :variables
          org-directory "~/notes/"
          org-agenda-files (list org-directory)
@@ -58,7 +60,7 @@ This function should only modify configuration layer settings."
          org-enable-github-support t
          org-enable-bootstrap-support nil
          org-enable-org-journal-support t
-         org-enable-sticky-header nil  ;; errorになるのでnil
+         org-enable-sticky-header nil
          org-enable-epub-support t
          org-enable-verb-support t
          org-enable-reveal-js-support t
@@ -69,18 +71,16 @@ This function should only modify configuration layer settings."
          org-journal-time-format "%H:%M"
          org-journal-carryover-items nil
          org-projectile-file "TODOs.org"
-         org-default-notes-file (concat org-directory "/notes.org")
-         ;; Jira
-         org-enable-jira-support t
-         jiralib-url "https://mecompany.atlassian.net:443"
-         )
+         org-default-notes-file (concat org-directory "/notes.org"))
        (imenu-list :variables
          imenu-list-auto-resize t
          imenu-list-size 0.2)
        (shell :variables
-         shell-default-term-shell "/bin/bash"
-         shell-default-height 30
-         shell-default-position 'bottom)
+         shell-default-shell 'vterm
+         shell-default-position 'bottom
+         shell-default-term-shell "/usr/local/bin/fish"
+         spacemacs-vterm-history-file-location "~/.local/share/fish/fish_history"
+         )
        spell-checking
        (syntax-checking :variables
          syntax-checking-use-original-bitmaps t)
@@ -93,29 +93,28 @@ This function should only modify configuration layer settings."
          osx-function-as      nil
          osx-right-command-as 'left
          osx-right-option-as  'hyper
-         osx-right-control-as 'left
-         )
+         osx-right-control-as 'left)
        (deft :variables
-         deft-directory "~/notes"
-         )
+         deft-directory "~/notes")
        dash
        search-engine
        emoji
-       (plantuml :variables
-         plantuml-jar-path "/usr/local/Cellar/plantuml/1.2019.10/libexec/plantuml.jar"
-         org-plantuml-jar-path "/usr/local/Cellar/plantuml/1.2019.10/libexec/plantuml.jar"
-         plantuml-java-args "java.awt.headless=true"
-         plantuml-default-exec-mode 'executable
-         ;; plantuml-server-url "http://localhost:8080/plantuml"
+       (plantuml
+         :location (recipe :fetcher github :repo "skuro/plantuml-mode")
+         :variables
+         plantuml-server-url "http://127.0.0.1:18080"
+         plantuml-default-exec-mocde 'server
          )
-       asciidoc
+       ;; (plantuml :variables
+       ;;   plantuml-jar-path  ;; set at (user-config)
+       ;;   org-plantuml-jar-path set at (user-config)
+       ;;   plantuml-default-exec-mode 'jar)
        web-beautify
        (pdf :variables
          pdf-view-display-size 'fit-page
          pdf-annot-activate-created-annotations t)
        epub
        pandoc
-       asciidoc
        ;; bibtex
        ;; twitter
        ranger
@@ -123,11 +122,9 @@ This function should only modify configuration layer settings."
          treemacs-use-follow-mode t
          treemacs-use-git-mode 'deferred  ; simple, extended, deferred
          treemacs-use-scope-type 'Perspectives
-         treemacs-lock-width t
-         )
+         treemacs-lock-width t)
        (lsp :variables
-         lsp-navigation 'peek
-         )
+         lsp-navigation 'peek)
        (docker :variables
          docker-dockerfile-backend 'lsp)
        csv
@@ -145,36 +142,37 @@ This function should only modify configuration layer settings."
          ;; lsp-diagnostic-package :none
          godoc-at-point-function 'godoc-gogetdoc
          go-format-before-save t
-         gofmt-command "goimports"
-         )
+         gofmt-command "goimports")
        dap
        protobuf
-       (python :variables
-         python-enable-yapf-format-on-save t
-         python-sort-imports-on-save t
-         python-fill-column 119
-         )
-       ;; ipython-notebook
+       ;; (python :variables
+       ;;   python-sort-imports-on-save t
+       ;;   python-pipenv-activate t
+       ;;   python-formatter 'black
+       ;;   python-format-on-save t
+       ;;   )
+       ;; ;; ipython-notebook
        shell-scripts
-       ruby
+       (ruby :variables
+         ruby-enable-enh-ruby-mode nil
+         ruby-backend 'lsp
+         ruby-version-manager 'rbenv)
        html
        (javascript :variables
          javascript-backend 'lsp)
        (sql :variables
          sql-capitalize-keywords t
          sql-capitalize-keywords-disable-interactive t
-         sql-capitalize-keywords-blacklist '("name" "varchar")
-         sqlfmt-executable "pg_format"
-         sqlfmt-options '()
-         )
+         sql-auto-indent t
+         sql-backend 'lsp
+         sql-lsp-sqls-workspace-config-path 'workspace)
        (groovy :variables
          groovy-backend 'lsp
          groovy-lsp-jar-path "~/src/github.com/prominic/groovy-language-server/build/libs/groovy-language-server-all.jar")
        lua
        ansible
        (ietf :variables
-         ietf-docs-cache "~/Downloads/ietf-docs-cache")
-       )
+         ietf-docs-cache "~/Downloads/ietf-docs-cache"))
 
     ;; List of additional packages that will be installed without being
     ;; wrapped in a layer. If you need some configuration for these
@@ -202,12 +200,14 @@ This function should only modify configuration layer settings."
        ob-go
        ob-mongo
        ob-translate
+       org-ql
        ;; (org-roam :location (recipe :fetcher github :repo "jethrokuan/org-roam"))
        wrap-region
-       (justify-kp :location "~/.emacs.d/private/local")
        ripgrep
        toml-mode
        lsp-treemacs
+       moom
+       fish-completion
        )
 
     ;; A list of packages that cannot be updated.
@@ -366,9 +366,9 @@ It should only modify the values of Spacemacs settings."
                                  ;;
                                  ;; "HackGenNerd"
                                  ;; "HackGen35Nerd"
-                                 "HackGenNerd Console"
-                                 ;; "HackGen35Nerd Console"
-                                 :size 16
+                                 ;; "HackGenNerd Console"
+                                 "HackGen35Nerd Console"
+                                 :size 15
                                  :line-spacing 0.25
                                  )
 
@@ -667,14 +667,12 @@ before packages are loaded."
   (add-to-list 'default-frame-alist
     '(ns-appearance . dark)) ;; or dark - depending on your theme
 
-  ;; (spacemacs/toggle-transparency)
-  (spacemacs/toggle-golden-ratio-on)
+  (spacemacs/toggle-golden-ratio-off)
   (spacemacs/toggle-mode-line-battery-on)
   (spacemacs/toggle-which-key-on)
   (spacemacs/toggle-aggressive-indent-globally-on)
-
-  (global-flycheck-mode)
-  (global-emojify-mode)
+  (global-flycheck-mode 1)
+  (global-emojify-mode 1)
 
   (setq nntp-authinfo-file "~/.authinfo.gpg")
   (setq nnimap-authinfo-file "~/.authinfo.gpg")
@@ -682,6 +680,14 @@ before packages are loaded."
 
   (setq encrypt-file-alist '(("~/.authinfo.gpg" (gpg "AES"))))
   (setq password-cache-expiry nil)
+
+  (add-hook 'term-mode-hook 'spacemacs/toggle-truncate-lines-on)
+  (use-package vterm
+    :ensure t
+    :init
+    (setq vterm-buffer-name-string "vterm: %s")
+    )
+
 
   ;; ;; Slack
   ;; ;;
@@ -793,25 +799,23 @@ before packages are loaded."
   ;;      )
   ;;   ) ;; end of eww
 
-  (browse-url-dwim-mode t)
   (require 'ace-link)
   (require 'browse-url-dwim)
+  (browse-url-dwim-mode 1)
 
-  ;; mu4e
-  (with-eval-after-load 'mu4e-alert
-    ;; Enable Desktop notifications
-    ;; (mu4e-alert-set-default-style 'notifications)) ; For linux
-    ;; (mu4e-alert-set-default-style 'libnotify))  ; Alternative for linux
-    ;; (mu4e-alert-set-default-style 'notifier))   ; For Mac OSX (through the terminal notifier app)
-    (mu4e-alert-set-default-style 'growl))      ; Alternative for Mac OSX
+  ;; ;; mu4e
+  ;; (with-eval-after-load 'mu4e-alert
+  ;;   ;; Enable Desktop notifications
+  ;;   ;; (mu4e-alert-set-default-style 'notifications)) ; For linux
+  ;;   ;; (mu4e-alert-set-default-style 'libnotify))  ; Alternative for linux
+  ;;   ;; (mu4e-alert-set-default-style 'notifier))   ; For Mac OSX (through the terminal notifier app)
+  ;;   (mu4e-alert-set-default-style 'growl))      ; Alternative for Mac OSX
 
-  ;; wakatime
-  ;; (global-wakatime-mode)
-
-  ;; for pdf layer(pdf-tools)
+  ;; ;; for pdf layer(pdf-tools)
   ;; (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig")
   ;; (add-hook 'pdf-view-mode-hook (lambda() (linum-mode -1)))
   ;; https://stackoverflow.com/questions/16132234/how-can-i-speed-up-emacs-docview-mode
+
   (global-linum-mode -1)
   (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
   (add-hook 'pdf-view-midnight-minor-mode-hook (
@@ -902,9 +906,9 @@ before packages are loaded."
   ;;   (company-box-icons-alist 'company-box-icons-all-the-icons)
   ;;   (company-box-doc-enable nil))
 
-  ;; (when (and (executable-find "fish")
-  ;;         (require 'fish-completion nil t))
-  ;;   (global-fish-completion-mode))
+  (when (and (executable-find "fish")
+          (require 'fish-completion nil t))
+    (global-fish-completion-mode 1))
 
   ;; projectile
   (setq projectile-enable-caching t)
@@ -912,13 +916,6 @@ before packages are loaded."
   ;; MPDel
   ;; (require 'mpdel)
   ;; (mpdel-mode)
-
-  (with-eval-after-load 'ivy
-    ;; (require 'ivy-posframe)
-
-    ;; package 経由のインストールなら，M-x counsel-world-clock ですぐ使える．
-
-    )
 
   (with-eval-after-load "ivy"
     (require 'counsel-world-clock nil t)
@@ -932,28 +929,7 @@ before packages are loaded."
         (format "%s\n" (make-string (1- (frame-width)) ?\x2D))))
     )
 
-  ;; 一時無効化する
-  ;; (with-eval-after-load "ivy-posframe"
-  ;;   ;; https://github.com/tumashu/ivy-posframe
-
-  ;;   (setq ivy-posframe-height-alist '((swiper . 20)
-  ;;                                      (t      . 30)))
-
-  ;;   ;; Different command can use different display function.
-  ;;   (setq ivy-posframe-display-functions-alist
-  ;;     '((swiper          . nil)
-  ;;        (swiper-all      . nil)
-  ;;        (complete-symbol . nil)
-  ;;        (counsel-M-x     . nil)
-  ;;        (counsel-find-file . nil)
-  ;;        (t               . ivy-posframe-display-at-frame-top-center))
-  ;;     )
-  ;;   (setq ivy-posframe-parameters
-  ;;     '((left-fringe . 8)
-  ;;        (right-fringe . 8)))
-  ;;   (ivy-posframe-mode 1))
-
-  ;;; treemacs
+ ;;; treemacs
   (with-eval-after-load 'treemacs
     (defun treemacs-custom-filter (file _)
       (or (s-ends-with? ".aux" file)
@@ -1007,7 +983,8 @@ before packages are loaded."
          org-bookmark-jump))
 
     ;; アクティベート
-    (org-recent-headings-mode))
+    (org-recent-headings-mode 1)
+    )
 
   (with-eval-after-load 'org-jira
     (setq org-jira-working-dir (concat org-directory "/org-jira")))
@@ -1035,7 +1012,7 @@ before packages are loaded."
 
     ;; フィルタの影響範囲を限定する．以下の3つは順番が重要．
     ;; (1) マイナーモードの有効化
-    (ivy-prescient-mode t)
+    (ivy-prescient-mode 1)
     ;; (2) =counsel-M-x= をイニシャル入力対応にする
     (setf (alist-get 'counsel-M-x ivy-re-builders-alist)
       #'ivy-prescient-re-builder)
@@ -1083,11 +1060,11 @@ before packages are loaded."
   ;;   (all-the-icons-ivy-setup))
   (use-package all-the-icons-ivy-rich
     :ensure t
-    :init (all-the-icons-ivy-rich-mode t))
+    :init (all-the-icons-ivy-rich-mode 1))
 
   (use-package ivy-rich
     :ensure t
-    :init (ivy-rich-mode t))
+    :init (ivy-rich-mode 1))
 
   (with-eval-after-load 'all-the-icons-ivy
     (defvar my-tab-width tab-width)
@@ -1116,6 +1093,13 @@ before packages are loaded."
   ;;   :config
   ;;   (progn
   ;;     (flycheck-gometalinter-setup)))
+
+  (use-package google-translate
+    :ensure t
+    :custom
+    (google-translate-backend-method 'curl)
+    :config
+    (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130)))
 
   ;; LSP
   (use-package lsp-mode
@@ -1153,23 +1137,29 @@ before packages are loaded."
     (which-key-mode))
 
 
+  ;; PlantUML
+  (add-to-list 'org-src-lang-modes
+    '("plantuml" . plantuml)
+    )
+
+  (org-babel-do-load-languages 'org-babel-load-languages
+    '((plantuml . t))
+    )
+
+  ;; get PlantUML jar path
+  (defun homebrew-plantuml-jar-path ()
+    (expand-file-name
+      (string-trim
+        (shell-command-to-string "brew list plantuml | grep jar"))))
+  (setq plantuml-jar-path (homebrew-plantuml-jar-path))
+  (setq org-plantuml-jar-path plantuml-jar-path)
+
+
   ;; Magit
-  (with-eval-after-load 'magit-log
-    (setq (magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 18)))
-    )
-
-  ;;; You need to customize ‘magit-repository-directories’ before you can list repositories
-
-  ;; jenkins.el
-  (with-eval-after-load 'jenkins
-    (setq jenkins-api-token "11f24f43355259f412180476a0700cffc4")
-    (setq jenkins-url "http://jenkins/")
-    (setq jenkins-username "kawano")
-    ;;    (setq jenkins-viewname "<viewname>") ;; if you're not using views skip this line
-    (setq jenkins-colwidth-name 70) ;; or jenkins-colwidth-id, jenkins-colwidth-last-status
-    (setq jenkins-colwidth-id 10)
-    (setq jenkins-colwidth-last-status 60)
-    )
+  (eval-after-load "magit-log"
+    '(progn
+       (custom-set-variables
+         '(magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 19)))))
 
   (with-eval-after-load 'json-mode
     (define-key json-mode-map (kbd "C-c C-j") #'jq-interactively))
@@ -1184,6 +1174,15 @@ before packages are loaded."
   (add-hook 'org-mode-hook 'wrap-region-mode)
   (add-hook 'org-mode-hook 'emojify-mode)
   (add-hook 'markdown-mode-hook 'wrap-region-mode)
+
+  (use-package moom
+    :init
+    (setq moom-multi-monitors-support t
+      )
+    (moom-identify-current-monitor)
+    (moom-mode 1)
+    )
+
 
   ;; emacs-ja.info
   ;; https://ayatakesi.github.io/
