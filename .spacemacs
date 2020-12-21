@@ -361,15 +361,15 @@ It should only modify the values of Spacemacs settings."
 				                         ;; "Hack Nerd Font"
                                  ;; "Source Han Code JP"
                                  ;; :size 14
-                                 ;; ;; :weight normal
-                                 ;; ;; :width normal
                                  ;;
                                  ;; "HackGenNerd"
                                  ;; "HackGen35Nerd"
-                                 ;; "HackGenNerd Console"
-                                 "HackGen35Nerd Console"
-                                 :size 15
-                                 :line-spacing 0.25
+                                 "HackGenNerd Console"
+                                 ;; "HackGen35Nerd Console"
+                                 :size 16
+                                 ;; :line-spacing 0.25
+                                 ;; :weight normal
+                                 ;; :width normal
                                  )
 
     ;; The leader key (default "SPC")
@@ -1194,44 +1194,5 @@ before packages are loaded."
         (t filename))
       args))
   (advice-add 'Info-find-node :around 'Info-find-node--info-ja)
-
-  ;; epub
-  (defun my-nov-font-setup ()
-    (face-remap-add-relative 'variable-pitch :family "Liberation Serif"
-      :height 1.0))
-  (add-hook 'nov-mode-hook 'my-nov-font-setup)
-
-  (setq nov-text-width t)
-  (setq visual-fill-column-center-text t)
-  (add-hook 'nov-mode-hook 'visual-line-mode)
-  (add-hook 'nov-mode-hook 'visual-fill-column-mode)
-
-  (require 'justify-kp)
-  (setq nov-text-width t)
-
-  (defun my-nov-window-configuration-change-hook ()
-    (my-nov-post-html-render-hook)
-    (remove-hook 'window-configuration-change-hook
-      'my-nov-window-configuration-change-hook
-      t))
-
-  (defun my-nov-post-html-render-hook ()
-    (if (get-buffer-window)
-      (let ((max-width (pj-line-width))
-             buffer-read-only)
-        (save-excursion
-          (goto-char (point-min))
-          (while (not (eobp))
-            (when (not (looking-at "^[[:space:]]*$"))
-              (goto-char (line-end-position))
-              (when (> (shr-pixel-column) max-width)
-                (goto-char (line-beginning-position))
-                (pj-justify)))
-            (forward-line 1))))
-      (add-hook 'window-configuration-change-hook
-        'my-nov-window-configuration-change-hook
-        nil t)))
-
-  (add-hook 'nov-post-html-render-hook 'my-nov-post-html-render-hook)
 
   ) ;; end of user-config
