@@ -47,7 +47,8 @@ set -g fish_user_paths "/usr/local/opt/openjdk/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/nss/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/opt/qt/bin" $fish_user_paths
 set -g fish_user_paths "/usr/local/texlive/2018/bin/x86_64-darwin" $fish_user_paths
-set -g fish_user_paths "/usr/local/opt/mysql@5.7/bin" $fish_user_paths
+set -g fish_user_paths "/usr/local/opt/mysql-client@5.7/bin" $fish_user_paths
+set -g fish_user_paths "/usr/local/opt/python@3.8/bin" $fish_user_paths
 
 set -g theme_powerline_fonts no
 set -g theme_nerd_fonts yes
