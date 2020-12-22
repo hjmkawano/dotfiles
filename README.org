@@ -1,4 +1,15 @@
-* How to Install
-  #+begin_src shell
-  brew install emacs-head --HEAD --with-cocoa --with-imagemagick --with-pdumper
-  #+end_src
+* How to Install Emacs on OSX
+
+  Using [[https://github.com/d12frosted/homebrew-emacs-plus/][Emacs Plus]].
+
+  #+begin_example shell
+  brew tap d12frosted/emacs-plus
+  brew install emacs-plus --with-ctags --with-no-titlebar --with-xwidgets --with-spacemacs-icon --HEAD
+  #+end_example
+
+  When upgrade.
+
+  #+begin_example shell
+  brew uninstall emacs-plus
+  brew install emacs-plus [options]
+  #+end_example
