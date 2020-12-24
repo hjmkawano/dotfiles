@@ -104,6 +104,7 @@ This function should only modify configuration layer settings."
          :variables
          plantuml-server-url "http://127.0.0.1:18080"
          plantuml-default-exec-mocde 'server
+         plantuml-indent-level 2
          )
        ;; (plantuml :variables
        ;;   plantuml-jar-path  ;; set at (user-config)
@@ -189,6 +190,7 @@ This function should only modify configuration layer settings."
        go-autocomplete
        ox-asciidoc
        jenkins
+       jenkinsfile-mode
        counsel-osx-app
        counsel-world-clock
        flyspell-correct-ivy
@@ -621,25 +623,6 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
 
-  (setq tramp-ssh-controlmaster-options
-    "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
-
-  ;; (require 'semantic/db-file)
-  (setq read-process-output-max (* 1024 1024)) ;; 1mb
-
-  (defun my-lisp-load (filename)
-    "Load lisp from FILENAME"
-    (let ((fullname (expand-file-name (concat "private/" filename) user-emacs-directory))
-           lisp)
-      (when (file-readable-p fullname)
-        (with-temp-buffer
-          (progn
-            (insert-file-contents fullname)
-            (setq lisp
-              (condition-case nil
-                (read (current-buffer))
-                (error ()))))))
-      lisp))
   )
 
 (defun dotspacemacs/user-load ()
@@ -656,7 +639,6 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
-  ;; (setq ns-use-srgb-colorspace nil)
   (use-package ddskk
     :defer t
     :bind (("C-x j" . skk-mode)))
@@ -688,116 +670,70 @@ before packages are loaded."
     (setq vterm-buffer-name-string "vterm: %s")
     )
 
+  (eval-after-load "eww"
+    '(progn
+       ;; 背景色の設定
+       (defvar eww-disable-colorize t)
+       (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
+         (unless eww-disable-colorize
+           (funcall orig start end fg)))
+       (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
+       (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
+       (defun eww-disable-color ()
+         "eww で文字色を反映させない"
+         (interactive)
+         (setq-local eww-disable-colorize t)
+         (eww-reload))
+       (defun eww-enable-color ()
+         "eww で文字色を反映させる"
+         (interactive)
+         (setq-local eww-disable-colorize nil)
+         (eww-reload))
 
-  ;; ;; Slack
-  ;; ;;
-  ;; ;; (setq my-slack-team (my-lisp-load "emacs-slack-team"))
-  ;; (setq my-slack-client-id (my-lisp-load "emacs-slack-client-id"))
-  ;; (setq my-slack-client-secret (my-lisp-load "emacs-slack-client-secret"))
-  ;; (setq my-slack-client-token (my-lisp-load "emacs-slack-client-token"))
+       ;; 現在の url を eww で開く
+       (defun browse-url-with-eww ()
+         (interactive)
+         (let ((url-region (bounds-of-thing-at-point 'url)))
+           ;; url
+           (if url-region
+             (eww-browse-url (buffer-substring-no-properties (car url-region)
+                               (cdr url-region))))
+           ;; org-link
+           (setq browse-url-browser-function 'eww-browse-url)
+           (org-open-at-point)))
 
-  ;; (slack-register-team
-  ;;   :name (my-lisp-load "emacs-slack-team")
-  ;;   :default t
-  ;;   :client-id my-slack-client-id
-  ;;   :client-secret my-slack-client-secret
-  ;;   :token my-slack-client-token
-  ;;   :subscribed-channels '(general slackbot))
+       ;; 画像は遅いので表示させない
+       (defun eww-disable-images ()
+         "eww で画像表示させない"
+         (interactive)
+         (setq-local shr-put-image-function 'shr-put-image-alt)
+         (eww-reload))
+       (defun eww-enable-images ()
+         "eww で画像表示させる"
+         (interactive)
+         (setq-local shr-put-image-function 'shr-put-image)
+         (eww-reload))
+       (defun shr-put-image-alt (spec alt &optional flags)
+         (insert alt))
+       ;; はじめから非表示
+       (defun eww-mode-hook--disable-image ()
+         (setq-local shr-put-image-function 'shr-put-image-alt))
+       (add-hook 'eww-mode-hook 'eww-mode-hook--disable-image)
 
-  (spacemacs|define-custom-layout "@Slack"
-    :binding "s"
-    :body
-    (call-interactively 'slack-start)
-    )
+       ;; (setq eww-search-prefix "https://www.google.co.jp/search?ie=UTF-8&oe=UTF-8&num=50&filter=1&gbv=1&q=")
 
-  ;; (spacemacs|define-custom-layout "@elfeed"
-  ;;   :binding "l"
-  ;;   :body
-  ;;   (call-interactively 'elfeed)
-  ;;   )
+       (define-key eww-mode-map "r" 'eww-reload)
+       (define-key eww-mode-map "c 0" 'eww-copy-page-url)
+       (define-key eww-mode-map "p" 'scroll-down)
+       (define-key eww-mode-map "n" 'scroll-up)
 
-  (spacemacs|define-custom-layout "@twitter"
-    :binding "t"
-    :body
-    (call-interactively 'twit)
-    )
+       (ace-link-setup-default)
 
-  (spacemacs|define-custom-layout "@scratch"
-    :binding "S"
-    :body
-    (call-interactively 'spacemacs/switch-to-scratch-buffer)
-    )
+       ;; make emacs always use its own browser for opening URL links
+       (setq browse-url-browser-function 'eww-browse-url)
 
-  (spacemacs|define-custom-layout "@eww"
-    :binding "w"
-    :body
-    (call-interactively 'eww-browse-url)
-    )
-
-  ;; (eval-after-load "eww"
-  ;;   '(progn
-  ;;      ;; 背景色の設定
-  ;;      (defvar eww-disable-colorize t)
-  ;;      (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
-  ;;        (unless eww-disable-colorize
-  ;;          (funcall orig start end fg)))
-  ;;      (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
-  ;;      (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
-  ;;      (defun eww-disable-color ()
-  ;;        "eww で文字色を反映させない"
-  ;;        (interactive)
-  ;;        (setq-local eww-disable-colorize t)
-  ;;        (eww-reload))
-  ;;      (defun eww-enable-color ()
-  ;;        "eww で文字色を反映させる"
-  ;;        (interactive)
-  ;;        (setq-local eww-disable-colorize nil)
-  ;;        (eww-reload))
-
-  ;;      ;; 現在の url を eww で開く
-  ;;      (defun browse-url-with-eww ()
-  ;;        (interactive)
-  ;;        (let ((url-region (bounds-of-thing-at-point 'url)))
-  ;;          ;; url
-  ;;          (if url-region
-  ;;            (eww-browse-url (buffer-substring-no-properties (car url-region)
-  ;;                              (cdr url-region))))
-  ;;          ;; org-link
-  ;;          (setq browse-url-browser-function 'eww-browse-url)
-  ;;          (org-open-at-point)))
-
-  ;;      ;; 画像は遅いので表示させない
-  ;;      (defun eww-disable-images ()
-  ;;        "eww で画像表示させない"
-  ;;        (interactive)
-  ;;        (setq-local shr-put-image-function 'shr-put-image-alt)
-  ;;        (eww-reload))
-  ;;      (defun eww-enable-images ()
-  ;;        "eww で画像表示させる"
-  ;;        (interactive)
-  ;;        (setq-local shr-put-image-function 'shr-put-image)
-  ;;        (eww-reload))
-  ;;      (defun shr-put-image-alt (spec alt &optional flags)
-  ;;        (insert alt))
-  ;;      ;; はじめから非表示
-  ;;      (defun eww-mode-hook--disable-image ()
-  ;;        (setq-local shr-put-image-function 'shr-put-image-alt))
-  ;;      (add-hook 'eww-mode-hook 'eww-mode-hook--disable-image)
-
-  ;;      ;; (setq eww-search-prefix "https://www.google.co.jp/search?ie=UTF-8&oe=UTF-8&num=50&filter=1&gbv=1&q=")
-
-  ;;      (define-key eww-mode-map "r" 'eww-reload)
-  ;;      (define-key eww-mode-map "c 0" 'eww-copy-page-url)
-  ;;      (define-key eww-mode-map "p" 'scroll-down)
-  ;;      (define-key eww-mode-map "n" 'scroll-up)
-
-  ;;      (ace-link-setup-default)
-
-  ;;      ;; make emacs always use its own browser for opening URL links
-  ;;      (setq browse-url-browser-function 'eww-browse-url)
-
-  ;;      )
-  ;;   ) ;; end of eww
+       )
+    ) ;; end of eww
 
   (require 'ace-link)
   (require 'browse-url-dwim)
@@ -832,6 +768,8 @@ before packages are loaded."
     ;; (org-babel-do-load-languages
     ;;   'org-babel-load-languages
     ;;   '((ditaa . t)))
+    (add-hook 'dired-mode-hook 'org-download-enable)
+
     (setq org-ditaa-jar-path "/usr/local/bin/ditaa")
     (setq org-refile-targets '((org-agenda-files :maxlevel . 2)))
     (require 'ob-go)
@@ -842,27 +780,6 @@ before packages are loaded."
       )
 
     (require 'ob-sql-mode)
-
-    ;;     (setq org-capture-templates
-    ;;       '(("e" "experiment" entry (file+headline "~/dropbox/notes/experiment.org" "experiment")
-    ;;           "* %? %u %i\n
-    ;; #+begin_src emacs-lisp
-
-    ;; #+end_src")
-    ;;          ("i" "idea" entry (file+headline "~/dropbox/notes/idea.org" "idea")
-    ;;            "* %? %u %i")
-    ;;          ("r" "remember" entry (file+headline "~/dropbox/notes/remember.org" "remember")
-    ;;            "* %? %u %i")
-    ;;          ("m" "memo" entry (file+headline "~/dropbox/notes/memo.org" "memo")
-    ;;            "* %? %u %i")
-    ;;          ("s" "story" entry (file+headline "~/dropbox/emacs/org/story.org" "story")
-    ;;            "* %? %u %i")
-    ;;          ("f" "future task" entry (file+headline "~/dropbox/notes/task_future.org" "future task")
-    ;;            "** todo %? \n")
-    ;;          ("t" "task" entry (file+headline "~/dropbox/notes/notes.org" "tasks")
-    ;;            "** todo %? \n   scheduled: %^t \n")
-    ;;          ("p" "priority task" entry (file "~/dropbox/notes/priority_task.org")
-    ;;            "* %?\n" :clock-in t :clock-resume t)))
 
     (setq org-capture-templates
       '(("t" "New TODO" entry
@@ -878,7 +795,6 @@ before packages are loaded."
          ;;   :unnarrowed t)
          )
       )
-    (add-hook 'dired-mode-hook 'org-download-enable)
     )
 
   ;; Org-roam
@@ -908,7 +824,7 @@ before packages are loaded."
 
   (when (and (executable-find "fish")
           (require 'fish-completion nil t))
-    (global-fish-completion-mode 1))
+    (global-fish-completion-mode))
 
   ;; projectile
   (setq projectile-enable-caching t)
@@ -986,8 +902,8 @@ before packages are loaded."
     (org-recent-headings-mode 1)
     )
 
-  (with-eval-after-load 'org-jira
-    (setq org-jira-working-dir (concat org-directory "/org-jira")))
+  ;; (with-eval-after-load 'org-jira
+  ;; (setq org-jira-working-dir (concat org-directory "/org-jira")))
 
   (when (require 'prescient nil t)
     ;; ivy インターフェイスでコマンドを実行するたびに，キャッシュをファイル保存
@@ -1138,10 +1054,7 @@ before packages are loaded."
 
 
   ;; PlantUML
-  (add-to-list 'org-src-lang-modes
-    '("plantuml" . plantuml)
-    )
-
+  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
   (org-babel-do-load-languages 'org-babel-load-languages
     '((plantuml . t))
     )
@@ -1186,7 +1099,7 @@ before packages are loaded."
 
   ;; emacs-ja.info
   ;; https://ayatakesi.github.io/
-  (add-to-list 'Info-directory-list "~/info/")
+  (add-to-list 'Info-directory-list (expand-file-name (concat user-home-directory "info")))
   (defun Info-find-node--info-ja (orig-fn filename &rest args)
     (apply orig-fn
       (pcase filename
@@ -1208,7 +1121,25 @@ This function is called at the very end of Spacemacs initialization."
     ;; Your init file should contain only one such instance.
     ;; If there is more than one, they won't work right.
     '(auth-source-save-behavior nil)
-    '(magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 19)))
+    '(evil-want-Y-yank-to-eol nil)
+    '(hl-todo-keyword-faces
+       '(("TODO" . "#dc752f")
+          ("NEXT" . "#dc752f")
+          ("THEM" . "#2d9574")
+          ("PROG" . "#4f97d7")
+          ("OKAY" . "#4f97d7")
+          ("DONT" . "#f2241f")
+          ("FAIL" . "#f2241f")
+          ("DONE" . "#86dc2f")
+          ("NOTE" . "#b1951d")
+          ("KLUDGE" . "#b1951d")
+          ("HACK" . "#b1951d")
+          ("TEMP" . "#b1951d")
+          ("FIXME" . "#dc752f")
+          ("XXX+" . "#dc752f")
+          ("\\?\\?\\?+" . "#dc752f")))
+    '(magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 19))
+    )
   (custom-set-faces
     ;; custom-set-faces was added by Custom.
     ;; If you edit it by hand, you could mess it up, so be careful.
