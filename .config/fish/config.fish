@@ -74,7 +74,13 @@ if [ "$INSIDE_EMACS" = 'vterm' ]
     end
 end
 
+function fish_title
+    hostname
+    echo ":"
+    pwd
+end
+
 # startship (https://starship.rs/)
 starship init fish | source
 
-test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
+# test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish

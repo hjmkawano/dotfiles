@@ -54,3 +54,4 @@ SETUVAR fish_pager_color_completion:normal
 SETUVAR fish_pager_color_description:B3A06D\x1eyellow
 SETUVAR fish_pager_color_prefix:white\x1e\x2d\x2dbold\x1e\x2d\x2dunderline
 SETUVAR fish_pager_color_progress:brwhite\x1e\x2d\x2dbackground\x3dcyan
+SETUVAR fish_user_paths:/usr/local/opt/python\x403\x2e8/bin\x1e/usr/local/opt/mysql\x2dclient\x405\x2e7/bin\x1e/usr/local/texlive/2018/bin/x86_64\x2ddarwin\x1e/usr/local/opt/qt/bin\x1e/usr/local/opt/nss/bin\x1e/usr/local/opt/openjdk/bin\x1e/usr/local/opt/sqlite/bin\x1e/usr/local/opt/imagemagick\x406/bin\x1e/usr/local/opt/curl/bin\x1e/usr/local/sbin\x1e/usr/local/opt/coreutils/libexec/gnubin\x1e/usr/local/Cellar/git/2\x2e29\x2e2/bin\x1e/\x7e\x2eyubikey/bin\x1e\x7e/bin\x1e\x7e/\x2elocal/bin\x1e/usr/local/opt/fzf/bin
