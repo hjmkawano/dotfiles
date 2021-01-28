@@ -78,6 +78,7 @@ This function should only modify configuration layer settings."
        (shell :variables
          shell-default-shell 'vterm
          shell-default-position 'bottom
+         shell-default-height 30
          shell-default-term-shell "/usr/local/bin/fish"
          spacemacs-vterm-history-file-location "~/.local/share/fish/fish_history"
          )
@@ -146,13 +147,13 @@ This function should only modify configuration layer settings."
          gofmt-command "goimports")
        dap
        protobuf
-       ;; (python :variables
-       ;;   python-sort-imports-on-save t
-       ;;   python-pipenv-activate t
-       ;;   python-formatter 'black
-       ;;   python-format-on-save t
-       ;;   )
-       ;; ;; ipython-notebook
+       (python :variables
+         python-sort-imports-on-save t
+         python-pipenv-activate t
+         python-formatter 'black
+         python-format-on-save t
+         )
+       ipython-notebook
        shell-scripts
        (ruby :variables
          ruby-enable-enh-ruby-mode nil
@@ -173,7 +174,9 @@ This function should only modify configuration layer settings."
        lua
        ansible
        (ietf :variables
-         ietf-docs-cache "~/Downloads/ietf-docs-cache"))
+         ietf-docs-cache "~/Downloads/ietf-docs-cache")
+       slack
+       )
 
     ;; List of additional packages that will be installed without being
     ;; wrapped in a layer. If you need some configuration for these
@@ -185,10 +188,19 @@ This function should only modify configuration layer settings."
     dotspacemacs-additional-packages
     '(
        ddskk
+       (japanese-holidays
+         :location (recipe
+                     :fetcher github
+                     :repo "emacs-jp/japanese-holidays"))
        browse-url-dwim
        exec-path-from-shell
        go-autocomplete
+       direnv
        ox-asciidoc
+       (ox-qmd
+         :location (recipe
+                     :fetcher github
+                     :repo "0x60df/ox-qmd"))
        jenkins
        jenkinsfile-mode
        counsel-osx-app
@@ -202,14 +214,29 @@ This function should only modify configuration layer settings."
        ob-go
        ob-mongo
        ob-translate
+       ob-async
+       (ob-docker-build
+         :location (recipe
+                     :fetcher github
+                     :repo "ifitzpat/ob-docker-build"))
        org-ql
-       ;; (org-roam :location (recipe :fetcher github :repo "jethrokuan/org-roam"))
+       (org-menu
+         :location (recipe
+                     :fetcher github
+                     :repo "sheijk/org-menu"))
        wrap-region
        ripgrep
        toml-mode
        lsp-treemacs
        moom
        fish-completion
+       grip-mode
+       xwwp
+       (xwwp-follow-link
+         :location (recipe
+                     :fetcher github
+                     :repo "canatella/xwwp"))
+       itail
        )
 
     ;; A list of packages that cannot be updated.
@@ -670,74 +697,31 @@ before packages are loaded."
     (setq vterm-buffer-name-string "vterm: %s")
     )
 
-  (eval-after-load "eww"
-    '(progn
-       ;; 背景色の設定
-       (defvar eww-disable-colorize t)
-       (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
-         (unless eww-disable-colorize
-           (funcall orig start end fg)))
-       (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
-       (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
-       (defun eww-disable-color ()
-         "eww で文字色を反映させない"
-         (interactive)
-         (setq-local eww-disable-colorize t)
-         (eww-reload))
-       (defun eww-enable-color ()
-         "eww で文字色を反映させる"
-         (interactive)
-         (setq-local eww-disable-colorize nil)
-         (eww-reload))
+  (with-eval-after-load "vterm"
+    (add-to-list 'vterm-eval-cmds '("update-pwd" (lambda (path) (setq default-directory path))))
+    )
 
-       ;; 現在の url を eww で開く
-       (defun browse-url-with-eww ()
-         (interactive)
-         (let ((url-region (bounds-of-thing-at-point 'url)))
-           ;; url
-           (if url-region
-             (eww-browse-url (buffer-substring-no-properties (car url-region)
-                               (cdr url-region))))
-           ;; org-link
-           (setq browse-url-browser-function 'eww-browse-url)
-           (org-open-at-point)))
+  (with-eval-after-load "calendar"
+    (require 'japanese-holidays)
+    (setq calendar-holidays ; 他の国の祝日も表示させたい場合は適当に調整
+      (append japanese-holidays holiday-local-holidays holiday-other-holidays))
+    (setq calendar-mark-holidays-flag t)	; 祝日をカレンダーに表示
+    ;; 土曜日・日曜日を祝日として表示する場合、以下の設定を追加します。
+    ;; デフォルトで設定済み
+    (setq japanese-holiday-weekend '(0 6)	   ; 土日を祝日として表示
+      japanese-holiday-weekend-marker	   ; 土曜日を水色で表示
+      '(holiday nil nil nil nil nil japanese-holiday-saturday))
+    (add-hook 'calendar-today-visible-hook 'japanese-holiday-mark-weekend)
+    (add-hook 'calendar-today-invisible-hook 'japanese-holiday-mark-weekend))
 
-       ;; 画像は遅いので表示させない
-       (defun eww-disable-images ()
-         "eww で画像表示させない"
-         (interactive)
-         (setq-local shr-put-image-function 'shr-put-image-alt)
-         (eww-reload))
-       (defun eww-enable-images ()
-         "eww で画像表示させる"
-         (interactive)
-         (setq-local shr-put-image-function 'shr-put-image)
-         (eww-reload))
-       (defun shr-put-image-alt (spec alt &optional flags)
-         (insert alt))
-       ;; はじめから非表示
-       (defun eww-mode-hook--disable-image ()
-         (setq-local shr-put-image-function 'shr-put-image-alt))
-       (add-hook 'eww-mode-hook 'eww-mode-hook--disable-image)
-
-       ;; (setq eww-search-prefix "https://www.google.co.jp/search?ie=UTF-8&oe=UTF-8&num=50&filter=1&gbv=1&q=")
-
-       (define-key eww-mode-map "r" 'eww-reload)
-       (define-key eww-mode-map "c 0" 'eww-copy-page-url)
-       (define-key eww-mode-map "p" 'scroll-down)
-       (define-key eww-mode-map "n" 'scroll-up)
-
-       (ace-link-setup-default)
-
-       ;; make emacs always use its own browser for opening URL links
-       (setq browse-url-browser-function 'eww-browse-url)
-
-       )
-    ) ;; end of eww
 
   (require 'ace-link)
   (require 'browse-url-dwim)
   (browse-url-dwim-mode 1)
+
+  (use-package direnv
+    :config
+    (direnv-mode))
 
   ;; ;; mu4e
   ;; (with-eval-after-load 'mu4e-alert
@@ -765,11 +749,6 @@ before packages are loaded."
   ;;             "~/Dropbox/Documents/pdf"))
 
   (with-eval-after-load 'org
-    ;; (org-babel-do-load-languages
-    ;;   'org-babel-load-languages
-    ;;   '((ditaa . t)))
-    (add-hook 'dired-mode-hook 'org-download-enable)
-
     (setq org-ditaa-jar-path "/usr/local/bin/ditaa")
     (setq org-refile-targets '((org-agenda-files :maxlevel . 2)))
     (require 'ob-go)
@@ -778,9 +757,8 @@ before packages are loaded."
         '((go . t)
            ))
       )
-
     (require 'ob-sql-mode)
-
+    (setq org-download-screenshot-method "screencapture -i %s")
     (setq org-capture-templates
       '(("t" "New TODO" entry
           (file+headline "~/notes/notes.org" "tasks")
@@ -795,6 +773,18 @@ before packages are loaded."
          ;;   :unnarrowed t)
          )
       )
+
+    (require 'ox-qmd)
+    (require 'org-menu)
+    (define-key org-mode-map (kbd "C-c m") 'org-menu)
+    )
+
+  (use-package ob-docker-build
+    :ensure t
+    :defer t
+    :config
+    (add-to-list 'org-babel-load-languages '(docker-build . t))
+    (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
     )
 
   ;; Org-roam
@@ -821,6 +811,8 @@ before packages are loaded."
   ;;   :custom
   ;;   (company-box-icons-alist 'company-box-icons-all-the-icons)
   ;;   (company-box-doc-enable nil))
+
+
 
   (when (and (executable-find "fish")
           (require 'fish-completion nil t))
@@ -1021,12 +1013,19 @@ before packages are loaded."
   (use-package lsp-mode
     ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
     :init
-    (setq lsp-keymap-prefix "s-l"
-      lsp-gopls-codelens nil)
+    (setq lsp-keymap-prefix "s-l" lsp-gopls-codelens nil)
     ;; replace XXX-mode with concrete major-mode(e. g. python-mode)
     :hook ( (go-mode . lsp)
             (lsp-mode . lsp-enable-which-key-integration))
     :commands lsp
+    )
+
+  (with-eval-after-load "lsp-mode"
+    (add-to-list 'lsp-language-id-configuration '(jenkinsfile-mode . "groovy"))
+    (lsp-register-client
+      (make-lsp-client :new-connection (lsp-stdio-connection groovy-lsp-jar-path)
+        :major-modes '(jenkinsfile-mode)
+        :server-id 'groovy-ls))
     )
 
   ;; optionally
@@ -1052,6 +1051,48 @@ before packages are loaded."
     :config
     (which-key-mode))
 
+  (defun go-debug-config-generator ()
+    "Generate debug configuration for Go dap-mode."
+    (interactive)
+    (let ((tpl (list :type "go")))
+      (plist-put tpl :request (if (y-or-n-p "[必須] デバッグ対象は起動中?")
+                                "attach"
+                                "launch"))
+      (if (y-or-n-p "[必須] デバッグ対象はリモートにある?")
+        (plist-put tpl
+          :mode "remote"
+          :host (read-string "[必須] リモートマシンのホスト: ")
+          :port (read-string "[必須] デバッグ対象のポート番号: ")
+          :remotePath (read-string "[必須] デバッグ対象の絶対パス: "))
+        (if (eq (plist-get tpl :request) "attach")
+          (plist-put tpl
+            :mode "local"
+            :processId (read-number "[必須] デバッグ対象のプロセスID: "))
+          (if (y-or-n-p "[必須] デバッグ対象はテストですか?")
+            (progn
+              (plist-put tpl :mode "test")
+              (let ((func (read-string "テスト関数の指定 (e.g. TestMyFunc) (default: \"\"): "))
+                     (build (read-string "ビルドフラグの指定 (e.g. -tags fixtures) (default: \"\"): ")))
+                (if (not (equal func "")) (plist-put tpl :args ("-test.run" func)))
+                (if (not (equal build "")) (plist-put tpl :buildFlags (split-string build)))))
+            (plist-put tpl :mode (if (y-or-n-p "[必須] デバッグ対象はソースコードですか?")
+                                   "debug"
+                                   "exec"))
+            (let ((build (read-string "ビルドフラグの指定 (e.g. -tags fixtures) (default: \"\"): ")))
+              (if (not (equal build "")) (plist-put tpl :buildFlags (split-string build)))))
+          (let ((env (read-string "引数の設定 (e.g. (:env1 var :env2 var2)) (default: \"\"): ")))
+            (if (not (equal env "")) (plist-put tpl :env (read env)))))
+        (plist-put tpl :program (ivy-read "[必須] デバッグ対象のファイル(ディレクトリ): " 'read-file-name-internal
+                                  :matcher #'counsel--find-file-matcher
+                                  :action
+                                  (lambda (x)
+                                    (print x)))))
+      (let ((name (read-string "[必須] 登録するデバッグ設定名: ")))
+        (require 'dap-mode)
+        (dap-register-debug-template name tpl)
+        (message "Register go debug configuration as " name))))
+
+
 
   ;; PlantUML
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
@@ -1067,13 +1108,6 @@ before packages are loaded."
   (setq plantuml-jar-path (homebrew-plantuml-jar-path))
   (setq org-plantuml-jar-path plantuml-jar-path)
 
-
-  ;; Magit
-  (eval-after-load "magit-log"
-    '(progn
-       (custom-set-variables
-         '(magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 19)))))
-
   (with-eval-after-load 'json-mode
     (define-key json-mode-map (kbd "C-c C-j") #'jq-interactively))
 
@@ -1088,6 +1122,26 @@ before packages are loaded."
   (add-hook 'org-mode-hook 'emojify-mode)
   (add-hook 'markdown-mode-hook 'wrap-region-mode)
 
+
+  (use-package xwwp-follow-link
+    :custom
+    (xwwp-follow-link-completion-system 'ivy)
+    :bind (:map xwidget-webkit-mode-map
+            ("v" . xwwp-follow-link)))
+
+  ;; Use keybindings
+  (use-package grip-mode
+    :ensure t
+    :init
+    (setq grip-binary-path "/usr/local/bin/grip")
+    (setq grip-preview-use-webkit t)
+    (require 'auth-source)
+    (let ((credential (auth-source-user-and-password "api.github.com")))
+      (setq grip-github-user (car credential)
+        grip-github-password (cadr credential)))
+    :bind (:map markdown-mode-command-map
+            ("g" . grip-mode)))
+
   (use-package moom
     :init
     (setq moom-multi-monitors-support t
@@ -1095,6 +1149,25 @@ before packages are loaded."
     (moom-identify-current-monitor)
     (moom-mode 1)
     )
+
+  (require 'ob-async)
+
+  (use-package itail
+    :ensure t
+    :init
+    (setq itail-fancy-mode-line t)
+    (setq itail-highlight-list
+      '(("[eE]rror\\|[wW]arning" . hi-red-b)
+         ))
+    )
+
+  ;; like tail -f
+  ;; (add-to-list 'auto-mode-alist '("\\.log\\'" . auto-revert-tail-mode))
+  ;; (defun do-end-of-buffer()
+  ;;   (when auto-revert-tail-mode
+  ;;     (end-of-buffer)))
+  ;; (add-hook 'after-revert-hook 'do-end-of-buffer)
+  ;; (add-hook 'find-file-hook 'do-end-of-buffer)
 
 
   ;; emacs-ja.info
@@ -1107,6 +1180,72 @@ before packages are loaded."
         (t filename))
       args))
   (advice-add 'Info-find-node :around 'Info-find-node--info-ja)
+
+
+  ;; (eval-after-load "eww"
+  ;;   '(progn
+  ;;      ;; 背景色の設定
+  ;;      (defvar eww-disable-colorize t)
+  ;;      (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
+  ;;        (unless eww-disable-colorize
+  ;;          (funcall orig start end fg)))
+  ;;      (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
+  ;;      (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
+  ;;      (defun eww-disable-color ()
+  ;;        "eww で文字色を反映させない"
+  ;;        (interactive)
+  ;;        (setq-local eww-disable-colorize t)
+  ;;        (eww-reload))
+  ;;      (defun eww-enable-color ()
+  ;;        "eww で文字色を反映させる"
+  ;;        (interactive)
+  ;;        (setq-local eww-disable-colorize nil)
+  ;;        (eww-reload))
+
+  ;;      ;; 現在の url を eww で開く
+  ;;      (defun browse-url-with-eww ()
+  ;;        (interactive)
+  ;;        (let ((url-region (bounds-of-thing-at-point 'url)))
+  ;;          ;; url
+  ;;          (if url-region
+  ;;            (eww-browse-url (buffer-substring-no-properties (car url-region)
+  ;;                              (cdr url-region))))
+  ;;          ;; org-link
+  ;;          (setq browse-url-browser-function 'eww-browse-url)
+  ;;          (org-open-at-point)))
+
+  ;;      ;; 画像は遅いので表示させない
+  ;;      (defun eww-disable-images ()
+  ;;        "eww で画像表示させない"
+  ;;        (interactive)
+  ;;        (setq-local shr-put-image-function 'shr-put-image-alt)
+  ;;        (eww-reload))
+  ;;      (defun eww-enable-images ()
+  ;;        "eww で画像表示させる"
+  ;;        (interactive)
+  ;;        (setq-local shr-put-image-function 'shr-put-image)
+  ;;        (eww-reload))
+  ;;      (defun shr-put-image-alt (spec alt &optional flags)
+  ;;        (insert alt))
+  ;;      ;; はじめから非表示
+  ;;      (defun eww-mode-hook--disable-image ()
+  ;;        (setq-local shr-put-image-function 'shr-put-image-alt))
+  ;;      (add-hook 'eww-mode-hook 'eww-mode-hook--disable-image)
+
+  ;;      ;; (setq eww-search-prefix "https://www.google.co.jp/search?ie=UTF-8&oe=UTF-8&num=50&filter=1&gbv=1&q=")
+
+  ;;      (define-key eww-mode-map "r" 'eww-reload)
+  ;;      (define-key eww-mode-map "c 0" 'eww-copy-page-url)
+  ;;      (define-key eww-mode-map "p" 'scroll-down)
+  ;;      (define-key eww-mode-map "n" 'scroll-up)
+
+  ;;      (ace-link-setup-default)
+
+  ;;      ;; make emacs always use its own browser for opening URL links
+  ;;      (setq browse-url-browser-function 'eww-browse-url)
+
+  ;;      )
+  ;;   ) ;; end of eww
 
   ) ;; end of user-config
 
@@ -1138,8 +1277,7 @@ This function is called at the very end of Spacemacs initialization."
           ("FIXME" . "#dc752f")
           ("XXX+" . "#dc752f")
           ("\\?\\?\\?+" . "#dc752f")))
-    '(magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 19))
-    )
+    '(magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 19)))
   (custom-set-faces
     ;; custom-set-faces was added by Custom.
     ;; If you edit it by hand, you could mess it up, so be careful.
