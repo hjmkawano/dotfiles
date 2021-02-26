@@ -32,7 +32,7 @@ This function should only modify configuration layer settings."
 
     ;; List of configuration layers to load.
     dotspacemacs-configuration-layers
-    '(
+    '(vimscript
        spacemacs-purpose
        (auto-completion :variables
          auto-completion-enable-snippets-in-popup t
@@ -145,6 +145,7 @@ This function should only modify configuration layer settings."
          godoc-at-point-function 'godoc-gogetdoc
          go-format-before-save t
          gofmt-command "goimports")
+       debug
        dap
        protobuf
        (python :variables
@@ -224,6 +225,10 @@ This function should only modify configuration layer settings."
          :location (recipe
                      :fetcher github
                      :repo "sheijk/org-menu"))
+       (org-books
+         :location (recipe
+                     :fetcher github
+                     :repo "lepisma/org-books"))
        wrap-region
        ripgrep
        toml-mode
@@ -391,12 +396,10 @@ It should only modify the values of Spacemacs settings."
                                  ;; "Source Han Code JP"
                                  ;; :size 14
                                  ;;
-                                 ;; "HackGenNerd"
-                                 ;; "HackGen35Nerd"
-                                 "HackGenNerd Console"
-                                 ;; "HackGen35Nerd Console"
-                                 :size 16
-                                 ;; :line-spacing 0.25
+                                 ;; "HackGenNerd Console"
+                                 "HackGen35Nerd Console"
+                                 :size 15
+                                 :line-spacing 0.2
                                  ;; :weight normal
                                  ;; :width normal
                                  )
@@ -463,7 +466,7 @@ It should only modify the values of Spacemacs settings."
     ;; If non-nil, the paste transient-state is enabled. While enabled, after you
     ;; paste something, pressing `C-j' and `C-k' several times cycles through the
     ;; elements in the `kill-ring'. (default nil)
-    dotspacemacs-enable-paste-transient-state t
+    dotspacemacs-enable-paste-transient-state nil
 
     ;; Which-key delay in seconds. The which-key buffer is the popup listing
     ;; the commands bound to the current keystroke sequence. (default 0.4)
@@ -787,6 +790,13 @@ before packages are loaded."
     (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
     )
 
+  (use-package org-books
+    :ensure t
+    :defer t
+    :config
+    (setq org-books-file "~/notes/my-booklist.org")
+    )
+
   ;; Org-roam
   ;; (use-package org-roam
   ;;   :after org
@@ -1009,17 +1019,23 @@ before packages are loaded."
     :config
     (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130)))
 
+
+
+
+
   ;; LSP
   (use-package lsp-mode
     ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
     :init
     (setq lsp-keymap-prefix "s-l" lsp-gopls-codelens nil)
+    (setq lsp-signature-function 'lsp-signature-posframe)
     ;; replace XXX-mode with concrete major-mode(e. g. python-mode)
     :hook ( (go-mode . lsp)
             (lsp-mode . lsp-enable-which-key-integration))
     :commands lsp
     )
 
+  ;; TODO: use-packageに押し込めること
   (with-eval-after-load "lsp-mode"
     (add-to-list 'lsp-language-id-configuration '(jenkinsfile-mode . "groovy"))
     (lsp-register-client
@@ -1028,7 +1044,7 @@ before packages are loaded."
         :server-id 'groovy-ls))
     )
 
-  ;; optionally
+  ;; LSP optionally
   (use-package lsp-ui
     :init
     (setq
@@ -1040,9 +1056,34 @@ before packages are loaded."
   (use-package lsp-treemacs
     :init (lsp-treemacs-sync-mode t)
     :commands lsp-treemacs-errors-list)
+  (use-package lsp-ido)
 
-  ;; optionally if you want to use debugger
-  (use-package dap-mode)
+  ;; DAP
+  (use-package dap-mode
+    :hook ((dap-stopped-hook . (lambda (arg) (call-interactively #'dap-hydra)))
+            (dap-session-created-hook . +dap-running-session-mode)
+            (dap-stopped-hook . +dap-running-session-mode)
+            (dap-stack-frame-changed-hook . (lambda (session)
+                                              (when (dap--session-running session)
+                                                (+dap-running-session-mode 1))))
+            )
+    )
+
+  (define-minor-mode +dap-running-session-mode
+    "A mode for adding keybindings to running sessions"
+    nil
+    nil
+    (make-sparse-keymap)
+    (evil-normalize-keymaps) ;; if you use evil, this is necessary to update the keymaps
+    ;; The following code adds to the dap-terminated-hook
+    ;; so that this minor mode will be deactivated when the debugger finishes
+    (when +dap-running-session-mode
+      (let ((session-at-creation (dap--cur-active-session-or-die)))
+        (add-hook 'dap-terminated-hook
+          (lambda (session)
+            (when (eq session session-at-creation)
+              (+dap-running-session-mode -1)))))))
+
   ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
   (use-package dap-go)
 
@@ -1050,49 +1091,6 @@ before packages are loaded."
   (use-package which-key
     :config
     (which-key-mode))
-
-  (defun go-debug-config-generator ()
-    "Generate debug configuration for Go dap-mode."
-    (interactive)
-    (let ((tpl (list :type "go")))
-      (plist-put tpl :request (if (y-or-n-p "[必須] デバッグ対象は起動中?")
-                                "attach"
-                                "launch"))
-      (if (y-or-n-p "[必須] デバッグ対象はリモートにある?")
-        (plist-put tpl
-          :mode "remote"
-          :host (read-string "[必須] リモートマシンのホスト: ")
-          :port (read-string "[必須] デバッグ対象のポート番号: ")
-          :remotePath (read-string "[必須] デバッグ対象の絶対パス: "))
-        (if (eq (plist-get tpl :request) "attach")
-          (plist-put tpl
-            :mode "local"
-            :processId (read-number "[必須] デバッグ対象のプロセスID: "))
-          (if (y-or-n-p "[必須] デバッグ対象はテストですか?")
-            (progn
-              (plist-put tpl :mode "test")
-              (let ((func (read-string "テスト関数の指定 (e.g. TestMyFunc) (default: \"\"): "))
-                     (build (read-string "ビルドフラグの指定 (e.g. -tags fixtures) (default: \"\"): ")))
-                (if (not (equal func "")) (plist-put tpl :args ("-test.run" func)))
-                (if (not (equal build "")) (plist-put tpl :buildFlags (split-string build)))))
-            (plist-put tpl :mode (if (y-or-n-p "[必須] デバッグ対象はソースコードですか?")
-                                   "debug"
-                                   "exec"))
-            (let ((build (read-string "ビルドフラグの指定 (e.g. -tags fixtures) (default: \"\"): ")))
-              (if (not (equal build "")) (plist-put tpl :buildFlags (split-string build)))))
-          (let ((env (read-string "引数の設定 (e.g. (:env1 var :env2 var2)) (default: \"\"): ")))
-            (if (not (equal env "")) (plist-put tpl :env (read env)))))
-        (plist-put tpl :program (ivy-read "[必須] デバッグ対象のファイル(ディレクトリ): " 'read-file-name-internal
-                                  :matcher #'counsel--find-file-matcher
-                                  :action
-                                  (lambda (x)
-                                    (print x)))))
-      (let ((name (read-string "[必須] 登録するデバッグ設定名: ")))
-        (require 'dap-mode)
-        (dap-register-debug-template name tpl)
-        (message "Register go debug configuration as " name))))
-
-
 
   ;; PlantUML
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
@@ -1249,39 +1247,8 @@ before packages are loaded."
 
   ) ;; end of user-config
 
-(defun dotspacemacs/emacs-custom-settings ()
+(defun dotspacemacs/emacs-custom-settings ())
   "Emacs custom settings.
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-  (custom-set-variables
-    ;; custom-set-variables was added by Custom.
-    ;; If you edit it by hand, you could mess it up, so be careful.
-    ;; Your init file should contain only one such instance.
-    ;; If there is more than one, they won't work right.
-    '(auth-source-save-behavior nil)
-    '(evil-want-Y-yank-to-eol nil)
-    '(hl-todo-keyword-faces
-       '(("TODO" . "#dc752f")
-          ("NEXT" . "#dc752f")
-          ("THEM" . "#2d9574")
-          ("PROG" . "#4f97d7")
-          ("OKAY" . "#4f97d7")
-          ("DONT" . "#f2241f")
-          ("FAIL" . "#f2241f")
-          ("DONE" . "#86dc2f")
-          ("NOTE" . "#b1951d")
-          ("KLUDGE" . "#b1951d")
-          ("HACK" . "#b1951d")
-          ("TEMP" . "#b1951d")
-          ("FIXME" . "#dc752f")
-          ("XXX+" . "#dc752f")
-          ("\\?\\?\\?+" . "#dc752f")))
-    '(magit-log-margin '(t "%Y-%m-%d %H:%M:%S" magit-log-margin-width t 19)))
-  (custom-set-faces
-    ;; custom-set-faces was added by Custom.
-    ;; If you edit it by hand, you could mess it up, so be careful.
-    ;; Your init file should contain only one such instance.
-    ;; If there is more than one, they won't work right.
-    )
-  )
