@@ -157,7 +157,7 @@ This function should only modify configuration layer settings."
        ipython-notebook
        shell-scripts
        (ruby :variables
-         ruby-enable-enh-ruby-mode nil
+         ruby-enable-enh-ruby-mode t
          ruby-backend 'lsp
          ruby-version-manager 'rbenv)
        html
@@ -994,10 +994,6 @@ before packages are loaded."
     (add-hook 'minibuffer-setup-hook #'my-tab-width-2)
     (add-hook 'minibuffer-exit-hook #'my-tab-width-original))
 
-  ;; Go
-  ;; (setenv "GO111MODULE" "on")
-  ;; (add-to-list 'exec-path "~/bin/")
-
   (use-package exec-path-from-shell
     :ensure t
     :config
@@ -1246,9 +1242,3 @@ before packages are loaded."
   ;;   ) ;; end of eww
 
   ) ;; end of user-config
-
-(defun dotspacemacs/emacs-custom-settings ())
-  "Emacs custom settings.
-This is an auto-generated function, do not modify its content directly, use
-Emacs customize menu instead.
-This function is called at the very end of Spacemacs initialization."
