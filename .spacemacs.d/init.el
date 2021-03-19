@@ -154,7 +154,8 @@ This function should only modify configuration layer settings."
          python-formatter 'black
          python-format-on-save t
          )
-       ipython-notebook
+       (ipython-notebook :variables
+         ein-backend 'jupyter)
        shell-scripts
        (ruby :variables
          ruby-enable-enh-ruby-mode t
