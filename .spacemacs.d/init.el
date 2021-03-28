@@ -169,7 +169,8 @@ This function should only modify configuration layer settings."
          sql-capitalize-keywords-disable-interactive t
          sql-auto-indent t
          sql-backend 'lsp
-         sql-lsp-sqls-workspace-config-path 'workspace)
+         lsp-sqls-workspace-config-path nil
+         )
        (groovy :variables
          groovy-backend 'lsp
          groovy-lsp-jar-path "~/src/github.com/prominic/groovy-language-server/build/libs/groovy-language-server-all.jar")
@@ -178,6 +179,15 @@ This function should only modify configuration layer settings."
        (ietf :variables
          ietf-docs-cache "~/Downloads/ietf-docs-cache")
        slack
+       (w3m
+         w3m-home-page "https://duckduckduck.com/"
+         w3m-default-display-inline-images t
+         w3m-default-toggle-inline-images t
+         w3m-command-arguments '("-cookie" "-F")
+         w3m-use-cookies t
+         browse-url-browser-function 'w3m-browse-url
+         w3m-view-this-url-new-session-in-background t
+         )
        )
 
     ;; List of additional packages that will be installed without being
@@ -480,7 +490,7 @@ It should only modify the values of Spacemacs settings."
     ;; If non-nil, the paste transient-state is enabled. While enabled, after you
     ;; paste something, pressing `C-j' and `C-k' several times cycles through the
     ;; elements in the `kill-ring'. (default nil)
-    dotspacemacs-enable-paste-transient-state nil
+    dotspacemacs-enable-paste-transient-state t
 
     ;; Which-key delay in seconds. The which-key buffer is the popup listing
     ;; the commands bound to the current keystroke sequence. (default 0.4)
@@ -733,8 +743,8 @@ before packages are loaded."
 
 
   (require 'ace-link)
-  (require 'browse-url-dwim)
-  (browse-url-dwim-mode 1)
+  ;; (require 'browse-url-dwim)
+  ;; (browse-url-dwim-mode 1)
 
   (use-package direnv
     :config
@@ -1195,10 +1205,10 @@ before packages are loaded."
     :init
     ;; Change the default browser
     ;; To open the selected result in the operating system browser instead of Emacs:
-    (setq counsel-web-search-action #'eww)
+    (setq counsel-web-search-action #'browse-url-generic)
 
     ;; Change the alternate browser
-    (setq counsel-web-search-alternate-action #'browse-url)
+    (setq counsel-web-search-alternate-action #'browse-url-firefox)
 
     ;; Change Search Engines
     ;; DuckDuckGo and Google are built in. DuckDuckGo is the default. Change to Google like this:
