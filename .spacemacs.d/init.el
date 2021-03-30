@@ -247,9 +247,16 @@ This function should only modify configuration layer settings."
        fish-completion
        grip-mode
        xwwp
+       xwwp-follow-link
+       (xwidgets-reuse
+         :location (recipe
+                     :fetcher github
+                     :repo "lordpretzel/xwidgets-reuse"
+                     ))
+       counsel-web
+       browse-url-dwim
        itail
        ssh-config-mode
-       counsel-web
        edit-indirect
        )
 
@@ -1135,24 +1142,19 @@ before packages are loaded."
   (add-hook 'org-mode-hook 'emojify-mode)
   (add-hook 'markdown-mode-hook 'wrap-region-mode)
 
-
-  ;; (xwwp-follow-link
-  ;;   :location (recipe
-  ;;               :fetcher github
-  ;;               :repo "canatella/xwwp"))
-
   (use-package xwwp-follow-link
     :custom
     (xwwp-follow-link-completion-system 'ivy)
     :bind (:map xwidget-webkit-mode-map
             ("v" . xwwp-follow-link)))
 
+  (use-package xwidgets-reuse
+    :ensure t)
 
   (use-package browse-url-dwim
     :ensure t
     :init
-    (browse-url-dwim-mode 1)
-    )
+    (browse-url-dwim-mode 1))
 
   ;; Use keybindings
   (use-package grip-mode
