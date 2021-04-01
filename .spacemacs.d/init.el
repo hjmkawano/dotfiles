@@ -44,7 +44,6 @@ This function should only modify configuration layer settings."
        better-defaults
        (copy-as-format :variables
          copy-as-format-default "slack")
-       themes-megapack
        emacs-lisp
        (git :packages
          (not fancy-battery))
@@ -231,10 +230,6 @@ This function should only modify configuration layer settings."
                      :fetcher github
                      :repo "ifitzpat/ob-docker-build"))
        org-ql
-       (org-menu
-         :location (recipe
-                     :fetcher github
-                     :repo "sheijk/org-menu"))
        (org-books
          :location (recipe
                      :fetcher github
@@ -247,7 +242,6 @@ This function should only modify configuration layer settings."
        fish-completion
        grip-mode
        xwwp
-       xwwp-follow-link
        (xwidgets-reuse
          :location (recipe
                      :fetcher github
@@ -804,8 +798,6 @@ before packages are loaded."
       )
 
     (require 'ox-qmd)
-    (require 'org-menu)
-    (define-key org-mode-map (kbd "C-c m") 'org-menu)
     )
 
   (use-package ob-docker-build
@@ -1142,7 +1134,7 @@ before packages are loaded."
   (add-hook 'org-mode-hook 'emojify-mode)
   (add-hook 'markdown-mode-hook 'wrap-region-mode)
 
-  (use-package xwwp-follow-link
+  (use-package xwwp
     :custom
     (xwwp-follow-link-completion-system 'ivy)
     :bind (:map xwidget-webkit-mode-map
