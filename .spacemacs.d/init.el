@@ -165,7 +165,6 @@ This function should only modify configuration layer settings."
          javascript-backend 'lsp)
        (sql :variables
          sql-capitalize-keywords t
-         sql-capitalize-keywords-disable-interactive t
          sql-auto-indent t
          sql-backend 'lsp
          lsp-sqls-workspace-config-path nil
@@ -220,7 +219,6 @@ This function should only modify configuration layer settings."
        all-the-icons-ivy-rich
        ivy-rich
        jq-mode
-       ob-sql-mode
        ob-go
        ob-mongo
        ob-translate
@@ -780,7 +778,6 @@ before packages are loaded."
         '((go . t)
            ))
       )
-    (require 'ob-sql-mode)
     (setq org-download-screenshot-method "screencapture -i %s")
     (setq org-capture-templates
       '(("t" "New TODO" entry
@@ -1201,6 +1198,7 @@ before packages are loaded."
       '(("[eE]rror\\|[wW]arning" . hi-red-b)
          ))
     )
+
 
   ;; like tail -f
   ;; (add-to-list 'auto-mode-alist '("\\.log\\'" . auto-revert-tail-mode))
