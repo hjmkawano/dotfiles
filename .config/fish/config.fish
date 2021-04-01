@@ -48,6 +48,7 @@ set -x VIRTUAL_ENV_DISABLE_PROMPT 1
 set -x GNUPGHOME $HOME"/.gnupg"
 set -x MANPATH "/usr/local/opt/coreutils/libexec/gnuman" $MANPATH
 set -x RIPGREP_CONFIG_PATH $HOME"/.ripgreprc"
+set -x GTAGSLABEL pygments
 
 # initialize direnv
 eval (direnv hook fish)

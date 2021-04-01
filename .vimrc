@@ -14,6 +14,12 @@ endif
 execute 'set runtimepath^=' . fnamemodify(s:dein_repo_dir, ':p')
 endif
 
+map <C-g> :Gtags
+map <C-h> :Gtags -f %<CR>
+map <C-j> :GtagsCursor<CR>
+map <C-n> :cn<CR>
+map <C-p> :cp<CR>
+
 
 " 設定開始
 if dein#load_state(s:dein_dir)

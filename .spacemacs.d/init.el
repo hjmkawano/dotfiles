@@ -110,6 +110,7 @@ This function should only modify configuration layer settings."
        ;;   plantuml-jar-path  ;; set at (user-config)
        ;;   org-plantuml-jar-path set at (user-config)
        ;;   plantuml-default-exec-mode 'jar)
+       gtags
        web-beautify
        (pdf :variables
          pdf-view-display-size 'fit-page
