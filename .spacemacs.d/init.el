@@ -56,13 +56,14 @@ This function should only modify configuration layer settings."
          org-agenda-files (list org-directory)
          org-log-done 'time
          org-image-actual-width '(800)
+         org-enable-org-journal-support t
+         org-enable-sticky-header t
          org-enable-github-support t
          org-enable-bootstrap-support nil
-         org-enable-org-journal-support t
-         org-enable-sticky-header nil
-         org-enable-epub-support t
-         org-enable-verb-support t
-         org-enable-reveal-js-support t
+         org-enable-epub-support nil
+         org-enable-verb-support nil
+         org-enable-reveal-js-support nil
+         org-use-speed-commands t
          org-journal-dir "~/notes/journal/"
          org-journal-file-format "%Y-%m-%d"
          org-journal-date-format "%A, %B %d %Y"
@@ -770,6 +771,8 @@ before packages are loaded."
   ;;             "~/Dropbox/Documents/pdf"))
 
   (with-eval-after-load 'org
+    (setq spaceline-org-clock-p t)
+
     (setq org-ditaa-jar-path "/usr/local/bin/ditaa")
     (setq org-refile-targets '((org-agenda-files :maxlevel . 2)))
     (require 'ob-go)
