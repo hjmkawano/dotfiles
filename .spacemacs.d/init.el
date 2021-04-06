@@ -838,10 +838,9 @@ before packages are loaded."
   ;;   (company-box-doc-enable nil))
 
 
-
-  (when (and (executable-find "fish")
-          (require 'fish-completion nil t))
-    (global-fish-completion-mode))
+  ;; (when (and (executable-find "fish")
+  ;;         (require 'fish-completion nil t))
+  ;;   (global-fish-completion-mode))
 
   ;; projectile
   (setq projectile-enable-caching t)
