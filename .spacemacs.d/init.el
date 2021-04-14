@@ -252,6 +252,7 @@ This function should only modify configuration layer settings."
        ssh-config-mode
        edit-indirect
        nord-theme
+       (forge :toggle t)
        (gist
          :location (recipe
                      :fetcher github
@@ -679,6 +680,8 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
+
+  (setq-default git-magit-status-fullscreen t)
 
   )
 
