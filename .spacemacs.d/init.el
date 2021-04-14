@@ -252,6 +252,12 @@ This function should only modify configuration layer settings."
        ssh-config-mode
        edit-indirect
        nord-theme
+       (forge :toggle t)
+       (gist
+         :location (recipe
+                     :fetcher github
+                     :repo "defunkt/gist.el"
+                     ))
        )
 
     ;; A list of packages that cannot be updated.
@@ -674,6 +680,8 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
+
+  (setq-default git-magit-status-fullscreen t)
 
   )
 
@@ -1201,6 +1209,14 @@ before packages are loaded."
     (setq itail-highlight-list
       '(("[eE]rror\\|[wW]arning" . hi-red-b)
          ))
+    )
+
+  (setq magit-repository-directories
+    '(("~/dotfiles/" . 0) ("~/src/" . 2)))
+
+  (use-package gist
+    :ensure t
+    :init
     )
 
 
