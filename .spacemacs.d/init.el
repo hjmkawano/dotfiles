@@ -252,6 +252,11 @@ This function should only modify configuration layer settings."
        ssh-config-mode
        edit-indirect
        nord-theme
+       (iceberg-theme
+         :location (recipe
+                     :fetcher github
+                     :repo "conao3/iceberg-theme.el")
+         )
        (forge :toggle t)
        (gist
          :location (recipe
@@ -1217,6 +1222,13 @@ before packages are loaded."
   (use-package gist
     :ensure t
     :init
+    )
+
+  (use-package iceberg-theme
+    :ensure t
+    :config
+    (iceberg-theme-create-theme-file)
+    (load-theme 'solarized-iceberg-dark t)
     )
 
 
