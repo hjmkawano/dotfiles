@@ -251,7 +251,6 @@ This function should only modify configuration layer settings."
        itail
        ssh-config-mode
        edit-indirect
-       nord-theme
        (iceberg-theme
          :location (recipe
                      :fetcher github
@@ -402,8 +401,9 @@ It should only modify the values of Spacemacs settings."
     ;; Press `SPC T n' to cycle to the next theme in the list (works great
     ;; with 2 themes variants, one dark and one light)
     dotspacemacs-themes '(
-                           nord
+                           doom-one
                            doom-nord
+                           afternoon
                            )
 
     ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
@@ -414,7 +414,7 @@ It should only modify the values of Spacemacs settings."
     ;; spaceline theme. Value can be a symbol or list with additional properties.
     ;; (default '(spacemacs :separator wave :separator-scale 1.5))
     ;; dotspacemacs-mode-line-theme '(all-the-icons :separator slant :separator-scale 1.4)
-    dotspacemacs-mode-line-theme '(doom)
+    dotspacemacs-mode-line-theme '(doom :separator arrow :separator-scale 1.4)
 
     ;; If non-nil the cursor color matches the state color in GUI Emacs.
     ;; (default t)
@@ -429,8 +429,8 @@ It should only modify the values of Spacemacs settings."
                                  ;; "Source Han Code JP"
                                  ;; :size 14
                                  ;;
-                                 ;; "HackGenNerd Console"
-                                 "HackGen35Nerd Console"
+                                 "HackGenNerd Console"
+                                 ;; "HackGen35Nerd Console"
                                  :size 15
                                  :line-spacing 0.2
                                  ;; :weight normal
@@ -1229,6 +1229,19 @@ before packages are loaded."
     :config
     (iceberg-theme-create-theme-file)
     (load-theme 'solarized-iceberg-dark t)
+    )
+
+
+  (use-package doom-themes
+    :config
+    (setq
+      doom-themes-enable-bold t    ; if nil, bold is universally disabled
+      doom-themes-enable-italic t)     ; if nil, italics is universally disabled
+
+    (doom-themes-visual-bell-config)
+    (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
+    (doom-themes-treemacs-config)
+    (doom-themes-org-config)
     )
 
 
