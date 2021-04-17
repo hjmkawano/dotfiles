@@ -8,8 +8,13 @@ set cursorline
 set number
 
 call plug#begin()
+
+Plug 'junegunn/vim-easy-align'
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+
+Plug 'https://github.com/junegunn/vim-github-dashboard.git'
+Plug 'rdnetto/YCM-Generator', { 'branch': 'stable' }
 
 Plug 'mattn/vim-lsp-settings'
 Plug 'prabirshrestha/asyncomplete.vim'
@@ -19,6 +24,9 @@ Plug 'mattn/vim-lsp-settings'
 Plug 'mattn/vim-lsp-icons'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
+
+Plug 'fatih/vim-go', { 'tag': '*' }
+Plug 'nsf/gocode'
 
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
