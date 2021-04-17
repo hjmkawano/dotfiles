@@ -1,5 +1,4 @@
-set -x GOPATH $HOME
-set -x GO111MODULE auto
+set -x GOPATH $HOME/.go
 
 for p in $GOPATH
     set PATH $p/bin $PATH
