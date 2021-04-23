@@ -228,6 +228,7 @@ This function should only modify configuration layer settings."
          :location (recipe
                      :fetcher github
                      :repo "ifitzpat/ob-docker-build"))
+       ob-http
        org-ql
        (org-books
          :location (recipe
@@ -1245,6 +1246,14 @@ before packages are loaded."
     (doom-themes-org-config)
     )
 
+  (use-package ob-http
+    :ensure t
+    :config
+    (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((emacs-lisp . t)
+         (http . t)))
+    )
 
   ;; like tail -f
   ;; (add-to-list 'auto-mode-alist '("\\.log\\'" . auto-revert-tail-mode))
