@@ -12,8 +12,6 @@ if not functions -q fisher
     fish -c fisher
 end
 
-set fish_plugins theme git rbenv rails brew bundler gem osx pbcopy better-alias z tmux ghq spin fzf
-
 alias psf 'ps ax|fzf'
 
 set -x LESSCHARSET utf-8
@@ -54,7 +52,6 @@ eval (direnv hook fish)
 
 # initialize anyenv and XXenv
 status --is-interactive; and source (anyenv init -|psub)
-status --is-interactive; and source (pyenv init -|psub)
 status --is-interactive; and source (nodenv init -|psub)
 status --is-interactive; and source (goenv init -|psub)
 status --is-interactive; and source (rbenv init -|psub)
