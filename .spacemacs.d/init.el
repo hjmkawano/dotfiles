@@ -241,7 +241,15 @@ This function should only modify configuration layer settings."
        moom
        fish-completion
        grip-mode
-       xwwp
+       (xwwp
+         :location (recipe
+                     :fetcher github
+                     :repo "canatella/xwwp"
+                     )
+         :custom
+         (xwwp-follow-link-completion-system 'ivy)
+         :bind (:map xwidget-webkit-mode-map
+                 ("v" . xwwp-follow-link)))
        (xwidgets-reuse
          :location (recipe
                      :fetcher github
