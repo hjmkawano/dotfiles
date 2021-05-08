@@ -14,29 +14,25 @@ end
 
 alias psf 'ps ax|fzf'
 
+fish_add_path /usr/local/opt/coreutils/libexec/gnubin
+fish_add_path /usr/local/opt/openjdk/bin
+fish_add_path /usr/local/opt/mysql-client/bin
+fish_add_path /usr/local/opt/qt/bin
+fish_add_path /usr/local/opt/nss/bin
+fish_add_path /usr/local/opt/ruby/bin
+fish_add_path /usr/local/lib/ruby/gems/3.0.0/bin
+fish_add_path /usr/local/opt/sqlite/bin
+fish_add_path /usr/local/opt/krb5/bin
+fish_add_path /usr/local/opt/krb5/sbin
+fish_add_path /usr/local/opt/libpq/bin
+fish_add_path /usr/local/sbin
+fish_add_path /~.yubikey/bin
+fish_add_path ~/.local/bin
+fish_add_path ~/bin
+
+
 set -x LESSCHARSET utf-8
 set -x GHQ_SELECTOR fzf
-
-set -g fish_user_paths "/usr/local/opt/curl/bin" $fish_user_paths
-set -g fish_user_paths "/usr/local/Cellar/git/2.29.2/bin" $fish_user_paths
-set -g fish_user_paths "/usr/local/opt/python@3.8/bin" $fish_user_paths
-set -g fish_user_paths "/usr/local/opt/ruby/bin" $fish_user_path
-set -g fish_user_paths "/usr/local/lib/ruby/gems/3.0.0/bin" $fish_user_path
-set -g fish_user_paths "/usr/local/opt/sqlite/bin" $fish_user_paths
-set -g fish_user_paths "/usr/local/opt/krb5/bin" $fish_user_paths
-set -g fish_user_paths "/usr/local/opt/krb5/sbin" $fish_user_paths
-set -g fish_user_paths "/usr/local/opt/libpq/bin"  $fish_user_paths
-set -g fish_user_paths "/~.yubikey/bin" $fish_user_paths
-set -g fish_user_paths "~/.local/bin" $fish_user_paths
-set -g fish_user_paths "~/bin" $fish_user_paths
-set -g fish_user_paths "/usr/local/opt/coreutils/libexec/gnubin" $fish_user_paths
-set -g fish_user_paths "/usr/local/opt/imagemagick@6/bin" $fish_user_paths
-set -g fish_user_paths "/usr/local/sbin" $fish_user_paths
-set -g fish_user_paths "/usr/local/opt/openjdk/bin" $fish_user_paths
-set -g fish_user_paths "/usr/local/opt/mysql-client/bin" $fish_user_paths
-set -g fish_user_paths "/usr/local/opt/qt/bin" $fish_user_paths
-set -g fish_user_paths "/usr/local/opt/nss/bin" $fish_user_paths
-
 set -g theme_powerline_fonts yes
 set -g theme_nerd_fonts yes
 set -g theme_display_docker_machine yes
@@ -48,14 +44,7 @@ set -x MANPATH "/usr/local/opt/coreutils/libexec/gnuman" $MANPATH
 set -x RIPGREP_CONFIG_PATH $HOME"/.ripgreprc"
 
 # initialize direnv
-eval (direnv hook fish)
-
-# initialize anyenv and XXenv
-status --is-interactive; and source (anyenv init -|psub)
-status --is-interactive; and source (nodenv init -|psub)
-status --is-interactive; and source (goenv init -|psub)
-status --is-interactive; and source (rbenv init -|psub)
-
+direnv hook fish | source
 
 function vterm_printf;
     if [ -n "$TMUX" ]
@@ -87,4 +76,4 @@ end
 starship init fish | source
 
 # iTerm2 integration
-test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
+# test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
