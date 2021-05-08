@@ -257,7 +257,7 @@ This function should only modify configuration layer settings."
                      :fetcher github
                      :repo "conao3/iceberg-theme.el")
          )
-       (forge :toggle t)
+       forge
        (gist
          :location (recipe
                      :fetcher github
@@ -403,9 +403,6 @@ It should only modify the values of Spacemacs settings."
     ;; with 2 themes variants, one dark and one light)
     dotspacemacs-themes '(
                            doom-challenger-deep
-                           doom-nord
-                           doom-one
-                           afternoon
                            )
 
     ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
@@ -1230,19 +1227,20 @@ before packages are loaded."
     :ensure t
     :config
     (iceberg-theme-create-theme-file)
-    (load-theme 'solarized-iceberg-dark t)
+    ;; (load-theme 'solarized-iceberg-dark t)
     )
 
 
   (use-package doom-themes
-    :config
+    :ensure t
+    :init
     (setq
-      doom-themes-enable-bold t    ; if nil, bold is universally disabled
-      doom-themes-enable-italic t)     ; if nil, italics is universally disabled
-
+      doom-themes-enable-bold t
+      doom-themes-enable-italic t
+      doom-themes-treemacs-theme "doom-colors"
+      )
+    :config
     (doom-themes-visual-bell-config)
-    (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
-    (doom-themes-treemacs-config)
     (doom-themes-org-config)
     )
 
