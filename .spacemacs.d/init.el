@@ -151,7 +151,7 @@ This function should only modify configuration layer settings."
        (python :variables
          python-sort-imports-on-save t
          python-pipenv-activate t
-         python-formatter 'black
+         python-test-runner '(pytest nose)
          python-format-on-save t
          )
        (ipython-notebook :variables
