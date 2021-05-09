@@ -16,12 +16,13 @@ alias psf 'ps ax|fzf'
 
 fish_add_path /usr/local/opt/coreutils/libexec/gnubin
 fish_add_path /usr/local/opt/openjdk/bin
-fish_add_path /usr/local/opt/mysql-client/bin
-fish_add_path /usr/local/opt/qt/bin
-fish_add_path /usr/local/opt/nss/bin
+fish_add_path /usr/local/opt/python/bin
 fish_add_path /usr/local/opt/ruby/bin
 fish_add_path /usr/local/lib/ruby/gems/3.0.0/bin
+fish_add_path /usr/local/opt/mysql-client/bin
 fish_add_path /usr/local/opt/sqlite/bin
+fish_add_path /usr/local/opt/qt/bin
+fish_add_path /usr/local/opt/nss/bin
 fish_add_path /usr/local/opt/krb5/bin
 fish_add_path /usr/local/opt/krb5/sbin
 fish_add_path /usr/local/opt/libpq/bin
