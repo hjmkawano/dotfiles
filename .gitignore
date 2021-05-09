@@ -1,4 +1,4 @@
 .DS_Store
-
+/.spacemacs.d/.spacemacs.env
 /.ncmpcpp/error.log
 /.config/iterm2/
