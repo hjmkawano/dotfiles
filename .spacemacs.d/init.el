@@ -1,6 +1,7 @@
 ;; -*- mode: emacs-lisp; lexical-binding: t -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
+
 (defun dotspacemacs/layers ()
   "Layer configuration:
 This function should only modify configuration layer settings."
@@ -63,6 +64,7 @@ This function should only modify configuration layer settings."
          org-enable-epub-support nil
          org-enable-verb-support nil
          org-enable-reveal-js-support nil
+         org-enable-valign t
          org-use-speed-commands t
          org-journal-dir "~/notes/journal/"
          org-journal-file-format "%Y-%m-%d"
@@ -150,8 +152,9 @@ This function should only modify configuration layer settings."
        protobuf
        (python :variables
          python-sort-imports-on-save t
-         python-pipenv-activate t
          python-test-runner '(pytest nose)
+         python-pipenv-activate t
+         python-formatter 'black
          python-format-on-save t
          )
        (ipython-notebook :variables
@@ -399,8 +402,27 @@ It should only modify the values of Spacemacs settings."
     ;; True if the home buffer should respond to resize events. (default t)
     dotspacemacs-startup-buffer-responsive t
 
+    ;; Show numbers before the startup list lines. (default t)
+    dotspacemacs-show-startup-list-numbers t
+
+    ;; The minimum delay in seconds between number key presses. (default 0.4)
+    dotspacemacs-startup-buffer-multi-digit-delay 0.4
+
+    ;; Default major mode for a new empty buffer. Possible values are mode
+    ;; names such as `text-mode'; and `nil' to use Fundamental mode.
+    ;; (default `text-mode')
+    dotspacemacs-new-empty-buffer-major-mode 'text-mode
+
     ;; Default major mode of the scratch buffer (default `text-mode')
     dotspacemacs-scratch-mode 'text-mode
+
+    ;; If non-nil, *scratch* buffer will be persistent. Things you write down in
+    ;; *scratch* buffer will be saved and restored automatically.
+    dotspacemacs-scratch-buffer-persistent nil
+
+    ;; If non-nil, `kill-buffer' on *scratch* buffer
+    ;; will bury it instead of killing.
+    dotspacemacs-scratch-buffer-unkillable nil
 
     ;; Initial message in the scratch buffer, such as "Welcome to Spacemacs!"
     ;; (default nil)
@@ -420,7 +442,6 @@ It should only modify the values of Spacemacs settings."
     ;; refer to the DOCUMENTATION.org for more info on how to create your own
     ;; spaceline theme. Value can be a symbol or list with additional properties.
     ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-    ;; dotspacemacs-mode-line-theme '(all-the-icons :separator slant :separator-scale 1.4)
     dotspacemacs-mode-line-theme '(doom :separator arrow :separator-scale 1.4)
 
     ;; If non-nil the cursor color matches the state color in GUI Emacs.
@@ -463,8 +484,10 @@ It should only modify the values of Spacemacs settings."
     dotspacemacs-major-mode-leader-key ","
 
     ;; Major mode leader key accessible in `emacs state' and `insert state'.
-    ;; (default "C-M-m")
-    dotspacemacs-major-mode-emacs-leader-key "C-M-m"
+    ;; (default "C-M-m" for terminal mode, "<M-return>" for GUI mode).
+    ;; Thus M-RET should work as leader key in both GUI and terminal modes.
+    ;; C-M-m also should work in terminal mode, but not in GUI mode.
+    dotspacemacs-major-mode-emacs-leader-key (if window-system "<M-return>" "C-M-m")
 
     ;; These variables control whether separate commands are bound in the GUI to
     ;; the key pairs `C-i', `TAB' and `C-m', `RET'.
@@ -483,7 +506,7 @@ It should only modify the values of Spacemacs settings."
 
     ;; If non-nil then the last auto saved layouts are resumed automatically upon
     ;; start. (default nil)
-    dotspacemacs-auto-resume-layouts t
+    dotspacemacs-auto-resume-layouts nil
 
     ;; If non-nil, auto-generate layout name when creating new layouts. Only has
     ;; effect when using the "jump to layout by number" commands. (default nil)
@@ -543,6 +566,11 @@ It should only modify the values of Spacemacs settings."
     ;; (default nil) (Emacs 24.4+ only)
     dotspacemacs-maximized-at-startup t
 
+    ;; If non-nil the frame is undecorated when Emacs starts up. Combine this
+    ;; variable with `dotspacemacs-maximized-at-startup' in OSX to obtain
+    ;; borderless fullscreen. (default nil)
+    dotspacemacs-undecorated-at-startup nil
+
     ;; A value from the range (0..100), in increasing opacity, which describes
     ;; the transparency level of a frame when it's active or selected.
     ;; Transparency can be toggled through `toggle-transparency'. (default 90)
@@ -568,6 +596,10 @@ It should only modify the values of Spacemacs settings."
     ;; scrolling overrides the default behavior of Emacs which recenters point
     ;; when it reaches the top or bottom of the screen. (default t)
     dotspacemacs-smooth-scrolling t
+
+    ;; Show the scroll bar while scrolling. The auto hide time can be configured
+    ;; by setting this variable to a number. (default t)
+    dotspacemacs-scroll-bar-while-scrolling t
 
     ;; Control line numbers activation.
     ;; If set to `t' or `relative' line numbers are turned on in all `prog-mode' and
@@ -601,13 +633,18 @@ It should only modify the values of Spacemacs settings."
                                  :size-limit-kb 1000)
 
 
-    ;; Code folding method. Possible values are `evil' and `origami'.
+    ;; Code folding method. Possible values are `evil', `origami' and `vimish'.
     ;; (default 'evil)
-    dotspacemacs-folding-method 'evil
+    dotspacemacs-folding-method 'vimish
 
-    ;; If non-nil `smartparens-strict-mode' will be enabled in programming modes.
+    ;; If non-nil and `dotspacemacs-activate-smartparens-mode' is also non-nil,
+    ;; `smartparens-strict-mode' will be enabled in programming modes.
     ;; (default nil)
     dotspacemacs-smartparens-strict-mode t
+
+    ;; If non-nil smartparens-mode will be enabled in programming modes.
+    ;; (default t)
+    dotspacemacs-activate-smartparens-mode t
 
     ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
     ;; over any automatically added closing parenthesis, bracket, quote, etc…
@@ -617,11 +654,11 @@ It should only modify the values of Spacemacs settings."
     ;; Select a scope to highlight delimiters. Possible values are `any',
     ;; `current', `all' or `nil'. Default is `all' (highlight any scope and
     ;; emphasis the current one). (default 'all)
-    dotspacemacs-highlight-delimiters 'current
+    dotspacemacs-highlight-delimiters 'all
 
     ;; If non-nil, start an Emacs server if one is not already running.
     ;; (default nil)
-    dotspacemacs-enable-server t
+    dotspacemacs-enable-server nil
 
     ;; Set the emacs server socket location.
     ;; If nil, uses whatever the Emacs default is, otherwise a directory path
@@ -655,12 +692,18 @@ It should only modify the values of Spacemacs settings."
     ;; %n - Narrow if appropriate
     ;; %z - mnemonics of buffer, terminal, and keyboard coding systems
     ;; %Z - like %z, but including the end-of-line format
+    ;; If nil then Spacemacs uses default `frame-title-format' to avoid
+    ;; performance issues, instead of calculating the frame title by
+    ;; `spacemacs/title-prepare' all the time.
     ;; (default "%I@%S")
     dotspacemacs-frame-title-format "%a @ in %t"
 
     ;; Format specification for setting the icon title format
     ;; (default nil - same as frame-title-format)
     dotspacemacs-icon-title-format nil
+
+    ;; Show trailing whitespace (default t)
+    dotspacemacs-show-trailing-whitespace t
 
     ;; Delete whitespace while saving buffer. Possible values are `all'
     ;; to aggressively delete empty line and long sequences of whitespace,
@@ -669,6 +712,20 @@ It should only modify the values of Spacemacs settings."
     ;; (default nil)
     dotspacemacs-whitespace-cleanup 'trailing
 
+    ;; If non nil activate `clean-aindent-mode' which tries to correct
+    ;; virtual indentation of simple modes. This can interfer with mode specific
+    ;; indent handling like has been reported for `go-mode'.
+    ;; If it does deactivate it here.
+    ;; (default t)
+    dotspacemacs-use-clean-aindent-mode t
+
+    ;; If non-nil shift your number row to match the entered keyboard layout
+    ;; (only in insert state). Currently supported keyboard layouts are:
+    ;; `qwerty-us', `qwertz-de' and `querty-ca-fr'.
+    ;; New layouts can be added in `spacemacs-editing' layer.
+    ;; (default nil)
+    dotspacemacs-swap-number-row nil
+
     ;; Either nil or a number of seconds. If non-nil zone out after the specified
     ;; number of seconds. (default nil)
     dotspacemacs-zone-out-when-idle nil
@@ -676,7 +733,14 @@ It should only modify the values of Spacemacs settings."
     ;; Run `spacemacs/prettify-org-buffer' when
     ;; visiting README.org files of Spacemacs.
     ;; (default nil)
-    dotspacemacs-pretty-docs t))
+    dotspacemacs-pretty-docs t
+
+    ;; If nil the home buffer shows the full path of agenda items
+    ;; and todos. If non nil only the file name is shown.
+    dotspacemacs-home-shorten-agenda-source nil
+
+    ;; If non-nil then byte-compile some of Spacemacs files.
+    dotspacemacs-byte-compile nil))
 
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
@@ -1260,79 +1324,5 @@ before packages are loaded."
       '((emacs-lisp . t)
          (http . t)))
     )
-
-  ;; like tail -f
-  ;; (add-to-list 'auto-mode-alist '("\\.log\\'" . auto-revert-tail-mode))
-  ;; (defun do-end-of-buffer()
-  ;;   (when auto-revert-tail-mode
-  ;;     (end-of-buffer)))
-  ;; (add-hook 'after-revert-hook 'do-end-of-buffer)
-  ;; (add-hook 'find-file-hook 'do-end-of-buffer)
-
-
-  ;; (eval-after-load "eww"
-  ;;   '(progn
-  ;;      ;; 背景色の設定
-  ;;      (defvar eww-disable-colorize t)
-  ;;      (defun shr-colorize-region--disable (orig start end fg &optional bg &rest _)
-  ;;        (unless eww-disable-colorize
-  ;;          (funcall orig start end fg)))
-  ;;      (advice-add 'shr-colorize-region :around 'shr-colorize-region--disable)
-  ;;      (advice-add 'eww-colorize-region :around 'shr-colorize-region--disable)
-  ;;      (defun eww-disable-color ()
-  ;;        "eww で文字色を反映させない"
-  ;;        (interactive)
-  ;;        (setq-local eww-disable-colorize t)
-  ;;        (eww-reload))
-  ;;      (defun eww-enable-color ()
-  ;;        "eww で文字色を反映させる"
-  ;;        (interactive)
-  ;;        (setq-local eww-disable-colorize nil)
-  ;;        (eww-reload))
-
-  ;;      ;; 現在の url を eww で開く
-  ;;      (defun browse-url-with-eww ()
-  ;;        (interactive)
-  ;;        (let ((url-region (bounds-of-thing-at-point 'url)))
-  ;;          ;; url
-  ;;          (if url-region
-  ;;            (eww-browse-url (buffer-substring-no-properties (car url-region)
-  ;;                              (cdr url-region))))
-  ;;          ;; org-link
-  ;;          (setq browse-url-browser-function 'eww-browse-url)
-  ;;          (org-open-at-point)))
-
-  ;;      ;; 画像は遅いので表示させない
-  ;;      (defun eww-disable-images ()
-  ;;        "eww で画像表示させない"
-  ;;        (interactive)
-  ;;        (setq-local shr-put-image-function 'shr-put-image-alt)
-  ;;        (eww-reload))
-  ;;      (defun eww-enable-images ()
-  ;;        "eww で画像表示させる"
-  ;;        (interactive)
-  ;;        (setq-local shr-put-image-function 'shr-put-image)
-  ;;        (eww-reload))
-  ;;      (defun shr-put-image-alt (spec alt &optional flags)
-  ;;        (insert alt))
-  ;;      ;; はじめから非表示
-  ;;      (defun eww-mode-hook--disable-image ()
-  ;;        (setq-local shr-put-image-function 'shr-put-image-alt))
-  ;;      (add-hook 'eww-mode-hook 'eww-mode-hook--disable-image)
-
-  ;;      ;; (setq eww-search-prefix "https://www.google.co.jp/search?ie=UTF-8&oe=UTF-8&num=50&filter=1&gbv=1&q=")
-
-  ;;      (define-key eww-mode-map "r" 'eww-reload)
-  ;;      (define-key eww-mode-map "c 0" 'eww-copy-page-url)
-  ;;      (define-key eww-mode-map "p" 'scroll-down)
-  ;;      (define-key eww-mode-map "n" 'scroll-up)
-
-  ;;      (ace-link-setup-default)
-
-  ;;      ;; make emacs always use its own browser for opening URL links
-  ;;      (setq browse-url-browser-function 'eww-browse-url)
-
-  ;;      )
-  ;;   ) ;; end of eww
 
   ) ;; end of user-config
