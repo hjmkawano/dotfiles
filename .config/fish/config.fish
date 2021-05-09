@@ -31,7 +31,6 @@ fish_add_path /~.yubikey/bin
 fish_add_path ~/.local/bin
 fish_add_path ~/bin
 
-
 set -x LESSCHARSET utf-8
 set -x GHQ_SELECTOR fzf
 set -g theme_powerline_fonts yes
@@ -46,6 +45,9 @@ set -x RIPGREP_CONFIG_PATH $HOME"/.ripgreprc"
 
 # initialize direnv
 direnv hook fish | source
+
+# initialize anyenv and XXenv
+status --is-interactive; and source (anyenv init -|psub)
 
 function vterm_printf;
     if [ -n "$TMUX" ]
