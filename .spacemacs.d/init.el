@@ -868,20 +868,17 @@ before packages are loaded."
            ))
       )
     (setq org-download-screenshot-method "screencapture -i %s")
+
     (setq org-capture-templates
-      '(("t" "New TODO" entry
-          (file+headline "~/notes/notes.org" "tasks")
-          "* TODO %?\n\n%a")
-         ("m" "Memo" entry
-           (file+headline "~/notes/memo.org" "memo")
-           "* %U%?\n%i\n%a")
-         ;; ("d" "default" plain (function org-roam-capture--get-point)
-         ;;   "%?"
-         ;;   :file-name "%<%Y%m%d%H%M%S>-${slug}"
-         ;;   :head "#+TITLE: ${title}\n"
-         ;;   :unnarrowed t)
+      '(("t" "New TODO" entry (file+headline "~/notes/my-inbox.org" "inbox")
+          "* TODO %?\n:PROPERTIES:\n:CREATED_AT: %<[%Y-%02m-%02d]>\n:END:\n\n" :empty-lines 1)
+         ("b" "Book" entry (file org-books-file)
+           "%(let* ((url (substring-no-properties (current-kill 0)))
+                  (details (org-books-get-details url)))
+             (when details (apply #'org-books-format 1 details)))")
          )
       )
+
 
     (require 'ox-qmd)
     )
