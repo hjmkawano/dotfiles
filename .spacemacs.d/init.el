@@ -64,7 +64,6 @@ This function should only modify configuration layer settings."
          org-enable-epub-support nil
          org-enable-verb-support nil
          org-enable-reveal-js-support nil
-         org-enable-valign t
          org-use-speed-commands t
          org-journal-dir "~/notes/journal/"
          org-journal-file-format "%Y-%m-%d"
@@ -151,10 +150,10 @@ This function should only modify configuration layer settings."
        dap
        protobuf
        (python :variables
+         python-backend 'lsp python-lsp-server 'pyright
          python-sort-imports-on-save t
          python-test-runner '(pytest nose)
          python-pipenv-activate t
-         python-formatter 'black
          python-format-on-save t
          )
        (ipython-notebook :variables
@@ -635,7 +634,7 @@ It should only modify the values of Spacemacs settings."
 
     ;; Code folding method. Possible values are `evil', `origami' and `vimish'.
     ;; (default 'evil)
-    dotspacemacs-folding-method 'vimish
+    dotspacemacs-folding-method 'origami
 
     ;; If non-nil and `dotspacemacs-activate-smartparens-mode' is also non-nil,
     ;; `smartparens-strict-mode' will be enabled in programming modes.
@@ -870,6 +869,7 @@ before packages are loaded."
     (setq org-download-screenshot-method "screencapture -i %s")
 
     (setq org-capture-templates
+
       '(("t" "New TODO" entry (file+headline "~/notes/my-inbox.org" "inbox")
           "* TODO %?\n:PROPERTIES:\n:CREATED_AT: %<[%Y-%02m-%02d]>\n:END:\n\n" :empty-lines 1)
          ("b" "Book" entry (file org-books-file)
@@ -930,6 +930,9 @@ before packages are loaded."
 
   ;; projectile
   (setq projectile-enable-caching t)
+  (setq projectile-project-search-path '("~/src/bitbucket.org/" "~/src/github.com"))
+  (setq projectile-auto-discover t)
+
 
   ;; MPDel
   ;; (require 'mpdel)
