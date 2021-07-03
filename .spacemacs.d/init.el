@@ -262,11 +262,6 @@ This function should only modify configuration layer settings."
        itail
        ssh-config-mode
        edit-indirect
-       (iceberg-theme
-         :location (recipe
-                     :fetcher github
-                     :repo "conao3/iceberg-theme.el")
-         )
        forge
        (gist
          :location (recipe
@@ -1294,14 +1289,6 @@ before packages are loaded."
     :ensure t
     :init
     )
-
-  (use-package iceberg-theme
-    :ensure t
-    :config
-    (iceberg-theme-create-theme-file)
-    ;; (load-theme 'solarized-iceberg-dark t)
-    )
-
 
   (use-package doom-themes
     :ensure t
