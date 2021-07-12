@@ -189,6 +189,9 @@ This function should only modify configuration layer settings."
          browse-url-browser-function 'w3m-browse-url
          w3m-view-this-url-new-session-in-background t
          )
+       (elfeed :variable
+         rmh-elfeed-org-files (list (concat org-directory "elfeed.org"))
+         elfeed-enable-web-interface t)
        )
 
     ;; List of additional packages that will be installed without being
